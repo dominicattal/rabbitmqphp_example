@@ -1,21 +1,21 @@
+<form action="login_handler.php" method="post" id="login-form">
+  <div>
+    <label for="username">Userusername</label>
+    <input type="text" name="username" id="username" required />
+  </div>
+  <div>
+    <label for="password">Password</label>
+    <input type="password" name="password" id="password" required minlength="8"/>
+  </div>
+  <div>
+    <input type="submit" value="Submit" />
+  </div>
+</form>
+
 <?php
-
-
-if (!isset($_POST))
-{
-	$msg = "NO POST MESSAGE SET, POLITELY FUCK OFF";
-	echo json_encode($msg);
-	exit(0);
+session_start();
+if (isset($_SESSION["login_response"])) {
+  echo "<p>$_SESSION[login_response]</p>";
+  unset($_SESSION["login_response"]);
 }
-$request = $_POST;
-$response = "unsupported request type, politely FUCK OFF";
-switch ($request["type"])
-{
-	case "login":
-		$response = "login, yeah we can do that";
-	break;
-}
-echo json_encode($response);
-exit(0);
-
 ?>
