@@ -221,6 +221,10 @@ class rabbitMQClient
 
 			$exchange->publish($json_message,$this->routing_key,AMQP_NOPARAM,array('reply_to'=>$callback_queue->getName(),'correlation_id'=>$uid));
 			$this->response_queue[$uid] = "waiting";
+
+      // this line blocks until finished. if never finishes, website remains blocks.
+      // need to set timeout for this function somehow (php is not well-equipped to deal with this)
+      // https://github.com/php-amqp/php-amqp/blob/latest/stubs/AMQPQueue.php#L128
 			$callback_queue->consume(array($this,'process_response'));
 
 			$response = $this->response_queue[$uid];

@@ -19,4 +19,5 @@
 <script>
   sessionStorage.setItem("test", "test");
   console.log(sessionStorage.getItem("test"));
+  console.log(sessionStorage);
 </script>

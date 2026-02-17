@@ -1,6 +1,12 @@
+<!DOCTYPE html>
+<html>
+<head>
+<script>
 <?php
 
-goto fail;
+$location = "registration.php";
+$response = "idk how this happened";
+
 if (!isset($_POST)) {
   trigger_error("Missing post data", E_USER_WARNING);
   goto fail;
@@ -16,25 +22,34 @@ if (!isset($password)) {
   goto fail;
 }
 
+set_time_limit(5);
+
 // create db connection here to create user
-require_once('../path.inc');
-require_once('../get_host_info.inc');
-require_once('../rabbitMQLib.inc');
-
-$client = new rabbitMQClient("../testRabbitMQ.ini","testServer");
-
-$request = array();
-$request['type'] = "register";
-$request['username'] = $_POST["username"];
-$request['password'] = $_POST["password"];
-$response = $client->send_request($request);
+// set a timeout in case it takes too long
+// require_once('../path.inc');
+// require_once('../get_host_info.inc');
+// require_once('../rabbitMQLib.inc');
+//  
+// $client = new rabbitMQClient("../testRabbitMQ.ini","testServer");
+// 
+// $request = array();
+// $request['type'] = "register";
+// $request['username'] = $_POST["username"];
+// $request['password'] = $_POST["password"];
+// $response = $client->send_request($request);
+// trigger_error("A", E_USER_WARNING);
 //$response = $client->publish($request);
 
-echo "client received response: ".PHP_EOL;
-print_r($response);
+// print_r($response);
+
+$location = "home.php";
+
 fail:
+echo "window.location = '$location';\n";
+echo "sessionStorage.setItem('SESSIONID', '$response');\n";
 ?>
-<script>
-sessionStorage.setItem("test2", "test2");
-window.location = "home.php";
 </script>
+</head>
+<body>
+test
+</body>
