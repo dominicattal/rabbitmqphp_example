@@ -10,6 +10,9 @@ function doLogin($username,$password)
     // lookup username in databas
     // check password
     $login = new loginDB();
+
+     echo "Trying to login -matt".PHP_EOL;
+
     return $login->validateLogin($username,$password);
     //return false if not valid
 }
