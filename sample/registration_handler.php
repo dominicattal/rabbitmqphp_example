@@ -1,25 +1,34 @@
 <?php
-session_start();
 if (!isset($_POST)) {
-  $_SESSION["registration_response"] = "Internal Error";
   trigger_error("Missing post data", E_USER_WARNING);
   goto fail;
 }
 $username = $_POST["username"];
 if (!isset($username)) {
-  $_SESSION["registration_response"] = "Internal Error";
   trigger_error("Missing username", E_USER_WARNING);
   goto fail;
 }
 $password = htmlspecialchars($_POST["password"]);
 if (!isset($password)) {
-  $_SESSION["registration_response"] = "Internal Error";
   trigger_error("Missing password", E_USER_WARNING);
   goto fail;
 }
 // create db connection here to create user
+require_once('../path.inc');
+require_once('../get_host_info.inc');
+require_once('../rabbitMQLib.inc');
 
-$_SESSION["username"] = $username;
+$client = new rabbitMQClient("../testRabbitMQ.ini","testServer");
+
+$request = array();
+$request['type'] = "register";
+$request['username'] = $_POST["username"];
+$request['password'] = $_POST["password"];
+$response = $client->send_request($request);
+//$response = $client->publish($request);
+
+echo "client received response: ".PHP_EOL;
+print_r($response);
 
 header("Location: home.php");
 die();

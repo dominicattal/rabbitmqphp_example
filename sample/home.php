@@ -1,4 +1,4 @@
 <?php
 session_start();
-echo "<h1>Welcome, $_SESSION[username]</h1>";
+echo "<h1>Welcome, Person</h1>";
 ?>

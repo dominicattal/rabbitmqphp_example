@@ -15,11 +15,3 @@
     <input type="submit" value="Submit" />
   </div>
 </form>
-
-<?php
-session_start();
-if (isset($_SESSION["registration_response"])) {
-  echo "<p>$_SESSION[registration_response]</p>";
-  unset($_SESSION["registration_response"]);
-}
-?>
