@@ -1,4 +1,6 @@
 <?php
+
+goto fail;
 if (!isset($_POST)) {
   trigger_error("Missing post data", E_USER_WARNING);
   goto fail;
@@ -13,6 +15,7 @@ if (!isset($password)) {
   trigger_error("Missing password", E_USER_WARNING);
   goto fail;
 }
+
 // create db connection here to create user
 require_once('../path.inc');
 require_once('../get_host_info.inc');
@@ -29,11 +32,9 @@ $response = $client->send_request($request);
 
 echo "client received response: ".PHP_EOL;
 print_r($response);
-
-header("Location: home.php");
-die();
-
 fail:
-header("Location: registartion.php");
-die();
 ?>
+<script>
+sessionStorage.setItem("test2", "test2");
+window.location = "home.php";
+</script>

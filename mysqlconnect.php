@@ -1,7 +1,7 @@
 #!/usr/bin/php
 <?php
 
-$mydb = new mysqli('127.0.0.1','testUser','12345','testdb');
+$mydb = new mysqli('100.79.134.75','testUser','12345','testdb');
 
 if ($mydb->errno != 0)
 {
@@ -20,6 +20,4 @@ if ($mydb->errno != 0)
 	echo __FILE__.':'.__LINE__.":error: ".$mydb->error.PHP_EOL;
 	exit(0);
 }
-
-
 ?>

@@ -1,4 +1,4 @@
-<form action="registration_handler.php" method="post" id="login-form">
+<form action="registration_handler.php" method="post" id="registration-form">
   <div>
     <label for="username">Userusername</label>
     <input type="text" name="username" id="username" required />
@@ -15,3 +15,8 @@
     <input type="submit" value="Submit" />
   </div>
 </form>
+<p id="textResponse"></p>
+<script>
+  sessionStorage.setItem("test", "test");
+  console.log(sessionStorage.getItem("test"));
+</script>

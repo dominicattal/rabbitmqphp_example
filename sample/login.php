@@ -11,3 +11,6 @@
     <input type="submit" value="Submit" />
   </div>
 </form>
+<script>
+  console.log(sessionStorage.getItem("test"));
+</script>
