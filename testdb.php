@@ -32,7 +32,7 @@ $channel_send = $connection_send->channel();
 $channel_send->queue_declare($MQ_QUEUE_DB_BROKER_NAME, false, false, false, false);
 
 $callback = function (AMQPMessage $msg_in) {
-  global $db_conn, $channel_send;
+  global $db_conn, $channel_send, $MQ_QUEUE_DB_BROKER_NAME;
   echo ' [x] Received ', $msg_in->getBody(), "\n";
   $msg_decoded = json_decode($msg_in->getBody(), true);
   $query = "SELECT username, password FROM user WHERE username='$msg_decoded[username]'";
