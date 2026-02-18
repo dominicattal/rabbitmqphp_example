@@ -4,15 +4,32 @@ require_once __DIR__."/vendor/autoload.php";
 use PhpAmqpLib\Connection\AMQPStreamConnection;
 use PhpAmqpLib\Message\AMQPMessage;
 
-$db_conn = new mysqli('localhost','dom','pass','test');
+$config = parse_ini_file('testdb.ini');
 
-$connection_recv = new AMQPStreamConnection("localhost", 5672, "dom", "attal");
+$MQ_BROKER_HOST = $config["MQ_BROKER_HOST"];
+$MQ_BROKER_PORT = $config["MQ_BROKER_PORT"];
+$MQ_BROKER_USER = $config["MQ_BROKER_USER"];
+$MQ_BROKER_PASS = $config["MQ_BROKER_PASS"];
+$MQ_DB_HOST = $config["MQ_DB_HOST"];
+$MQ_DB_PORT = $config["MQ_DB_PORT"];
+$MQ_DB_USER = $config["MQ_DB_USER"];
+$MQ_DB_PASS = $config["MQ_DB_PASS"];
+$MQ_QUEUE_DB_BROKER_NAME = $config["MQ_QUEUE_DB_BROKER_NAME"];
+$MQ_QUEUE_BROKER_DB_NAME = $config["MQ_QUEUE_BROKER_DB_NAME"];
+$MYSQL_HOST = $config["MYSQL_HOST"];
+$MYSQL_USER = $config["MYSQL_USER"];
+$MYSQL_PASS = $config["MYSQL_PASS"];
+$MYSQL_DB = $config["MYSQL_DB"];
+
+$db_conn = new mysqli($MYSQL_HOST,$MYSQL_USER,$MYSQL_PASS,$MYSQL_DB);
+
+$connection_recv = new AMQPStreamConnection($MQ_DB_HOST, $MQ_DB_PORT, $MQ_DB_USER, $MQ_DB_PASS);
 $channel_recv = $connection_recv->channel();
-$channel_recv->queue_declare('queue_broker_db', false, false, false, false);
+$channel_recv->queue_declare($MQ_QUEUE_BROKER_DB_NAME, false, false, false, false);
 
-$connection_send = new AMQPStreamConnection("100.115.164.18", 5672, "test", "test");
+$connection_send = new AMQPStreamConnection($MQ_BROKER_HOST, $MQ_BROKER_PORT, $MQ_BROKER_USER, $MQ_BROKER_PASS);
 $channel_send = $connection_send->channel();
-$channel_send->queue_declare('queue_db_broker', false, false, false, false);
+$channel_send->queue_declare($MQ_QUEUE_DB_BROKER_NAME, false, false, false, false);
 
 $callback = function (AMQPMessage $msg_in) {
   global $db_conn, $channel_send;
@@ -31,10 +48,10 @@ $callback = function (AMQPMessage $msg_in) {
   }
   $msg_out = new AMQPMessage('Success');
 send:
-  $channel_send->basic_publish($msg_out, '', 'queue_db_broker');
+  $channel_send->basic_publish($msg_out, '', $MQ_QUEUE_DB_BROKER_NAME);
 };
 
-$channel_recv->basic_consume('queue_broker_db', '', false, true, false, false, $callback);
+$channel_recv->basic_consume($MQ_QUEUE_BROKER_DB_NAME, '', false, true, false, false, $callback);
 try {
   $channel_recv->consume();
 } catch (\Throwable $exception) {
