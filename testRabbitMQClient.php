@@ -6,6 +6,7 @@ require_once('rabbitMQLib.inc');
 
 $client = new rabbitMQClient("testRabbitMQ.ini","testServer");
 
+//echo "Builing a message to the broker";
 
 $request = array();
 $request['type'] = "login";
