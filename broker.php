@@ -6,6 +6,19 @@ function doLogin($username,$password)
 {
     $client = new rabbitMQClient("broker_client.ini", "broker");
     $req = array();
+    $req["type"] = "login";
+    $req["username"] = $username;
+    $req["password"] = $password;
+    $response = $client->send_request($req); 
+    echo "Received response from db: \n";
+    return $response;
+}
+
+function doRegister($username,$password)
+{
+    $client = new rabbitMQClient("broker_client.ini", "broker");
+    $req = array();
+    $req["type"] = "register";
     $req["username"] = $username;
     $req["password"] = $password;
     $response = $client->send_request($req); 
@@ -29,6 +42,8 @@ function requestProcessor($request)
   {
     case "login":
       return doLogin($request['username'],$request['password']);
+    case "register":
+        return doRegister($request['username'],$request['password']);
     case "validate_session":
       return doValidate($request['sessionId']);
   }

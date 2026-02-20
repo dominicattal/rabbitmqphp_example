@@ -5,8 +5,8 @@ require_once('rabbitMQLib.inc');
 $client = new rabbitMQClient("web_client.ini","web_client");
 
 $request = array();
-$request['type'] = "login";
-$request['username'] = "test";
+$request['type'] = "register";
+$request['username'] = "test1";
 $request['password'] = "test";
 $request['message'] = "HI";
 $response = $client->send_request($request);

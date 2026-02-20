@@ -28,6 +28,10 @@ $request['type'] = "login";
 $request['username'] = $username;
 $request['password'] = $password;
 $response = $client->send_request($request);
+if (!isset($response["status"])) {
+    $web_response = "Internal Error";
+    goto fail;
+}
 if ($response["status"] !== "success") {
     $web_response = $response["message"];
     goto fail;

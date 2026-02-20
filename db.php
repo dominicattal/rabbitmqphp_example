@@ -2,16 +2,21 @@
 <?php
 require_once('rabbitMQLib.inc');
 
-$config = parse_ini_file('config.ini');
+$config = parse_ini_file('db_mysql.ini');
 
 $db_conn = new mysqli($config["MYSQL_HOST"],$config["MYSQL_USER"],$config["MYSQL_PASS"],$config["MYSQL_DB"]);
+
+// TODO
+// replace sql queries with pdo because thats safer in php
+// replace ->query with ->prepare, ->bind_param, ->execute to allow robust error checking
+// sessions and stuff
 
 function doLogin($username,$password)
 {
   global $db_conn;
-  $query = "SELECT username, password FROM user WHERE username='$username'";
-  $result = $db_conn->query($query);
   $response_str = "Success";
+  $query = "SELECT username, password FROM users WHERE username='$username'";
+  $result = $db_conn->query($query);
   if ($result->num_rows == 0) {
     return array(
       "status" => "failed",
@@ -25,6 +30,27 @@ function doLogin($username,$password)
       "message" => "Invalid password"
     );
   }
+  return array(
+    "status" => "success",
+    "message" => ""
+  );
+}
+
+function doRegister($username,$password)
+{
+  global $db_conn;
+  $query = "SELECT username FROM users WHERE username='$username'";
+  $result = $db_conn->query($query);
+  if ($result->num_rows != 0) {
+      return array(
+          "status" => "failed",
+          "message" => "User exists"
+      );
+  }
+  echo $username . " " . $password . "\n";
+  $query = "INSERT INTO users VALUES ('$username','$password');";
+  // need to assert query successfully executed here
+  $result = $db_conn->query($query);
   return array(
     "status" => "success",
     "message" => ""
@@ -51,6 +77,8 @@ function requestProcessor($request)
   {
     case "login":
       return doLogin($request['username'],$request['password']);
+    case "register":
+      return doRegister($request['username'],$request['password']);
     case "validate_session":
       return doValidate($request['sessionId']);
   }

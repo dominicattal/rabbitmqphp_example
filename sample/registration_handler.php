@@ -1,11 +1,8 @@
-<!DOCTYPE html>
-<html>
-<head>
 <script>
 <?php
 
-$location = "registration.php";
-$response = "idk how this happened";
+$web_response = "";
+$location = "registration.html";
 
 if (!isset($_POST)) {
   trigger_error("Missing post data", E_USER_WARNING);
@@ -22,34 +19,37 @@ if (!isset($password)) {
   goto fail;
 }
 
-set_time_limit(5);
+require_once('../rabbitMQLib.inc');
 
-// create db connection here to create user
-// set a timeout in case it takes too long
-// require_once('../path.inc');
-// require_once('../get_host_info.inc');
-// require_once('../rabbitMQLib.inc');
-//  
-// $client = new rabbitMQClient("../testRabbitMQ.ini","testServer");
-// 
-// $request = array();
-// $request['type'] = "register";
-// $request['username'] = $_POST["username"];
-// $request['password'] = $_POST["password"];
-// $response = $client->send_request($request);
-// trigger_error("A", E_USER_WARNING);
-//$response = $client->publish($request);
+$client = new rabbitMQClient("../web_client.ini","web_client");
 
-// print_r($response);
+$request = array();
+$request['type'] = "register";
+$request['username'] = $username;
+$request['password'] = $password;
+$response = $client->send_request($request);
+if (!isset($response["status"])) {
+    $web_response = "Internal Error";
+    goto fail;
+}
+if ($response["status"] !== "success") {
+    $web_response = $response["message"];
+    goto fail;
+}
 
-$location = "home.php";
+$response["sessid"] = "test";
+$location = "home.html";
 
 fail:
+if ($web_response) {
+    trigger_error($web_response, E_USER_WARNING);
+    echo "sessionStorage.setItem('message', '$web_response');\n";
+} else if (isset($response["sessid"])) {
+    echo "sessionStorage.setItem('username', '$username');\n";
+    echo "sessionStorage.setItem('sessid', '$response[sess_id]');\n";
+} else {
+    trigger_error("how'd this happen", E_USER_WARNING);
+}
 echo "window.location = '$location';\n";
-echo "sessionStorage.setItem('SESSIONID', '$response');\n";
 ?>
 </script>
-</head>
-<body>
-test
-</body>
