@@ -1,0 +1,6 @@
+<h1>Welcome, <em id="username"></em></h1>
+<script>
+    var username = sessionStorage.getItem("username");
+    var username_ele = document.getElementById("username");
+    username_ele.textContent = username;
+</script>

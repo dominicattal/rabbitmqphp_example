@@ -5,12 +5,18 @@
   </div>
   <div>
     <label for="password">Password</label>
-    <input type="password" name="password" id="password" required minlength="8"/>
+    <input type="password" name="password" id="password" required />
   </div>
   <div>
     <input type="submit" value="Submit" />
   </div>
 </form>
+<p id="response"></p>
 <script>
-  console.log(sessionStorage.getItem("test"));
+    var response = sessionStorage.getItem("message");
+    if (response) {
+        var p_ele = document.getElementById("response");
+        p_ele.textContent = response;
+        sessionStorage.removeItem("message");     
+    }
 </script>
