@@ -28,6 +28,8 @@ function doRegister($username,$password)
 
 function doValidate($session)
 {
+   //Messing with this -Matt
+   //
     return false;
 }
 
@@ -45,7 +47,7 @@ function requestProcessor($request)
     case "register":
         return doRegister($request['username'],$request['password']);
     case "validate_session":
-      return doValidate($request['sessionId']);
+      return doValidate($request['sessionId']);//Is this correct? I see no sessionId anywhere, only sessid -Matt
   }
   return array("returnCode" => '0', 'message'=>"Server received request and processed");
 }

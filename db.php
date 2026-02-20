@@ -53,6 +53,10 @@ function doRegister($username,$password)
 
 function doValidate($session)
 {
+//Testing stuff here- Matt
+//$query = "INSERT INTO users VALUES ('$username','$password');";
+ 
+  //$result = $db_conn->query($query);
     return array(
         "status" => "failed",
         "message" => "not implemented"
