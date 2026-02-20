@@ -1,17 +1,16 @@
 #!/usr/bin/php
 <?php
-require_once('path.inc');
-require_once('get_host_info.inc');
 require_once('rabbitMQLib.inc');
 
-$client = new rabbitMQClient("testRabbitMQ.ini","testServer");
+$client = new rabbitMQClient("web_client.ini","web_client");
 
 $request = array();
 $request['type'] = "login";
-$request['username'] = $argv[1];
-$request['password'] = $argv[2];
+$request['username'] = "test1";
+$request['password'] = "test";
 $request['message'] = "HI";
 $response = $client->send_request($request);
 //$response = $client->publish($request);
+var_dump($response);
 
 

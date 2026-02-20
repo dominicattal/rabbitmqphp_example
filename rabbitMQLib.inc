@@ -1,12 +1,22 @@
 <?php
 
-require_once('get_host_info.inc');
+/**
+    @brief gets the currrent machine information and optionally any other task
+    specific INI folder installed in the system path.
+    Uses the default path of /var/system_ini/ unless $INIPATH is set
+
+    @return parsed ini machine information
+*/
+function getHostInfo($ini)
+{
+    return parse_ini_file($ini,true);
+}
 
 class rabbitMQServer
 {
 	private $machine = "";
-	public  $BROKER_HOST;
-	private $BROKER_PORT;
+	public  $HOST;
+	private $PORT;
 	private $USER;
 	private $PASSWORD;
 	private $VHOST;
@@ -16,24 +26,24 @@ class rabbitMQServer
 	private $exchange_type = "topic";
 	private $auto_delete = false;
 
-	function __construct($machine, $server = "rabbitMQ")
+	function __construct($ini, $server = "rabbitMQ")
 	{
-		$this->machine = getHostInfo(array($machine));
-		$this->BROKER_HOST   = $this->machine[$server]["BROKER_HOST"];
-		$this->BROKER_PORT   = $this->machine[$server]["BROKER_PORT"];
-		$this->USER     = $this->machine[$server]["USER"];
-		$this->PASSWORD = $this->machine[$server]["PASSWORD"];
-		$this->VHOST = $this->machine[$server]["VHOST"];
-		if (isset( $this->machine[$server]["EXCHANGE_TYPE"]))
+		$this->machine = getHostInfo($ini);
+		$this->HOST   = $this->machine[$server]["MQ_HOST"];
+		$this->PORT   = $this->machine[$server]["MQ_PORT"];
+		$this->USER     = $this->machine[$server]["MQ_USER"];
+		$this->PASSWORD = $this->machine[$server]["MQ_PASSWORD"];
+		$this->VHOST = $this->machine[$server]["MQ_VHOST"];
+		if (isset( $this->machine[$server]["MQ_EXCHANGE_TYPE"]))
 		{
-			$this->exchange_type = $this->machine[$server]["EXCHANGE_TYPE"];
+			$this->exchange_type = $this->machine[$server]["MQ_EXCHANGE_TYPE"];
 		}
-		if (isset( $this->machine[$server]["AUTO_DELETE"]))
+		if (isset( $this->machine[$server]["MQ_AUTO_DELETE"]))
 		{
-			$this->auto_delete = $this->machine[$server]["AUTO_DELETE"];
+			$this->auto_delete = $this->machine[$server]["MQ_AUTO_DELETE"];
 		}
-		$this->exchange = $this->machine[$server]["EXCHANGE"];
-		$this->queue = $this->machine[$server]["QUEUE"];
+		$this->exchange = $this->machine[$server]["MQ_EXCHANGE"];
+		$this->queue = $this->machine[$server]["MQ_QUEUE"];
 	}
 
 	function process_message($msg)
@@ -59,8 +69,8 @@ class rabbitMQServer
 				}
 
 				$params = array();
-				$params['host'] = $this->BROKER_HOST;
-				$params['port'] = $this->BROKER_PORT;
+				$params['host'] = $this->HOST;
+				$params['port'] = $this->PORT;
 				$params['login'] = $this->USER;
 				$params['password'] = $this->PASSWORD;
 				$params['vhost'] = $this->VHOST;
@@ -101,8 +111,8 @@ class rabbitMQServer
 		{
 			$this->callback = $callback;
 			$params = array();
-			$params['host'] = $this->BROKER_HOST;
-			$params['port'] = $this->BROKER_PORT;
+			$params['host'] = $this->HOST;
+			$params['port'] = $this->PORT;
 			$params['login'] = $this->USER;
 			$params['password'] = $this->PASSWORD;
 			$params['vhost'] = $this->VHOST;
@@ -137,8 +147,8 @@ class rabbitMQServer
 class rabbitMQClient
 {
 	private $machine = "";
-	public  $BROKER_HOST;
-	private $BROKER_PORT;
+	public  $HOST;
+	private $PORT;
 	private $USER;
 	private $PASSWORD;
 	private $VHOST;
@@ -148,29 +158,30 @@ class rabbitMQClient
 	private $response_queue = array();
 	private $exchange_type = "topic";
 
-	function __construct($machine, $server = "rabbitMQ")
+	function __construct($ini, $server = "rabbitMQ")
 	{
-		$this->machine = getHostInfo(array($machine));
-		$this->BROKER_HOST   = $this->machine[$server]["BROKER_HOST"];
-		$this->BROKER_PORT   = $this->machine[$server]["BROKER_PORT"];
-		$this->USER     = $this->machine[$server]["USER"];
-		$this->PASSWORD = $this->machine[$server]["PASSWORD"];
-		$this->VHOST = $this->machine[$server]["VHOST"];
-		if (isset( $this->machine[$server]["EXCHANGE_TYPE"]))
+		$this->machine = getHostInfo($ini);
+		$this->HOST   = $this->machine[$server]["MQ_HOST"];
+		$this->PORT   = $this->machine[$server]["MQ_PORT"];
+		$this->USER     = $this->machine[$server]["MQ_USER"];
+		$this->PASSWORD = $this->machine[$server]["MQ_PASSWORD"];
+		$this->VHOST = $this->machine[$server]["MQ_VHOST"];
+		if (isset( $this->machine[$server]["MQ_EXCHANGE_TYPE"]))
 		{
-			$this->exchange_type = $this->machine[$server]["EXCHANGE_TYPE"];
+			$this->exchange_type = $this->machine[$server]["MQ_EXCHANGE_TYPE"];
 		}
-		if (isset( $this->machine[$server]["AUTO_DELETE"]))
+		if (isset( $this->machine[$server]["MQ_AUTO_DELETE"]))
 		{
-			$this->auto_delete = $this->machine[$server]["AUTO_DELETE"];
+			$this->auto_delete = $this->machine[$server]["MQ_AUTO_DELETE"];
 		}
-		$this->exchange = $this->machine[$server]["EXCHANGE"];
-		$this->queue = $this->machine[$server]["QUEUE"];
+		$this->exchange = $this->machine[$server]["MQ_EXCHANGE"];
+		$this->queue = $this->machine[$server]["MQ_QUEUE"];
 	}
 
 	function process_response($response)
 	{
 		$uid = $response->getCorrelationId();
+        echo $this->response_queue[$uid];
 		if (!isset($this->response_queue[$uid]))
 		{
 			echo  "unknown uid\n";
@@ -195,8 +206,8 @@ class rabbitMQClient
 		try
 		{
 			$params = array();
-			$params['host'] = $this->BROKER_HOST;
-			$params['port'] = $this->BROKER_PORT;
+			$params['host'] = $this->HOST;
+			$params['port'] = $this->PORT;
 			$params['login'] = $this->USER;
 			$params['password'] = $this->PASSWORD;
 			$params['vhost'] = $this->VHOST;
@@ -222,9 +233,9 @@ class rabbitMQClient
 			$exchange->publish($json_message,$this->routing_key,AMQP_NOPARAM,array('reply_to'=>$callback_queue->getName(),'correlation_id'=>$uid));
 			$this->response_queue[$uid] = "waiting";
 
-      // this line blocks until finished. if never finishes, website remains blocks.
-      // need to set timeout for this function somehow (php is not well-equipped to deal with this)
-      // https://github.com/php-amqp/php-amqp/blob/latest/stubs/AMQPQueue.php#L128
+            // this line blocks until finished. if never finishes, website remains blocks.
+            // need to set timeout for this function somehow (php is not well-equipped to deal with this)
+            // https://github.com/php-amqp/php-amqp/blob/latest/stubs/AMQPQueue.php#L128
 			$callback_queue->consume(array($this,'process_response'));
 
 			$response = $this->response_queue[$uid];
@@ -250,8 +261,8 @@ class rabbitMQClient
 		try
 		{
 			$params = array();
-			$params['host'] = $this->BROKER_HOST;
-			$params['port'] = $this->BROKER_PORT;
+			$params['host'] = $this->HOST;
+			$params['port'] = $this->PORT;
 			$params['login'] = $this->USER;
 			$params['password'] = $this->PASSWORD;
 			$params['vhost'] = $this->VHOST;

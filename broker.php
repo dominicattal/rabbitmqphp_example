@@ -1,22 +1,15 @@
 #!/usr/bin/php
 <?php
-require_once('path.inc');
-require_once('get_host_info.inc');
 require_once('rabbitMQLib.inc');
-require_once('login.php.inc');
 
 function doLogin($username,$password)
 {
-    // lookup username in databas
-    // check password
-    // $login = new loginDB();
-    // return $login->validateLogin($username,$password);
-    //return false if not valid
-    $client = new rabbitMQClient("testRabbitMQ.ini", "testServer");
+    $client = new rabbitMQClient("broker_client.ini", "broker");
     $req = array();
     $req["username"] = $username;
     $req["password"] = $password;
-    $response = $client->send_request(); 
+    $response = $client->send_request($req); 
+    echo "Received response from db: \n";
     return $response;
 }
 
@@ -28,7 +21,6 @@ function doValidate($session)
 function requestProcessor($request)
 {
   echo "received request".PHP_EOL;
-  var_dump($request);
   if(!isset($request['type']))
   {
     return "ERROR: unsupported message type";
@@ -43,7 +35,7 @@ function requestProcessor($request)
   return array("returnCode" => '0', 'message'=>"Server received request and processed");
 }
 
-$server = new rabbitMQServer("testRabbitMQ.ini","testServer");
+$server = new rabbitMQServer("broker_server.ini","broker_server");
 $server->process_requests('requestProcessor');
 ?>
 

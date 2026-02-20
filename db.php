@@ -1,9 +1,6 @@
 #!/bin/php
 <?php
-require_once('path.inc');
-require_once('get_host_info.inc');
 require_once('rabbitMQLib.inc');
-require_once('login.php.inc');
 
 $config = parse_ini_file('config.ini');
 
@@ -36,6 +33,10 @@ function doLogin($username,$password)
 
 function doValidate($session)
 {
+    return array(
+        "status" => "failed",
+        "message" => "not implemented"
+    );
 }
 
 function requestProcessor($request)
@@ -57,7 +58,7 @@ function requestProcessor($request)
   return array("returnCode" => '0', 'message'=>"Server received request and processed");
 }
 
-$server = new rabbitMQServer("testRabbitMQ.ini","testServer");
+$server = new rabbitMQServer("db_server.ini","db_server");
 $server->process_requests('requestProcessor');
 
 ?>
