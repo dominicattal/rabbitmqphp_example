@@ -8,7 +8,6 @@ $request = array();
 $request['type'] = "register";
 $request['username'] = "test1";
 $request['password'] = "test";
-$request['message'] = "HI";
 $response = $client->send_request($request);
 //$response = $client->publish($request);
 var_dump($response);

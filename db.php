@@ -6,11 +6,6 @@ $config = parse_ini_file('db_mysql.ini');
 
 $db_conn = new mysqli($config["MYSQL_HOST"],$config["MYSQL_USER"],$config["MYSQL_PASS"],$config["MYSQL_DB"]);
 
-// TODO
-// replace sql queries with pdo because thats safer in php
-// replace ->query with ->prepare, ->bind_param, ->execute to allow robust error checking
-// sessions and stuff
-
 function doLogin($username,$password)
 {
   global $db_conn;
@@ -47,7 +42,6 @@ function doRegister($username,$password)
           "message" => "User exists"
       );
   }
-  echo $username . " " . $password . "\n";
   $query = "INSERT INTO users VALUES ('$username','$password');";
   // need to assert query successfully executed here
   $result = $db_conn->query($query);

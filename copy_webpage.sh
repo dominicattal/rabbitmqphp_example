@@ -1,7 +1,7 @@
 #!/bin/bash
 
 DIR="/var/www/sample"
-FILES="sample/login.php sample/registration.php sample/home.php sample/login_handler.php sample/registration_handler.php"
+FILES="sample/login.html sample/registration.html sample/home.html sample/login_handler.php sample/registration_handler.php"
 
 echo "Copying files..."
 for file in $FILES; do
