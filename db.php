@@ -30,41 +30,6 @@ function doLogin($username,$password)
     "message" => ""
   );
 
-//Making the validations update to make a sessionKey -ME
-  $query = "SELECT username from validations where username='$username'";
-  $result = $db_conn->query($query);
-
-
-   if ($result->num_rows == 0)
-   {
-	//Good means no former sessionKey
-	$key = bin2hex(random_bytes(10));
-	$now = time();
-        $expTime = $now + 300;
-	$query = "INSERT INTO validations (username,      		
-	sessionKey, createdAt, expiresAt)
-        VALUES ($username, $key, $now, $expTime);"
-	
-	$result = $db_conn->query($query);
-	echo "Hopefully added the validation!";
-   }
-   else
-   {
-	//Need to clear the current key
-	$query = "DELETE FROM validations
-WHERE username = $username";
-
-	$key = random_bytes(10);
-	$now = time();
-        $expTime = $now + 300;
-	$query = "INSERT INTO validations (username,      		
-	sessionKey, createdAt, expiresAt)
-        VALUES ($username, $key', $now, $expTime);"
-	
-	$result = $db_conn->query($query);
-
-	echo "Hopefully cleared then added the validation!";
-   }
 }
 
 function doRegister($username,$password)
