@@ -1,0 +1,9 @@
+add sessions for authentication
+
+make mysql queries safer using pdo in db.php
+
+replace ->query with ->prepare, ->bind_param, ->execute to allow robust error checking
+
+fix broker.php (see bugs.txt)
+
+
