@@ -1,0 +1,69 @@
+it490@dominic:~/midterm$ ./broker.php
+
+received request
+error: rabbitMQServer: process_message: exception caught: AMQPQueueException: Server channel error: 404, message: NOT_FOUND - no queue 'broker_to_db_queue_response' in vhost '/
+' in /home/it490/midterm/rabbitMQLib.inc:87
+Stack trace:
+#0 /home/it490/midterm/rabbitMQLib.inc(87): AMQPQueue->bind()
+#1 [internal function]: rabbitMQServer->process_message()
+#2 /home/it490/midterm/rabbitMQLib.inc(132): AMQPQueue->consume()
+#3 /home/it490/midterm/broker.php(39): rabbitMQServer->process_requests()
+#4 {main}received request
+processed one-way message
+received request
+error: rabbitMQServer: process_message: exception caught: AMQPQueueException: Server channel error: 404, message: NOT_FOUND - no queue 'broker_to_db_queue_response' in vhost '/
+' in /home/it490/midterm/rabbitMQLib.inc:87
+Stack trace:
+#0 /home/it490/midterm/rabbitMQLib.inc(87): AMQPQueue->bind()
+#1 [internal function]: rabbitMQServer->process_message()
+#2 /home/it490/midterm/rabbitMQLib.inc(132): AMQPQueue->consume()
+#3 /home/it490/midterm/broker.php(39): rabbitMQServer->process_requests()
+#4 {main}received request
+processed one-way message
+received request
+Received response from db:
+error: rabbitMQServer: process_message: exception caught: AMQPQueueException: Server channel error: 404, message: NOT_FOUND - no queue 'web_to_broker_queue_response' in vhost '
+/' in /home/it490/midterm/rabbitMQLib.inc:87
+Stack trace:
+#0 /home/it490/midterm/rabbitMQLib.inc(87): AMQPQueue->bind()
+#1 [internal function]: rabbitMQServer->process_message()
+#2 /home/it490/midterm/rabbitMQLib.inc(132): AMQPQueue->consume()
+#3 /home/it490/midterm/broker.php(39): rabbitMQServer->process_requests()
+#4 {main}received request
+unknown uid
+unknown uid
+unknown uid
+failed to send message to exchange: Server channel error: -1, message: unexpected response
+
+
+received request
+error: rabbitMQServer: process_message: exception caught: AMQPQueueException: Server channel error: 404, message: NOT_FOUND - no queue 'broker_to_db_queue_response' in vhost '/
+' in /home/it490/midterm/rabbitMQLib.inc:87
+Stack trace:
+#0 /home/it490/midterm/rabbitMQLib.inc(87): AMQPQueue->bind()
+#1 [internal function]: rabbitMQServer->process_message()
+#2 /home/it490/midterm/rabbitMQLib.inc(132): AMQPQueue->consume()
+#3 /home/it490/midterm/broker.php(54): rabbitMQServer->process_requests()
+#4 {main}received request
+processed one-way message
+received request
+error: rabbitMQServer: process_message: exception caught: AMQPQueueException: Server channel error: 404, message: NOT_FOUND - no queue 'broker_to_db_queue_response' in vhost '/
+' in /home/it490/midterm/rabbitMQLib.inc:87
+Stack trace:
+#0 /home/it490/midterm/rabbitMQLib.inc(87): AMQPQueue->bind()
+#1 [internal function]: rabbitMQServer->process_message()
+#2 /home/it490/midterm/rabbitMQLib.inc(132): AMQPQueue->consume()
+#3 /home/it490/midterm/broker.php(54): rabbitMQServer->process_requests()
+#4 {main}received request
+processed one-way message
+received request
+Received response from db:
+error: rabbitMQServer: process_message: exception caught: AMQPQueueException: Server channel error: 404, message: NOT_FOUND - no queue 'web_to_broker_queue_response' in vhost '
+/' in /home/it490/midterm/rabbitMQLib.inc:87
+Stack trace:
+#0 /home/it490/midterm/rabbitMQLib.inc(87): AMQPQueue->bind()
+#1 [internal function]: rabbitMQServer->process_message()
+#2 /home/it490/midterm/rabbitMQLib.inc(132): AMQPQueue->consume()
+#3 /home/it490/midterm/broker.php(54): rabbitMQServer->process_requests()
+#4 {main}received request
+failed to send message to exchange: Library error: channel mismatch

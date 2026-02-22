@@ -1,0 +1,22 @@
+<form action="login_handler.php" method="post" id="login-form">
+  <div>
+    <label for="username">Userusername</label>
+    <input type="text" name="username" id="username" required />
+  </div>
+  <div>
+    <label for="password">Password</label>
+    <input type="password" name="password" id="password" required />
+  </div>
+  <div>
+    <input type="submit" value="Submit" />
+  </div>
+</form>
+<p id="response"></p>
+<script>
+    var response = sessionStorage.getItem("message");
+    if (response) {
+        var p_ele = document.getElementById("response");
+        p_ele.textContent = response;
+        sessionStorage.removeItem("message");     
+    }
+</script>
