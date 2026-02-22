@@ -42,7 +42,7 @@ class rabbitMQServer
 		$this->exchange_type        = $this->machine[$server]["MQ_EXCHANGE_TYPE"];
 		$this->listen_queue_name    = $this->machine[$server]["MQ_LISTEN_QUEUE_NAME"];
         $this->listen_routing_key   = $this->machine[$server]["MQ_LISTEN_ROUTING_KEY"];
-        $this->send_responses       = isset($this->machine[$server]["MQ_SEND_RESPONSE"]) && $this->machine[$server]["MQ_SEND_RESPONSE"] === "true";
+        $this->send_responses       = $this->machine[$server]["MQ_SEND_RESPONSES"];
         if ($this->send_responses) {
             $this->send_queue_name      = $this->machine[$server]["MQ_SEND_QUEUE_NAME"];
             $this->send_routing_key     = $this->machine[$server]["MQ_SEND_ROUTING_KEY"];
@@ -80,7 +80,6 @@ class rabbitMQServer
             $send_queue->setName($this->send_queue_name);
             $replykey = $this->send_routing_key;
             $send_queue->bind($exchange->getName(),$replykey);
-            echo "responded\n";
             $exchange->publish(json_encode($response),$replykey,AMQP_NOPARAM,array('correlation_id'=>$msg->getCorrelationId()));
 		}
 		catch(Exception $e)
@@ -164,20 +163,13 @@ class rabbitMQClient
 	function process_response(AMQPEnvelope $response)
 	{
 		$correlation_id = $response->getCorrelationId();
-        if ($correlation_id !== $this->correlation_id)
+        if (!($this->correlation_id == $response->getCorrelationId()))
             return true;
-		if (!isset($this->response))
-		{
-			echo  "unknown uid\n";
-			return true;
-		}
 		$this->send_queue->ack($response->getDeliveryTag());
 		$body = $response->getBody();
 		$payload = json_decode($body, true);
 		if (!(isset($payload)))
-		{
 			$payload = "[empty response]";
-		}
 		$this->response = $payload;
 		return false;
 	}
