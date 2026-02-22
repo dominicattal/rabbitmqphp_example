@@ -29,6 +29,42 @@ function doLogin($username,$password)
     "status" => "success",
     "message" => ""
   );
+
+//Making the validations update to make a sessionKey -ME
+  $query = "SELECT username from validations where username='$username'";
+  $result = $db_conn->query($query);
+
+
+   if ($result->num_rows == 0)
+   {
+	//Good means no former sessionKey
+	$key = bin2hex(random_bytes(10));
+	$now = time();
+        $expTime = $now + 300;
+	$query = "INSERT INTO validations (username,      		
+	sessionKey, createdAt, expiresAt)
+        VALUES ($username, $key, $now, $expTime);"
+	
+	$result = $db_conn->query($query);
+	echo "Hopefully added the validation!";
+   }
+   else
+   {
+	//Need to clear the current key
+	$query = "DELETE FROM validations
+WHERE username = $username";
+
+	$key = random_bytes(10);
+	$now = time();
+        $expTime = $now + 300;
+	$query = "INSERT INTO validations (username,      		
+	sessionKey, createdAt, expiresAt)
+        VALUES ($username, $key', $now, $expTime);"
+	
+	$result = $db_conn->query($query);
+
+	echo "Hopefully cleared then added the validation!";
+   }
 }
 
 function doRegister($username,$password)
@@ -53,10 +89,8 @@ function doRegister($username,$password)
 
 function doValidate($session)
 {
-//Testing stuff here- Matt
-//$query = "INSERT INTO users VALUES ('$username','$password');";
- 
-  //$result = $db_conn->query($query);
+//This should be run whenever the user does something bar logging in to check if their session is still valid
+//It should just compare the validation's table's created at and expired at lines. If the user is expired, log them out. Otherwise exstend their stay
     return array(
         "status" => "failed",
         "message" => "not implemented"
