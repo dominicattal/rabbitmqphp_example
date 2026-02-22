@@ -5,7 +5,6 @@ CREATE TABLE users (
 
 INSERT INTO users VALUES ('test', 'test');
 
---Table for validation stuff -Matt
 CREATE TABLE validations (
   id INT AUTO_INCREMENT PRIMARY KEY,
   username INT NOT NULL,
@@ -14,13 +13,3 @@ CREATE TABLE validations (
   expiresAt BIGINT NOT NULL,
   FOREIGN KEY (username) REFERENCES users(username)
 );
-
-/*For session key
-IN JS when user is logging in use some hash function to get a key
-  Take said key + EPOCH time stamp -> to DB
-   DB Saves time created + key + expiration (5 mins)
-    Each request to server should check for valid key
-      if y -let request go + update expiration
-        if n -Log out user
-	-Matt
-*/
