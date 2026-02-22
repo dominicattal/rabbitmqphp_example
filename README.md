@@ -25,5 +25,5 @@ For ease of development, I use the following command to start a php server inste
 
 The script `copy_webpage.sh` will automatically move all the relevant files to the apache directory
 
-
-
+### Rabbitmq Diagram
+![rabbitmq_diagram](https://github.com/dominicattal/rabbitmqphp_example/blob/webpage/it490.png?raw=true)
