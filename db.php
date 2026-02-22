@@ -29,6 +29,7 @@ function doLogin($username,$password)
     "status" => "success",
     "message" => ""
   );
+
 }
 
 function doRegister($username,$password)
@@ -53,10 +54,8 @@ function doRegister($username,$password)
 
 function doValidate($session)
 {
-//Testing stuff here- Matt
-//$query = "INSERT INTO users VALUES ('$username','$password');";
- 
-  //$result = $db_conn->query($query);
+//This should be run whenever the user does something bar logging in to check if their session is still valid
+//It should just compare the validation's table's created at and expired at lines. If the user is expired, log them out. Otherwise exstend their stay
     return array(
         "status" => "failed",
         "message" => "not implemented"
