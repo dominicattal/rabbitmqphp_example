@@ -23,3 +23,6 @@ For ease of development, I use the following command to start a php server inste
     `php -S 127.0.0.1:8000 -t sample`
 
 The script `copy_webpage.sh` will automatically move all the relevant files to the apache directory
+
+### Rabbitmq Diagram
+![rabbitmq_diagram](https://github.com/dominicattal/rabbitmqphp_example/blob/webpage/it490.png?raw=true)
