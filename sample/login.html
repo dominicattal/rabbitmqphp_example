@@ -1,22 +1,45 @@
-<form action="login_handler.php" method="post" id="login-form">
-  <div>
-    <label for="username">Userusername</label>
-    <input type="text" name="username" id="username" required />
-  </div>
-  <div>
-    <label for="password">Password</label>
-    <input type="password" name="password" id="password" required />
-  </div>
-  <div>
-    <input type="submit" value="Submit" />
-  </div>
-</form>
-<p id="response"></p>
-<script>
-    var response = sessionStorage.getItem("message");
-    if (response) {
-        var p_ele = document.getElementById("response");
-        p_ele.textContent = response;
-        sessionStorage.removeItem("message");     
-    }
-</script>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="madd.css">
+</head>
+<body>
+    <div class="login-container">
+        <form action="login_handler.php" method="POST" id="login-form">
+            <h1>MADD FOR MOVIES? LOGIN</h1>
+            
+            <div class="input-group">
+                <label for="username">USERNAME</label>
+                <input type="text" id="username" name="username" placeholder="Enter your username here" required>
+            </div>
+            
+            <div class="input-group">
+                <label for="password">PASSWORD</label>
+                <input type="password" id="password" name="password" placeholder="Enter your password here" required>
+            </div>
+            
+            <button type="submit">SIGN IN</button>
+            
+            <p id="response" class="error-text"></p>
+            
+            <div class="divider">OR</div>
+            
+            <div class="footer">
+                Don't have an account? <a href="registration.html">Sign Up</a>
+            </div>
+        </form>
+    </div>
+
+    <script>
+        // Check sessionStorage for error messages sent by the backend
+        var response = sessionStorage.getItem("message");
+        if (response) {
+            var p_ele = document.getElementById("response");
+            p_ele.textContent = response;
+            sessionStorage.removeItem("message");     
+        }
+    </script>
+</body>
+</html>
