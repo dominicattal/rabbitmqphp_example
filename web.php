@@ -6,7 +6,7 @@ $client = new rabbitMQClient("web_client.ini","web_client");
 
 $request = array();
 $request['type'] = "login";
-$request['username'] = "test";
+$request['username'] = "test1";
 $request['password'] = "test";
 $response = $client->send_request($request);
 //$response = $client->publish($request);

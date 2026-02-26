@@ -7,8 +7,8 @@ INSERT INTO users VALUES ('test', 'test');
 
 CREATE TABLE validations (
   id INT AUTO_INCREMENT PRIMARY KEY,
-  username INT NOT NULL,
-  sessionKey VARCHAR(128) NOT NULL UNIQUE,
+  username VARCHAR(255) NOT NULL,
+  sessionKey VARCHAR(255) NOT NULL UNIQUE,
   createdAt BIGINT NOT NULL,
   expiresAt BIGINT NOT NULL,
   FOREIGN KEY (username) REFERENCES users(username)
@@ -23,3 +23,5 @@ IN JS when user is logging in use some hash function to get a key
         if n -Log out user
 	-Matt
 */
+
+
