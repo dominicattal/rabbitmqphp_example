@@ -46,7 +46,7 @@ if ($web_response) {
     echo "sessionStorage.setItem('message', '$web_response');\n";
 } else if (isset($response["sessid"])) {
     echo "sessionStorage.setItem('username', '$username');\n";
-    echo "sessionStorage.setItem('sessid', '$response[sess_id]')\n";
+    echo "sessionStorage.setItem('key', '$response[key]')\n";
 } else {
     trigger_error("how'd this happen", E_USER_WARNING);
 }

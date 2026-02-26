@@ -1,6 +1,5 @@
-
-
 <h1>Welcome, <em id="username"></em></h1>
+<p>Key: <em id="key"></em></p>
 <script>
 //This if statement checks if a user is logged in
 //If not, dumps them at the log in screen -Matt
@@ -14,4 +13,8 @@ if(!sessionStorage.getItem("username"))
 var username = sessionStorage.getItem("username");
 var username_ele = document.getElementById("username");
 username_ele.textContent = username;
+
+var key = sessionStorage.getItem("key");
+var key_ele = document.getElementById("key");
+key_ele.textContent = key;
 </script>
