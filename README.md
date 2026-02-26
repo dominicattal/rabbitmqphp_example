@@ -27,3 +27,5 @@ The script `copy_webpage.sh` will automatically move all the relevant files to t
 
 ### Rabbitmq Diagram
 ![rabbitmq_diagram](https://github.com/dominicattal/rabbitmqphp_example/blob/webpage/it490.png?raw=true)
+
+Out of date, broker_queue no longer exists since it isn't necessary for the project. Also, exchange is now direct instead of fanout, so '#' routing key doesn't work.
