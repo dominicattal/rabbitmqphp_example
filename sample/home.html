@@ -6,7 +6,7 @@
 if(!sessionStorage.getItem("username"))
 {
   //At some point this might need to be changed to check for session info aswell
-  alert("User not logged in!");
+  //alert("User not logged in!");
   window.location.href = "login.html";
 }
   
@@ -17,4 +17,38 @@ username_ele.textContent = username;
 var key = sessionStorage.getItem("key");
 var key_ele = document.getElementById("key");
 key_ele.textContent = key;
+
+
+</script>
+
+<form action="mattTesting.php" method="post" id="matt-Testing">
+<div>
+    <label for="username">Username</label>
+    <input type="text" name="username" id="username" required />
+  </div>
+  <div>
+    <label for="message">Message</label>
+    <input type="text" name="message" id="message" required />
+  </div>
+  <div>
+    <input type="submit" value="Submit" />
+  </div>
+</form>
+<p id="response"></p>
+
+
+<script>
+    var response = sessionStorage.getItem("message");
+    if (response) {
+        var p_ele = document.getElementById("response");
+        p_ele.textContent = response;
+        sessionStorage.removeItem("message");
+        
+
+      window.location.href = "login.html";
+        if(p_ele.textContent == "boot")
+          {
+            window.location.href = "login.html";
+          }
+    }
 </script>
