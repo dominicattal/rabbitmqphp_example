@@ -50,7 +50,17 @@ if($response["status"] == "boot")
  	$web_response = $response["message"];
 	$location = "login.html";
 	echo "window.location = '$location';\n";
-	goto redirect;
+	header("location: home.html");
+	exit();
+}
+
+if($response["status"] == "success")
+{
+ 	$web_response = $response["message"];
+	$location = "home.html";
+	echo "window.location = '$location';\n";
+	header("location: home.html");
+	exit();
 }
 
 if ($response["status"] !== "success") {
@@ -75,9 +85,6 @@ if ($web_response) {
 }
 echo "window.location = '$location';\n";
 
-//temp solution? -ME 2/27
-redirect:
-$location = "login.html";
-echo "window.location = '$location';\n";
+
 ?>
 </script>

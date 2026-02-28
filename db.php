@@ -98,6 +98,11 @@ echo "Trying a validation!\n";
 		echo "Result has rows!\n";
 		$row = $result->fetch_assoc();   
     		$expiresAt = $row['expiresAt']; 
+
+		var_dump($username);
+		var_dump($row);
+		var_dump($now);
+
     		if($expiresAt >= $now)
     		{
     			
@@ -105,7 +110,11 @@ echo "Trying a validation!\n";
 			//Need to clear the current key
 			echo "User has prior session, clearing then adding!\n";
 			$query = "DELETE FROM validations
-				WHERE username = $username";
+				WHERE username = '$username'";
+
+			
+			
+
 
 			$key = bin2hex(random_bytes(10));
 			$now = time();
@@ -117,6 +126,10 @@ echo "Trying a validation!\n";
 			$result = $db_conn->query($query);
 
 			echo "Hopefully cleared then added the validation!\n";
+			return array(
+			    "status" => "success",
+			    "message" => "User can stay logged in!"
+			);
 		}
 		else
 		{
