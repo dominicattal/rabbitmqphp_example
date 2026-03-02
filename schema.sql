@@ -20,7 +20,7 @@ CREATE TABLE reviews(
  username VARCHAR(255) NOT NULL,
  movie_id VARCHAR(255) NOT NULL,
  score INT NOT NULL,
- review VARCHAR(255), NOT NULL,
+ review VARCHAR(255) NOT NULL,
  FOREIGN KEY (username) REFERENCES users(username)
 );
 

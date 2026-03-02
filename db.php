@@ -67,14 +67,17 @@ echo "Trying a validation!\n";
     $query = "SELECT username from validations where username='$username'";
     $result = $db_conn->query($query);
     $key = "";
-
+    $timeToAdd=300;
+	
+   var_dump($username);	
+	
    if ($result->num_rows == 0)
    {
-	echo "No user sessions, creating one!";
+	echo "No user sessions, creating one!\n";
 	//Good means no former sessionKey
 	$key = bin2hex(random_bytes(10));
 	$now = time();
-        $expTime = $now + 300;
+        $expTime = $now + $timeToAdd;
 	$query = "INSERT INTO validations (username,      		
 	sessionKey, createdAt, expiresAt)
         VALUES ('$username', '$key', $now, $expTime);";
@@ -99,26 +102,25 @@ echo "Trying a validation!\n";
 		$row = $result->fetch_assoc();   
     		$expiresAt = $row['expiresAt']; 
 
-		var_dump($username);
-		var_dump($row);
-		var_dump($now);
+		
 
     		if($expiresAt >= $now)
     		{
     			
 			//Not expired yet
 			//Need to clear the current key
+			 var_dump($username);
 			echo "User has prior session, clearing then adding!\n";
 			$query = "DELETE FROM validations
 				WHERE username = '$username'";
 
-			
+			$result = $db_conn->query($query);
 			
 
 
 			$key = bin2hex(random_bytes(10));
 			$now = time();
-			$expTime = $now + 300;
+			$expTime = $now + $timeToAdd;
 			$query = "INSERT INTO validations (username,      		
 			sessionKey, createdAt, expiresAt)
 			VALUES ('$username', '$key', $now, $expTime);";
