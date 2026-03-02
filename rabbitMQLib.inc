@@ -1,17 +1,4 @@
 <?php
-
-/**
-    @brief gets the currrent machine information and optionally any other task
-    specific INI folder installed in the system path.
-    Uses the default path of /var/system_ini/ unless $INIPATH is set
-
-    @return parsed ini machine information
-*/
-function getHostInfo($ini)
-{
-    return parse_ini_file($ini,true);
-}
-
 class rabbitMQServer
 {
 	public $machine;
@@ -25,28 +12,24 @@ class rabbitMQServer
 	public $listen_queue_name;
     public $listen_queue;
 	public $routing_key;
+    public $callback;
     public $send_queue_name;
     public $send_routing_key;
-    public $callback;
-    public $send_responses;
 
-	function __construct($ini, $server = "rabbitMQ")
+	function __construct($ini, $send_queue_name, $send_routing_key)
 	{
-		$this->machine              = getHostInfo($ini);
-		$this->HOST                 = $this->machine[$server]["MQ_HOST"];
-		$this->PORT                 = $this->machine[$server]["MQ_PORT"];
-		$this->USER                 = $this->machine[$server]["MQ_USER"];
-		$this->PASSWORD             = $this->machine[$server]["MQ_PASSWORD"];
-		$this->VHOST                = $this->machine[$server]["MQ_VHOST"];
-		$this->exchange_name        = $this->machine[$server]["MQ_EXCHANGE_NAME"];
-		$this->exchange_type        = $this->machine[$server]["MQ_EXCHANGE_TYPE"];
-		$this->listen_queue_name    = $this->machine[$server]["MQ_LISTEN_QUEUE_NAME"];
-        $this->listen_routing_key   = $this->machine[$server]["MQ_LISTEN_ROUTING_KEY"];
-        $this->send_responses       = $this->machine[$server]["MQ_SEND_RESPONSES"];
-        if ($this->send_responses) {
-            $this->send_queue_name      = $this->machine[$server]["MQ_SEND_QUEUE_NAME"];
-            $this->send_routing_key     = $this->machine[$server]["MQ_SEND_ROUTING_KEY"];
-        }
+		$this->machine              = parse_ini_file($ini, false);
+		$this->HOST                 = $this->machine["MQ_HOST"];
+		$this->PORT                 = $this->machine["MQ_PORT"];
+		$this->USER                 = $this->machine["MQ_USER"];
+		$this->PASSWORD             = $this->machine["MQ_PASSWORD"];
+		$this->VHOST                = $this->machine["MQ_VHOST"];
+		$this->exchange_name        = $this->machine["MQ_EXCHANGE_NAME"];
+		$this->exchange_type        = $this->machine["MQ_EXCHANGE_TYPE"];
+		$this->listen_queue_name    = $this->machine["MQ_LISTEN_QUEUE_NAME"];
+        $this->listen_routing_key   = $this->machine["MQ_LISTEN_ROUTING_KEY"];
+        $this->send_queue_name      = $send_queue_name;
+        $this->send_routing_key     = $send_routing_key;
 	}
 
 	function process_message($msg)
@@ -59,9 +42,6 @@ class rabbitMQServer
             $payload["routing_key"] = $msg->getRoutingKey();
             if (isset($this->callback))
                 $response = call_user_func($this->callback,$payload);
-
-            if (!$this->send_responses)
-                return;
 
             $params = array();
             $params['host'] = $this->HOST;
@@ -144,20 +124,20 @@ class rabbitMQClient
     public $response;
     public $correlation_id;
 
-	function __construct($ini, $server = "rabbitMQ")
+	function __construct($ini, $send_queue_name, $send_routing_key)
 	{
-		$this->machine              = getHostInfo($ini);
-		$this->HOST                 = $this->machine[$server]["MQ_HOST"];
-		$this->PORT                 = $this->machine[$server]["MQ_PORT"];
-		$this->USER                 = $this->machine[$server]["MQ_USER"];
-		$this->PASSWORD             = $this->machine[$server]["MQ_PASSWORD"];
-		$this->VHOST                = $this->machine[$server]["MQ_VHOST"];
-		$this->exchange_name        = $this->machine[$server]["MQ_EXCHANGE_NAME"];
-		$this->exchange_type        = $this->machine[$server]["MQ_EXCHANGE_TYPE"];
-		$this->send_routing_key     = $this->machine[$server]["MQ_SEND_ROUTING_KEY"];
-		$this->reply_routing_key    = $this->machine[$server]["MQ_REPLY_ROUTING_KEY"];
-		$this->send_queue_name      = $this->machine[$server]["MQ_SEND_QUEUE_NAME"];
-		$this->reply_queue_name     = $this->machine[$server]["MQ_REPLY_QUEUE_NAME"];
+		$this->machine              = parse_ini_file($ini, false);
+		$this->HOST                 = $this->machine["MQ_HOST"];
+		$this->PORT                 = $this->machine["MQ_PORT"];
+		$this->USER                 = $this->machine["MQ_USER"];
+		$this->PASSWORD             = $this->machine["MQ_PASSWORD"];
+		$this->VHOST                = $this->machine["MQ_VHOST"];
+		$this->exchange_name        = $this->machine["MQ_EXCHANGE_NAME"];
+		$this->exchange_type        = $this->machine["MQ_EXCHANGE_TYPE"];
+		$this->reply_routing_key    = $this->machine["MQ_REPLY_ROUTING_KEY"];
+		$this->reply_queue_name     = $this->machine["MQ_REPLY_QUEUE_NAME"];
+		$this->send_queue_name      = $send_queue_name;
+		$this->send_routing_key     = $send_routing_key;
 	}
 
 	function process_response(AMQPEnvelope $response)

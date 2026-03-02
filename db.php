@@ -297,7 +297,7 @@ function requestProcessor($request)
   return array("returnCode" => '0', 'message'=>"Server received request and processed");
 }
 
-$server = new rabbitMQServer("db_server.ini","db_server");
+$server = new rabbitMQServer("db_server.ini","web_queue","web");
 $server->process_requests('requestProcessor');
 
 ?>
