@@ -1,5 +1,6 @@
 <h1>Welcome, <em id="username"></em></h1>
 <h2>Movie being reviewed, <em id="movieName"></em></h2>
+<h3>Your Review:  <em id="userReview"></em></h3>
 
 <script>
 if(!sessionStorage.getItem("username"))
@@ -21,6 +22,7 @@ document.getElementById("username").value = username_ele.textContent;
 
 <form action="reviews_handler.php" method="post" id="review_handler">
 <div>
+  <input type="hidden" name="currentPage" id="currentPage" value="">
     <label for="username">Username</label>
     <input type="text" name="username" id="username2" value ="TEST VALUE"  readonly />
 
@@ -42,6 +44,21 @@ document.getElementById("username").value = username_ele.textContent;
 
 <script>
 
-document.getElementById("username2").value = username_ele.textContent;
+document.getElementById("username2").value = username_ele.textContent; //DO NOT REMOVE THIS OR STUFF BREAKS! -ME
 
 </script>
+
+<script>
+var userReviewMessage =sessionStorage.getItem("reviewMessage");
+
+  if(userReviewMessage)
+  {
+    document.getElementById("userReview").textContent = userReviewMessage;
+  }
+  else
+  {
+    document.getElementById("userReview").textContent = "You have not reviewed this content yet!";
+  }
+
+</script>
+

@@ -2,12 +2,18 @@
 <?php
 
 $web_response = "";
-$location = "reviews.html";
 
 if (!isset($_POST)) {
   trigger_error("Missing post data", E_USER_WARNING);
   goto fail;
 }
+
+$location = $_POST["currentPage"];
+if (!isset($location)) {
+    $web_response = "Missing location";
+    goto fail;
+}
+
 
 $username = $_POST["username"];
 if (!isset($username)) {
@@ -58,7 +64,27 @@ $request['movieID'] = $movieID;
 
 $response = $client->send_request($request);
 
+if($response)
+{
+	if($response["status"] == "success")
+	{	
+	 	$web_response = $response["message"];
+		
+		header("location: login.html");
+		exit();
+	}
+	
 
+	if ($response["status"] !== "success") 
+	{
+	    $web_response = $response["message"];
+	    goto fail;
+	}
+}
+else
+{
+  goto fail;
+}
 
 
 fail:
