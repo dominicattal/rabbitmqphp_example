@@ -167,6 +167,7 @@ echo "Trying a validation!\n";
 
 function doMovie($username, $message, $movieID)
 {
+	//to do, at somepoint sanatize message!!!!!!!!!!!!!!!!!!!!!
 	var_dump($username);
 	var_dump($message);
 	var_dump($movieID);
@@ -181,10 +182,22 @@ function doMovie($username, $message, $movieID)
 	}
 	else
 	{
-		echo "Rows from movie!\n";
+		//echo "Rows from movie!\n";
+
+		$query = "UPDATE reviews set review = '$message' where username ='$username'";
+		 $result = $db_conn->query($query);
+
+		echo "Review should be updated!\n";
+		  return array(
+		    "status" => "success",
+		    "message" => $message
+		  );
 	}
 
-  	return "This is a test message!";
+  	      return array(
+          "status" => "failed",
+          "message" => "Internal Error or user+movie combo not exists!"
+      );
 }
 
 function requestProcessor($request)

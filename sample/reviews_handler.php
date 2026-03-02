@@ -21,11 +21,17 @@ if (!isset($message)) {
   goto fail;
 }
 
+$movieID = $_POST["movieID"];
+if (!isset($movieID)) {
+  trigger_error("Missing movieID", E_USER_WARNING);
+  goto fail;
+}
+
 require_once('../rabbitMQLib.inc');
 
 $client = new rabbitMQClient("../web_client.ini","web_client");
 
-$request = array();
+/*$request = array();
 $request['type'] = "validate_session";
 $request['username'] = $username;
 $request['message'] = $message;
@@ -38,7 +44,7 @@ if($response["status"] == "boot")
 	$location = "login.html";
 	header("location: login.html");
 	exit();
-}
+}*/
 
 //This is where we make the call to the other terminal to get the data, not worked out on atm
 //For now, just making a connnection to the local DB and adding the user's review
