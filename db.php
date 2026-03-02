@@ -136,6 +136,11 @@ echo "Trying a validation!\n";
 		else
 		{
 			echo "User has an expired Key! Boot 'em!\n";
+			
+			$query = "DELETE FROM validations
+				WHERE username = '$username'";
+			$result = $db_conn->query($query);
+
 			//Expired Key, tell system to kick them out!	
 			  return array(
 			    "status" => "boot",
@@ -160,6 +165,28 @@ echo "Trying a validation!\n";
   );
 }
 
+function doMovie($username, $message, $movieID)
+{
+	var_dump($username);
+	var_dump($message);
+	var_dump($movieID);
+	
+	global $db_conn;
+    	$query = "SELECT * from reviews where username='$username' and movie_id ='$movieID'";
+	$result = $db_conn->query($query);
+	
+	if ($result->num_rows == 0)
+	{
+		echo "No rows from movie!\n";
+	}
+	else
+	{
+		echo "Rows from movie!\n";
+	}
+
+  	return "This is a test message!";
+}
+
 function requestProcessor($request)
 {
   echo "received request".PHP_EOL;
@@ -176,6 +203,8 @@ function requestProcessor($request)
       return doRegister($request['username'],$request['password']);
     case "validate_session":
       return doValidate($request['username']);
+    case "review_movie":
+      return doMovie($request['username'],$request['message'],$request['movieID']);
   }
 
   return array("returnCode" => '0', 'message'=>"Server received request and processed");

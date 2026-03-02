@@ -2,7 +2,7 @@
 <?php
 
 $web_response = "";
-$location = "home.html";
+$location = "reviews.html";
 
 if (!isset($_POST)) {
   trigger_error("Missing post data", E_USER_WARNING);
@@ -30,15 +30,7 @@ $request['type'] = "validate_session";
 $request['username'] = $username;
 $request['message'] = $message;
 
-
-
 $response = $client->send_request($request);
-
-
-if (!isset($response["status"])) {
-    $web_response = "Internal Error";
-    goto fail;
-}
 
 if($response["status"] == "boot")
 {
@@ -48,21 +40,20 @@ if($response["status"] == "boot")
 	exit();
 }
 
-if($response["status"] == "success")
-{
- 	$web_response = $response["message"];
-	$location = "home.html";
-	header("location: home.html");
-	exit();
-}
+//This is where we make the call to the other terminal to get the data, not worked out on atm
+//For now, just making a connnection to the local DB and adding the user's review
+//Need to do 2 things, 1 check if user has made a review on this movie before, if so output it for them to edit, else let them make a new one
 
-if ($response["status"] !== "success") {
-    $web_response = $response["message"];
-    goto fail;
-}
+$request = array();
+$request['type'] = "review_movie";
+$request['username'] = $username;
+$request['message'] = $message;
+$request['movieID'] = $movieID;
+
+$response = $client->send_request($request);
 
 
-$location = "home.html";
+
 
 fail:
 if ($web_response) {
@@ -75,7 +66,6 @@ if ($web_response) {
     trigger_error("how'd this happen", E_USER_WARNING);
 }
 echo "window.location = '$location';\n";
-
 
 ?>
 </script>

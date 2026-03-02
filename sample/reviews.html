@@ -1,0 +1,47 @@
+<h1>Welcome, <em id="username"></em></h1>
+<h2>Movie being reviewed, <em id="movieName"></em></h2>
+
+<script>
+if(!sessionStorage.getItem("username"))
+{
+  //At some point this might need to be changed to check for session info aswell
+  //alert("User not logged in!");
+  window.location.href = "login.html";
+}
+var username = sessionStorage.getItem("username");
+var username_ele = document.getElementById("username");
+username_ele.textContent = username;
+
+var movieName= "Test Name!"; //For testing purposes this movie is -1 in the db
+var movieName_ele = document.getElementById("movieName");
+movieName_ele.textContent = movieName;
+
+document.getElementById("username").value = username_ele.textContent;
+</script>
+
+<form action="reviews_handler.php" method="post" id="review_handler">
+<div>
+    <label for="username">Username</label>
+    <input type="text" name="username" id="username2" value ="TEST VALUE"  readonly />
+
+  </div>
+  <div>
+    <label for="movieID">MovieID</label>
+    <input type="text" name="movieID" id="movieID" required />
+  </div>
+  <div>
+    <label for="message">Message</label>
+    <input type="text" name="message" id="message" required />
+  </div>
+  <div>
+    <input type="submit" value="Submit" />
+  </div>
+</form>
+<p id="response"></p>
+
+
+<script>
+
+document.getElementById("username2").value = username_ele.textContent;
+
+</script>
