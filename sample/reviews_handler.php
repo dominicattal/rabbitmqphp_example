@@ -70,7 +70,8 @@ if($response)
 	{	
 	 	$web_response = $response["message"];
 		
-		header("location: login.html");
+		$location = "home.html"; //This is to prevent an infinite loop of loading hell. Probably fixable -ME
+		header("Location: " . $location);
 		exit();
 	}
 	

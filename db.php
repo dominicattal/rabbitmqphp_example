@@ -83,22 +83,22 @@ echo "Trying a validation!\n";
         VALUES ('$username', '$key', $now, $expTime);";
 	
 	$result = $db_conn->query($query);
-	echo "Hopefully added the validation!\n";
+	//echo "Hopefully added the validation!\n";
    }
    else
    {
    	//Check if the user is expired. If not clear the old time and give them a new one/new key
 	//ME -2/27/26
-	echo "Check if user is expired!\n";
+	//echo "Check if user is expired!\n";
 	$query = "SELECT expiresAt FROM validations WHERE username = '$username'";
  	$result = $db_conn->query($query);
 
-	echo "Check if user is expired after result!\n";
+	//echo "Check if user is expired after result!\n";
 	$now = time();
 	
 	if ($result->num_rows > 0) 
 	{
-		echo "Result has rows!\n";
+		//echo "Result has rows!\n";
 		$row = $result->fetch_assoc();   
     		$expiresAt = $row['expiresAt']; 
 
@@ -127,7 +127,7 @@ echo "Trying a validation!\n";
 			
 			$result = $db_conn->query($query);
 
-			echo "Hopefully cleared then added the validation!\n";
+			//echo "Hopefully cleared then added the validation!\n";
 			return array(
 			    "status" => "success",
 			    "message" => "User can stay logged in!"
@@ -178,7 +178,7 @@ function doMovie($username, $message, $movieID)
 	
 	if ($result->num_rows == 0)
 	{
-		echo "No rows from movie!\n";
+		echo "No rows from movie! Either no reviews or movie not real!\n";
 	}
 	else
 	{
