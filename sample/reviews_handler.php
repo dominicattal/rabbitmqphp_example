@@ -11,7 +11,8 @@ if (!isset($_POST)) {
 $location = $_POST["currentPage"];
 if (!isset($location)) {
     $web_response = "Missing location";
-    goto fail;
+    //goto fail; //Just goin to hard write this one 'cause it broke out of nowhere
+   $location = "home.html";
 }
 
 
@@ -68,8 +69,9 @@ if($response["status"] == "boot")
 //For now, just making a connnection to the local DB and adding the user's review
 //Need to do 2 things, 1 check if user has made a review on this movie before, if so output it for them to edit, else let them make a new one
 
-if($UOI == "U" || $UOI == "UPDATE")
+if($UOI == "U" || $UOI == "UPDATE" || $UOI == "u")
 {
+	trigger_error("User is updating a review!", E_USER_WARNING);
 	$request = array();
 	$request['type'] = "review_movie";
 	$request['username'] = $username;
@@ -102,14 +104,40 @@ if($UOI == "U" || $UOI == "UPDATE")
 	  goto fail;
 	}
 }
-else if($UOI == "I" || $UOI == "INSERT")
+else if($UOI == "I" || $UOI == "INSERT" || $UOI == "i")
 {
+	trigger_error("User is inserting a review!", E_USER_WARNING);
 	$request = array();
 	$request['type'] = "createReview";
 	$request['username'] = $username;
 	$request['message'] = $message;
 	$request['movieID'] = $movieID;
-	$requst['rating'] = $rating;
+	$request['rating'] = $rating;
+
+	$response = $client->send_request($request);
+
+	if($response)
+	{
+		if($response["status"] == "success")
+		{	
+		 	$web_response = $response["message"];
+			
+			$location = "home.html"; //This is to prevent an infinite loop of loading hell. Probably 	fixable -ME
+			header("Location: " . $location);
+			exit();
+		}
+		
+
+		if ($response["status"] !== "success") 
+		{
+		    $web_response = $response["message"];
+		    goto fail;
+		}
+	}
+	else
+	{
+	  goto fail;
+	}
 
 }
 else

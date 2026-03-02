@@ -166,7 +166,7 @@ echo "Trying a validation!\n";
 }
 
 //This function creates a review for a movie if it does not exist. if it does, returns fail!
-function createReview($username, $message, $score, $movieID)
+function createReview($username, $message, $movieID, $rating)
 {
 	//to do, at somepoint sanatize message!!!!!!!!!!!!!!!!!!!!!
 	//var_dump($username);
@@ -184,7 +184,8 @@ function createReview($username, $message, $score, $movieID)
 		//IMPORTANT MAKE SURE TO VERIFY WITH THE DATA THAT THE MOVIE ID EXIST!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 		
 		//$query = "INSERT INTO users VALUES ('$username','$password');";
-		$query = "INSERT INTO reviews VALUES('$username','$movieID','$score','$message');";
+		$query = "INSERT INTO reviews (username, movie_id, score, review) VALUES ('$username', '$movieID', 	$rating, '$message');";
+
 		$result = $db_conn->query($query);
 
 		return array (
@@ -279,7 +280,7 @@ function requestProcessor($request)
   }
   switch ($request['type'])
   {
-    case "login":$query = "SELECT expiresAt FROM validations WHERE username = '$username'";
+    case "login":
       return doLogin($request['username'],$request['password']);
     case "register":
       return doRegister($request['username'],$request['password']);
