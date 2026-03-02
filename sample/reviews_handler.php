@@ -33,6 +33,18 @@ if (!isset($movieID)) {
   goto fail;
 }
 
+$UOI = $_POST["UOI"];
+if (!isset($UOI)) {
+  trigger_error("Missing UOI", E_USER_WARNING);
+  goto fail;
+}
+
+$rating = $_POST["rating"];
+if (!isset($rating)) {
+  trigger_error("Missing rating", E_USER_WARNING);
+  goto fail;
+}
+
 require_once('../rabbitMQLib.inc');
 
 $client = new rabbitMQClient("../web_client.ini","web_client");
@@ -56,36 +68,59 @@ if($response["status"] == "boot")
 //For now, just making a connnection to the local DB and adding the user's review
 //Need to do 2 things, 1 check if user has made a review on this movie before, if so output it for them to edit, else let them make a new one
 
-$request = array();
-$request['type'] = "review_movie";
-$request['username'] = $username;
-$request['message'] = $message;
-$request['movieID'] = $movieID;
-
-$response = $client->send_request($request);
-
-if($response)
+if($UOI == "U" || $UOI == "UPDATE")
 {
-	if($response["status"] == "success")
-	{	
-	 	$web_response = $response["message"];
-		
-		$location = "home.html"; //This is to prevent an infinite loop of loading hell. Probably fixable -ME
-		header("Location: " . $location);
-		exit();
-	}
-	
+	$request = array();
+	$request['type'] = "review_movie";
+	$request['username'] = $username;
+	$request['message'] = $message;
+	$request['movieID'] = $movieID;
+	$request['rating'] = $rating;
 
-	if ($response["status"] !== "success") 
+	$response = $client->send_request($request);
+
+	if($response)
 	{
-	    $web_response = $response["message"];
-	    goto fail;
+		if($response["status"] == "success")
+		{	
+		 	$web_response = $response["message"];
+			
+			$location = "home.html"; //This is to prevent an infinite loop of loading hell. Probably 	fixable -ME
+			header("Location: " . $location);
+			exit();
+		}
+		
+
+		if ($response["status"] !== "success") 
+		{
+		    $web_response = $response["message"];
+		    goto fail;
+		}
 	}
+	else
+	{
+	  goto fail;
+	}
+}
+else if($UOI == "I" || $UOI == "INSERT")
+{
+	$request = array();
+	$request['type'] = "createReview";
+	$request['username'] = $username;
+	$request['message'] = $message;
+	$request['movieID'] = $movieID;
+	$requst['rating'] = $rating;
+
 }
 else
 {
-  goto fail;
+trigger_error("User never declared U or I!!!!!!!!!!", E_USER_WARNING);
+	goto fail;
 }
+ 
+
+
+
 
 
 fail:
