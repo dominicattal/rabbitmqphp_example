@@ -1,4 +1,5 @@
 CREATE TABLE users (
+    id INT AUTO_INCREMENT,
     username varchar(255) PRIMARY KEY,
     password varchar(255) NOT NULL
 );
@@ -12,6 +13,15 @@ CREATE TABLE validations (
   createdAt BIGINT NOT NULL,
   expiresAt BIGINT NOT NULL,
   FOREIGN KEY (username) REFERENCES users(username)
+);
+
+CREATE TABLE reviews(
+ id INT AUTO_INCREMENT PRIMARY KEY,
+ username VARCHAR(255) NOT NULL,
+ movie_id VARCHAR(255) NOT NULL,
+ score INT NOT NULL,
+ review VARCHAR(255), NOT NULL,
+ FOREIGN KEY (username) REFERENCES users(username)
 );
 
 
