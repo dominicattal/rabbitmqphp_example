@@ -69,7 +69,7 @@ echo "Trying a validation!\n";
     $key = "";
     $timeToAdd=300;
 	
-   var_dump($username);	
+   //var_dump($username);	
 	
    if ($result->num_rows == 0)
    {
@@ -109,7 +109,7 @@ echo "Trying a validation!\n";
     			
 			//Not expired yet
 			//Need to clear the current key
-			 var_dump($username);
+			 //var_dump($username);
 			echo "User has prior session, clearing then adding!\n";
 			$query = "DELETE FROM validations
 				WHERE username = '$username'";
@@ -165,12 +165,52 @@ echo "Trying a validation!\n";
   );
 }
 
-function doMovie($username, $message, $movieID)
+//This function creates a review for a movie if it does not exist. if it does, returns fail!
+function createReview($username, $message, $score, $movieID)
+{
+	//to do, at somepoint sanatize message!!!!!!!!!!!!!!!!!!!!!
+	//var_dump($username);
+	//var_dump($message);
+	//var_dump($movieID);
+	
+	global $db_conn;
+    	$query = "SELECT * from reviews where username='$username' and movie_id ='$movieID'";
+	$result = $db_conn->query($query);
+	
+	if ($result->num_rows == 0)
+	{
+		echo "No rows from movie!\n";
+		
+		//IMPORTANT MAKE SURE TO VERIFY WITH THE DATA THAT THE MOVIE ID EXIST!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+		
+		//$query = "INSERT INTO users VALUES ('$username','$password');";
+		$query = "INSERT INTO reviews VALUES('$username','$movieID','$score','$message');";
+		$result = $db_conn->query($query);
+
+		return array (
+	"status" => "success",
+	"message" => "Inserted User's review into DB!"
+		);
+	}
+	else
+	{
+		echo "Rows from movie!\n";
+	}
+
+  	      return array(
+          "status" => "failed",
+          "message" => "Internal Error or user+movie combo not exists!"
+      );
+}
+
+//This function checks if a person has made a review on a movie and updates their review with what they have sent
+function updateReview($username, $message, $movieID,$rating)
 {
 	//to do, at somepoint sanatize message!!!!!!!!!!!!!!!!!!!!!
 	var_dump($username);
 	var_dump($message);
 	var_dump($movieID);
+	var_dump($rating);
 	
 	global $db_conn;
     	$query = "SELECT * from reviews where username='$username' and movie_id ='$movieID'";
@@ -184,9 +224,9 @@ function doMovie($username, $message, $movieID)
 	{
 		//echo "Rows from movie!\n";
 
-		$query = "UPDATE reviews set review = '$message' where username ='$username'";
+		$query = "UPDATE reviews set review = '$message', score = $rating where username ='$username'";
 		 $result = $db_conn->query($query);
-
+		
 		echo "Review should be updated!\n";
 		  return array(
 		    "status" => "success",
@@ -197,6 +237,35 @@ function doMovie($username, $message, $movieID)
   	      return array(
           "status" => "failed",
           "message" => "Internal Error or user+movie combo not exists!"
+      );
+}
+
+//This returns an array with every single user's review for each media thing
+function reviewAll()
+{
+	global $db_conn;
+    	$query = "SELECT username,movie_id,score, review from reviews";
+	$result = $db_conn->query($query);
+
+	if ($result->num_rows == 0)
+	{
+		echo "No Movies have been reviewed!\n";
+	}
+	else
+	{
+		$reviewsArray = array();
+
+		while ($row = $result->fetch_assoc()) 
+		{
+			$reviewsArray[] = $row;
+		}
+		return $reviewsArray;
+		
+	}
+	
+	 return array(
+          "status" => "failed",
+          "message" => "Internal Error!"
       );
 }
 
@@ -217,7 +286,11 @@ function requestProcessor($request)
     case "validate_session":
       return doValidate($request['username']);
     case "review_movie":
-      return doMovie($request['username'],$request['message'],$request['movieID']);
+      return updateReview($request['username'],$request['message'],$request['movieID'],$request['rating']);
+     case "reviewAll":
+     return reviewAll();
+     case "createReview":
+	return createReview($request['username'],$request['message'],$request['movieID'],$request['rating']);
   }
 
   return array("returnCode" => '0', 'message'=>"Server received request and processed");
