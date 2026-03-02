@@ -1,0 +1,19 @@
+<h1>Welcome, <em id="username"></em></h1>
+
+<script>
+if(!sessionStorage.getItem("username"))
+{
+  //At some point this might need to be changed to check for session info aswell
+  //alert("User not logged in!");
+  window.location.href = "login.html";
+}
+var username = sessionStorage.getItem("username");
+var username_ele = document.getElementById("username");
+username_ele.textContent = username;
+
+</script>
+
+<form action="reviewsView_handler.php" method="get">
+    <button type="submit">Show Reviews</button>
+</form>
+
