@@ -2,7 +2,7 @@
 <?php
 require_once('rabbitMQLib.inc');
 
-$client = new rabbitMQClient("web_client.ini", "data_queue", "data");
+$client = new rabbitMQClient("web_client.ini", "db_queue", "db");
 
 $request = array();
 $request['type'] = "login";

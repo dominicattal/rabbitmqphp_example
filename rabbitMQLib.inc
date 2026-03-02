@@ -13,10 +13,8 @@ class rabbitMQServer
     public $listen_queue;
 	public $routing_key;
     public $callback;
-    public $send_queue_name;
-    public $send_routing_key;
 
-	function __construct($ini, $send_queue_name, $send_routing_key)
+	function __construct($ini)
 	{
 		$this->machine              = parse_ini_file($ini, false);
 		$this->HOST                 = $this->machine["MQ_HOST"];
@@ -28,8 +26,6 @@ class rabbitMQServer
 		$this->exchange_type        = $this->machine["MQ_EXCHANGE_TYPE"];
 		$this->listen_queue_name    = $this->machine["MQ_LISTEN_QUEUE_NAME"];
         $this->listen_routing_key   = $this->machine["MQ_LISTEN_ROUTING_KEY"];
-        $this->send_queue_name      = $send_queue_name;
-        $this->send_routing_key     = $send_routing_key;
 	}
 
 	function process_message($msg)
@@ -39,7 +35,6 @@ class rabbitMQServer
 		{
             $body = $msg->getBody();
             $payload = json_decode($body, true);
-            $payload["routing_key"] = $msg->getRoutingKey();
             if (isset($this->callback))
                 $response = call_user_func($this->callback,$payload);
 
@@ -56,11 +51,13 @@ class rabbitMQServer
             $exchange->setName($this->exchange_name);
             $exchange->setType($this->exchange_type);
 
+            $reply_queue_name = $payload["reply_queue_name"];
+            $reply_routing_key = $payload["reply_routing_key"];
+
             $send_queue = new AMQPQueue($channel);
-            $send_queue->setName($this->send_queue_name);
-            $replykey = $this->send_routing_key;
-            $send_queue->bind($exchange->getName(),$replykey);
-            $exchange->publish(json_encode($response),$replykey,AMQP_NOPARAM,array('correlation_id'=>$msg->getCorrelationId()));
+            $send_queue->setName($reply_queue_name);
+            $send_queue->bind($exchange->getName(),$reply_routing_key);
+            $exchange->publish(json_encode($response),$reply_routing_key,AMQP_NOPARAM,array('correlation_id'=>$msg->getCorrelationId()));
 		}
 		catch(Exception $e)
 		{
@@ -157,6 +154,8 @@ class rabbitMQClient
 	function send_request($message)
 	{
 		$this->correlation_id = uniqid();
+        $message["reply_queue_name"] = $this->reply_queue_name;
+        $message["reply_routing_key"] = $this->reply_routing_key;
 		$json_message = json_encode($message);
 		try
 		{
@@ -210,6 +209,8 @@ class rabbitMQClient
 	 */
 	function publish($message)
 	{
+        $message["reply_queue_name"] = $this->reply_queue_name;
+        $message["reply_routing_key"] = $this->reply_routing_key;
 		$json_message = json_encode($message);
 		try
 		{
