@@ -24,6 +24,3 @@ CREATE TABLE reviews(
  FOREIGN KEY (username) REFERENCES users(username)
 );
 
-
-
-
