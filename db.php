@@ -28,6 +28,20 @@ function doLogin($username,$password)
 
   echo "User logging in, validating!\n";
 
+  //First need to check if the user has a valid session already, if yes kill it !!! - ME
+
+  $query = "SELECT username FROM validations WHERE username='$username'";
+  $result = $db_conn->query($query);
+  
+  if ($result->num_rows > 0) 
+  {
+	echo "User has an expired Key! Killing it!\n";
+			
+	$query = "DELETE FROM validations
+		WHERE username = '$username'";
+	$result = $db_conn->query($query);
+  }
+
   $arr = doValidate($username);
   if (!isset($arr["status"]) || $arr["status"] != "success") {
       return array(
