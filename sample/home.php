@@ -1,3 +1,14 @@
+<script>
+//This if statement checks if a user is logged in
+//If not, dumps them at the log in screen -Matt
+if(!sessionStorage.getItem("username"))
+{
+  //At some point this might need to be changed to check for session info aswell
+  //alert("User not logged in!");
+  window.location.href = "login.html";
+}
+</script>
+
 <?php
 // Load API Configuration
 $settings = parse_ini_file("../.api.ini", true);
@@ -46,6 +57,10 @@ $movies = $data['results'] ?? [];
         </a>
     <?php endforeach; ?>
     </div>
+
+<a href="reviews.html">Test Create a Review Page</a><br>
+<a href="reviewsView.html">View all reviews Page</a>
+
 </main>
 </body>
 </html>

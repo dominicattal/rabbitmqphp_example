@@ -1,6 +1,6 @@
 CREATE TABLE users (
-    id INT AUTO_INCREMENT,
-    username varchar(255) PRIMARY KEY,
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    username varchar(255),
     password varchar(255) NOT NULL
 );
 
