@@ -1,0 +1,65 @@
+<?php
+// Load API Configuration
+$settings = parse_ini_file("../.api.ini", true);
+$apiKey = $settings['tmdb']['api_key'] ?? '917c0ffbd6f072c36aba70b11674cf39';
+
+// Fetch Data from TMDB
+$url = "https://api.themoviedb.org/3/movie/popular?api_key=" . $apiKey . "&language=en-US&page=1";
+$response = file_get_contents($url);
+$data = json_decode($response, true);
+$movies = $data['results'] ?? [];
+?>
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MADD FOR MOVIES - Home</title>
+    <link rel="stylesheet" href="madd.css">
+</head>
+<body class="home-body">
+    <nav class="navbar">
+        <div class="logo">MADD FOR MOVIES</div>
+        <div class="nav-links">
+            <span id="user-display">Welcome, <em id="username-span"></em></span>
+            <a href="login.html" class="logout-link" onclick="sessionStorage.clear()">LOGOUT</a>
+        </div>
+    </nav>
+
+    <main class="content-wrapper">
+        <section class="hero">
+            <h1>POPULAR RELEASES</h1>
+            <div class="search-container">
+                <input type="text" placeholder="Search IMDB database..." class="search-input">
+                <button class="search-btn">SEARCH</button>
+            </div>
+        </section>
+
+        <section class="movie-grid">
+            <?php if (!empty($movies)): ?>
+                <?php foreach ($movies as $movie): 
+                    $title = htmlspecialchars($movie['title']);
+                    $rating = number_format($movie['vote_average'], 1);
+                    $year = substr($movie['release_date'], 0, 4);
+                    $poster = "https://image.tmdb.org/t/p/w500" . $movie['poster_path'];
+                ?>
+                    <div class="movie-card">
+                        <div class="poster-container">
+                            <img src="<?php echo $poster; ?>" alt="<?php echo $title; ?>" class="movie-poster">
+                            <div class="rating-badge"><?php echo $rating; ?></div>
+                        </div>
+                        <div class="movie-details">
+                            <h3 class="movie-title"><?php echo $title; ?></h3>
+                            <p class="movie-meta"><?php echo $year; ?></p>
+                            <button class="view-btn">VIEW DETAILS</button>
+                        </div>
+                    </div>
+                <?php endforeach; ?>
+            <?php else: ?>
+                <p class="error-text">Failed to load movies. Check your API key.</p>
+            <?php endif; ?>
+        </section>
+    </main>
+</body>
+</html>
