@@ -4,7 +4,7 @@ CREATE TABLE users (
     password varchar(255) NOT NULL
 );
 
-INSERT INTO users VALUES ('test', 'test');
+INSERT INTO users (username, password) VALUES ('test', 'test');
 
 CREATE TABLE validations (
   id INT AUTO_INCREMENT PRIMARY KEY,
@@ -23,7 +23,4 @@ CREATE TABLE reviews(
  review VARCHAR(255) NOT NULL,
  FOREIGN KEY (username) REFERENCES users(username)
 );
-
-
-
 

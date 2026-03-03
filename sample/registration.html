@@ -1,26 +1,51 @@
-<form action="registration_handler.php" method="post" id="registration-form">
-  <div>
-    <label for="username">Username</label>
-    <input type="text" name="username" id="username" required />
-  </div>
-  <div>
-    <label for="password">Password</label>
-    <input type="password" name="password" id="password" required minlength="8"/>
-  </div>
-  <div>
-    <label for="confirm-password">Confirm Password</label>
-    <input type="password" name="confirm-password" id="confirm-password" required />
-  </div>
-  <div>
-    <input type="submit" value="Submit" />
-  </div>
-</form>
-<p id="response"></p>
-<script>
-    var response = sessionStorage.getItem("message");
-    if (response) {
-        var p_ele = document.getElementById("response");
-        p_ele.textContent = response;
-        sessionStorage.removeItem("message");     
-    }
-</script>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MADD FOR MOVIES? REGISTER</title>
+    <link rel="stylesheet" href="madd.css">
+</head>
+<body>
+    <div class="login-container">
+        <form action="registration_handler.php" method="POST" id="registration-form">
+            <h1>MADD FOR MOVIES? REGISTER</h1>
+            
+            <div class="input-group">
+                <label for="username">USERNAME</label>
+                <input type="text" id="username" name="username" placeholder="Choose a username" required>
+            </div>
+            
+            <div class="input-group">
+                <label for="password">CREATE PASSWORD</label>
+                <input type="password" id="password" name="password" placeholder="Minimum 4 characters" required minlength="4">
+            </div>
+
+            <div class="input-group">
+                <label for="confirm-password">CONFIRM PASSWORD</label>
+                <input type="password" id="confirm-password" name="confirm-password" placeholder="Re-enter password" required>
+            </div>
+            
+            <button type="submit">CREATE ACCOUNT</button>
+            
+            <p id="response" class="error-text"></p>
+            
+            <div class="divider">OR</div>
+            
+            <div class="footer">
+                Already have an account? <a href="login.html">Sign In</a>
+            </div>
+        </form>
+    </div>
+
+    <script>
+        // Displays error messages
+        var response = sessionStorage.getItem("message");
+        if (response) {
+            var p_ele = document.getElementById("response");
+            p_ele.textContent = response;
+            sessionStorage.removeItem("message");     
+        }
+    </script>
+</body>
+</html>
