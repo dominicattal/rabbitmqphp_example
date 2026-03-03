@@ -160,3 +160,79 @@ button:hover {
   font-weight: bold;
   text-decoration: underline;
 }
+
+.movie-grid {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 20px; 
+    padding: 20px;
+    margin-top: 20px;
+}
+
+.movie-card {
+    background-color: var(--secondary);
+    border: 3px solid var(--primary);
+    box-shadow: var(--shadow);
+    border-radius: 12px;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    transition: transform 0.2s ease;
+}
+
+.movie-poster {
+    width: 100%;
+    height: auto; 
+    aspect-ratio: 2 / 3;
+    object-fit: cover;
+    border-bottom: 3px solid var(--primary);
+}
+
+.movie-link {
+    text-decoration: none; 
+    color: inherit; 
+    display: block;
+}
+
+.movie-link:hover .movie-card {
+    transform: translate(-6px, -6px);
+    box-shadow: 12px 12px 0px var(--primary);
+    border-color: var(--accent); 
+}
+
+.details-container {
+    display: flex;
+    gap: 40px;
+    background: var(--secondary);
+    border: 4px solid var(--primary);
+    padding: 30px;
+    box-shadow: var(--shadow);
+}
+
+.movie-info-card {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.details-poster {
+    width: 100%;
+    max-width: 300px;
+    border: 3px solid var(--primary);
+}
+
+.review-section {
+    flex: 1;
+    border-left: 2px solid var(--primary);
+    padding-left: 40px;
+}
+
+textarea {
+    width: 100%;
+    height: 100px;
+    border: 2px solid var(--primary);
+    padding: 10px;
+    font-family: inherit;
+    margin-bottom: 10px;
+}
