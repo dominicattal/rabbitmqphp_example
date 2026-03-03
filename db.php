@@ -25,8 +25,13 @@ function doLogin($username,$password)
       "message" => "Invalid password"
     );
   }
+
+  echo "User logging in, validating!\n";
+
+  $arr = doValidate($username);
   return array(
     "status" => "success",
+    "key" => $arr["key"],
     "message" => ""
   );
 }
@@ -45,22 +50,224 @@ function doRegister($username,$password)
   $query = "INSERT INTO users VALUES ('$username','$password');";
   // need to assert query successfully executed here
   $result = $db_conn->query($query);
+  $arr = doValidate($username);
+
   return array(
     "status" => "success",
+    "key" => $arr["key"],
     "message" => ""
   );
 }
 
-function doValidate($session)
+function doValidate($username)
 {
-//Testing stuff here- Matt
-//$query = "INSERT INTO users VALUES ('$username','$password');";
- 
-  //$result = $db_conn->query($query);
-    return array(
-        "status" => "failed",
-        "message" => "not implemented"
-    );
+//Making the validations update to make a sessionKey -ME
+echo "Trying a validation!\n";
+    global $db_conn;
+    $query = "SELECT username from validations where username='$username'";
+    $result = $db_conn->query($query);
+    $key = "";
+    $timeToAdd=300;
+	
+   //var_dump($username);	
+	
+   if ($result->num_rows == 0)
+   {
+	echo "No user sessions, creating one!\n";
+	//Good means no former sessionKey
+	$key = bin2hex(random_bytes(10));
+	$now = time();
+        $expTime = $now + $timeToAdd;
+	$query = "INSERT INTO validations (username,      		
+	sessionKey, createdAt, expiresAt)
+        VALUES ('$username', '$key', $now, $expTime);";
+	
+	$result = $db_conn->query($query);
+	//echo "Hopefully added the validation!\n";
+   }
+   else
+   {
+   	//Check if the user is expired. If not clear the old time and give them a new one/new key
+	//ME -2/27/26
+	//echo "Check if user is expired!\n";
+	$query = "SELECT expiresAt FROM validations WHERE username = '$username'";
+ 	$result = $db_conn->query($query);
+
+	//echo "Check if user is expired after result!\n";
+	$now = time();
+	
+	if ($result->num_rows > 0) 
+	{
+		//echo "Result has rows!\n";
+		$row = $result->fetch_assoc();   
+    		$expiresAt = $row['expiresAt']; 
+
+		
+
+    		if($expiresAt >= $now)
+    		{
+    			
+			//Not expired yet
+			//Need to clear the current key
+			 //var_dump($username);
+			echo "User has prior session, clearing then adding!\n";
+			$query = "DELETE FROM validations
+				WHERE username = '$username'";
+
+			$result = $db_conn->query($query);
+			
+
+
+			$key = bin2hex(random_bytes(10));
+			$now = time();
+			$expTime = $now + $timeToAdd;
+			$query = "INSERT INTO validations (username,      		
+			sessionKey, createdAt, expiresAt)
+			VALUES ('$username', '$key', $now, $expTime);";
+			
+			$result = $db_conn->query($query);
+
+			//echo "Hopefully cleared then added the validation!\n";
+			return array(
+			    "status" => "success",
+			    "message" => "User can stay logged in!"
+			);
+		}
+		else
+		{
+			echo "User has an expired Key! Boot 'em!\n";
+			
+			$query = "DELETE FROM validations
+				WHERE username = '$username'";
+			$result = $db_conn->query($query);
+
+			//Expired Key, tell system to kick them out!	
+			  return array(
+			    "status" => "boot",
+			    "message" => "User needs to be logged out!"
+			);
+		}
+	}
+	else if($result->num_rows == 0)
+	{
+		echo "No rows from validations!\n";
+	}
+	else
+	  echo "There was an error getting expiresAt from validations table!";
+	
+	
+	
+   }
+  return array(
+    "status" => "success",
+    "key" => $key,
+    "message" => ""
+  );
+}
+
+//This function creates a review for a movie if it does not exist. if it does, returns fail!
+function createReview($username, $message, $movieID, $rating)
+{
+	//to do, at somepoint sanatize message!!!!!!!!!!!!!!!!!!!!!
+	//var_dump($username);
+	//var_dump($message);
+	//var_dump($movieID);
+	
+	global $db_conn;
+    	$query = "SELECT * from reviews where username='$username' and movie_id ='$movieID'";
+	$result = $db_conn->query($query);
+	
+	if ($result->num_rows == 0)
+	{
+		echo "No rows from movie!\n";
+		
+		//IMPORTANT MAKE SURE TO VERIFY WITH THE DATA THAT THE MOVIE ID EXIST!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+		
+		//$query = "INSERT INTO users VALUES ('$username','$password');";
+		$query = "INSERT INTO reviews (username, movie_id, score, review) VALUES ('$username', '$movieID', 	$rating, '$message');";
+
+		$result = $db_conn->query($query);
+
+		return array (
+	"status" => "success",
+	"message" => "Inserted User's review into DB!"
+		);
+	}
+	else
+	{
+		echo "Rows from movie!\n";
+	}
+
+  	      return array(
+          "status" => "failed",
+          "message" => "Internal Error or user+movie combo not exists!"
+      );
+}
+
+//This function checks if a person has made a review on a movie and updates their review with what they have sent
+function updateReview($username, $message, $movieID,$rating)
+{
+	//to do, at somepoint sanatize message!!!!!!!!!!!!!!!!!!!!!
+	var_dump($username);
+	var_dump($message);
+	var_dump($movieID);
+	var_dump($rating);
+	
+	global $db_conn;
+    	$query = "SELECT * from reviews where username='$username' and movie_id ='$movieID'";
+	$result = $db_conn->query($query);
+	
+	if ($result->num_rows == 0)
+	{
+		echo "No rows from movie! Either no reviews or movie not real!\n";
+	}
+	else
+	{
+		//echo "Rows from movie!\n";
+
+		$query = "UPDATE reviews set review = '$message', score = $rating where username ='$username'";
+		 $result = $db_conn->query($query);
+		
+		echo "Review should be updated!\n";
+		  return array(
+		    "status" => "success",
+		    "message" => $message
+		  );
+	}
+
+  	      return array(
+          "status" => "failed",
+          "message" => "Internal Error or user+movie combo not exists!"
+      );
+}
+
+//This returns an array with every single user's review for each media thing
+function reviewAll()
+{
+	global $db_conn;
+    	$query = "SELECT username,movie_id,score, review from reviews";
+	$result = $db_conn->query($query);
+
+	if ($result->num_rows == 0)
+	{
+		echo "No Movies have been reviewed!\n";
+	}
+	else
+	{
+		$reviewsArray = array();
+
+		while ($row = $result->fetch_assoc()) 
+		{
+			$reviewsArray[] = $row;
+		}
+		return $reviewsArray;
+		
+	}
+	
+	 return array(
+          "status" => "failed",
+          "message" => "Internal Error!"
+      );
 }
 
 function requestProcessor($request)
@@ -78,7 +285,13 @@ function requestProcessor($request)
     case "register":
       return doRegister($request['username'],$request['password']);
     case "validate_session":
-      return doValidate($request['sessionId']);
+      return doValidate($request['username']);
+    case "review_movie":
+      return updateReview($request['username'],$request['message'],$request['movieID'],$request['rating']);
+     case "reviewAll":
+     return reviewAll();
+     case "createReview":
+	return createReview($request['username'],$request['message'],$request['movieID'],$request['rating']);
   }
 
   return array("returnCode" => '0', 'message'=>"Server received request and processed");
