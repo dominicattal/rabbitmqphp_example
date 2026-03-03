@@ -1,5 +1,14 @@
-<h1>Welcome, <em id="username"></em></h1>
-<p>Key: <em id="key"></em></p>
+<?php
+// Load API Configuration
+$settings = parse_ini_file("../.api.ini", true);
+$apiKey = $settings['tmdb']['api_key'] ?? '917c0ffbd6f072c36aba70b11674cf39';
+
+// Fetch Data from TMDB
+$url = "https://api.themoviedb.org/3/movie/popular?api_key=" . $apiKey . "&language=en-US&page=1";
+$response = file_get_contents($url);
+$data = json_decode($response, true);
+$movies = $data['results'] ?? [];
+?>
 
 <?php
 require_once('../rabbitMQLib.inc');
@@ -16,59 +25,43 @@ foreach ($response["results"] as $movie) {
     
 ?>
 
-<script>
-//This if statement checks if a user is logged in
-//If not, dumps them at the log in screen -Matt
-if(!sessionStorage.getItem("username"))
-{
-  //At some point this might need to be changed to check for session info aswell
-  //alert("User not logged in!");
-  window.location.href = "login.html";
-}
-  
-var username = sessionStorage.getItem("username");
-var username_ele = document.getElementById("username");
-username_ele.textContent = username;
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MADD FOR MOVIES - Home</title>
+    <link rel="stylesheet" href="madd.css">
+</head>
+<body class="home-body">
+    <nav class="navbar">
+        <div class="logo">MADD FOR MOVIES</div>
+        <div class="nav-links">
+            <span id="user-display">Welcome, <em id="username-span"></em></span>
+            <a href="login.html" class="logout-link" onclick="sessionStorage.clear()">LOGOUT</a>
+        </div>
+    </nav>
 
-var key = sessionStorage.getItem("key");
-var key_ele = document.getElementById("key");
-key_ele.textContent = key;
-
-
-</script>
-
-<form action="validation_handler.php" method="post" id="validation_handler">
-<div>
-    <label for="username">Username</label>
-    <input type="text" name="username" id="username" required />
-  </div>
-  <div>
-    <label for="message">Message</label>
-    <input type="text" name="message" id="message" required />
-  </div>
-  <div>
-    <input type="submit" value="Submit" />
-  </div>
-</form>
-<p id="response"></p>
-
-<a href="reviews.html">Test Create a Review Page</a><br>
-<a href="reviewsView.html">View all reviews Page</a>
-
-<script>
-    var response = sessionStorage.getItem("message");
-    //window.location.href = "login.html";
-
-    if (response) {
-        var p_ele = document.getElementById("response");
-        p_ele.textContent = response;
-        sessionStorage.removeItem("message");
-        
-
-      window.location.href = "login.html";
-        if(p_ele.textContent == "boot")
-          {
-            window.location.href = "login.html";
-          }
-    }
-</script>
+    <main class="content-wrapper">
+    <div class="movie-grid">
+    <?php foreach ($movies as $movie): 
+        $title = htmlspecialchars($movie['title']);
+        $movieId = $movie['id']; // Get the unique ID from TMDB
+        $poster = "https://image.tmdb.org/t/p/w500" . $movie['poster_path'];
+    ?>
+        <a href="details.php?id=<?php echo $movieId; ?>" class="movie-link">
+            <div class="movie-card">
+                <div class="poster-container">
+                    <img src="<?php echo $poster; ?>" alt="<?php echo $title; ?>" class="movie-poster">
+                </div>
+                <div class="movie-details">
+                    <h3 class="movie-title"><?php echo $title; ?></h3>
+                </div>
+            </div>
+        </a>
+    <?php endforeach; ?>
+    </div>
+</main>
+</body>
+</html>
+>>>>>>> f2820d7 (Final push on branch)
