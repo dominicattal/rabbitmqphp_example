@@ -67,6 +67,10 @@ Documentation for types of queries you can make to Data VM
 - [field3] [type] description
 = description of query
 
+[movie]
+- [field1] [int] id of the movie to get
+= gets all of the info relted to a movie
+
 [popular]
 - [count] [int] the number of movies to return
 = returns popular movies, basically just the basicaly tmdb api call

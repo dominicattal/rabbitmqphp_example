@@ -27,19 +27,27 @@ function getRequest($url)
     return $response;
 }
 
+function getMovie($id)
+{
+    $encoded_json = getRequest("https://api.themoviedb.org/3/movie/$id?language=en-US");
+    return json_decode($encoded_json, true);
+}
+
 function getRecentMovies($count)
 {
     $encoded_json = getRequest('https://api.themoviedb.org/3/movie/popular?language=en-US&page=1');
-    $res = json_decode($encoded_json, true);
-    return $res;
+    return json_decode($encoded_json, true);
 }
 
 function requestProcessor($request)
 {
+    echo "Printing request:\n";
     var_dump($request);
     switch ($request["type"]) {
-    case "popular":
-        return getRecentMovies($request["count"]);
+        case "popular":
+            return getRecentMovies($request["count"]);
+        case "movie":
+            return getMovie($request["id"]);
     }
     return array("status" => "failed", "message" => "unrecognized type");
 }
