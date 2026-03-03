@@ -64,4 +64,3 @@ foreach ($response["results"] as $movie) {
 </main>
 </body>
 </html>
->>>>>>> f2820d7 (Final push on branch)
