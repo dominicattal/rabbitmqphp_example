@@ -1,9 +1,10 @@
 CREATE TABLE users (
-    username varchar(255) PRIMARY KEY,
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    username varchar(255),
     password varchar(255) NOT NULL
 );
 
-INSERT INTO users VALUES ('test', 'test');
+INSERT INTO users (username, password) VALUES ('test', 'test');
 
 CREATE TABLE validations (
   id INT AUTO_INCREMENT PRIMARY KEY,
@@ -14,14 +15,20 @@ CREATE TABLE validations (
   FOREIGN KEY (username) REFERENCES users(username)
 );
 
-/*For session key
-IN JS when user is logging in use some hash function to get a key
-  Take said key + EPOCH time stamp -> to DB
-   DB Saves time created + key + expiration (5 mins)
-    Each request to server should check for valid key
-      if y -let request go + update expiration
-        if n -Log out user
-	-Matt
-*/
+CREATE TABLE reviews(
+ id INT AUTO_INCREMENT PRIMARY KEY,
+ username VARCHAR(255) NOT NULL,
+ movie_id VARCHAR(255) NOT NULL,
+ score INT NOT NULL,
+ review VARCHAR(255) NOT NULL,
+ FOREIGN KEY (username) REFERENCES users(username)
+);
 
+CREATE TABLE watchlist(
+ id INT AUTO_INCREMENT PRIMARY KEY,
+ username VARCHAR(255) NOT NULL,
+ movie_id VARCHAR(255) NOT NULL,
+ movie_name VARCHAR(255) NOT NULL,
+ FOREIGN KEY (username) REFERENCES users(username)
+);
 

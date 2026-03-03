@@ -2,43 +2,67 @@
 <?php
 
 $web_response = "";
-$location = "registration.html";
+$location = "home.html";
 
 if (!isset($_POST)) {
   trigger_error("Missing post data", E_USER_WARNING);
   goto fail;
 }
+
 $username = $_POST["username"];
 if (!isset($username)) {
-  trigger_error("Missing username", E_USER_WARNING);
-  goto fail;
+    $web_response = "Missing username";
+    goto fail;
 }
-$password = htmlspecialchars($_POST["password"]);
-if (!isset($password)) {
-  trigger_error("Missing password", E_USER_WARNING);
+
+$message = $_POST["message"];
+if (!isset($message)) {
+  trigger_error("Missing message", E_USER_WARNING);
   goto fail;
 }
 
 require_once('../rabbitMQLib.inc');
 
-$client = new rabbitMQClient("../web_client.ini","db_queue","db");
+$client = new rabbitMQClient("../web_client.ini","web_client");
 
 $request = array();
-$request['type'] = "register";
+$request['type'] = "validate_session";
 $request['username'] = $username;
-$request['password'] = $password;
+$request['message'] = $message;
+
+
+
 $response = $client->send_request($request);
+
+
 if (!isset($response["status"])) {
     $web_response = "Internal Error";
     goto fail;
 }
+
+if($response["status"] == "boot")
+{
+ 	$web_response = $response["message"];
+	$location = "login.html";
+	header("location: login.html");
+	exit();
+}
+
+if($response["status"] == "success")
+{
+ 	$web_response = $response["message"];
+	$location = "home.html";
+	header("location: home.html");
+	exit();
+}
+
 if ($response["status"] !== "success") {
     $web_response = $response["message"];
     goto fail;
 }
 
-$response["sessid"] = "test";
-$location = "home.php";
+
+$location = "home.html";
 
 fail:
 if ($web_response) {
@@ -46,10 +70,12 @@ if ($web_response) {
     echo "sessionStorage.setItem('message', '$web_response');\n";
 } else if (isset($response["sessid"])) {
     echo "sessionStorage.setItem('username', '$username');\n";
-    echo "sessionStorage.setItem('key', '$response[key]')\n";
+    //echo "sessionStorage.setItem('key', '$response[key]')\n";
 } else {
     trigger_error("how'd this happen", E_USER_WARNING);
 }
 echo "window.location = '$location';\n";
+
+
 ?>
 </script>

@@ -1,20 +1,19 @@
 <h1>Welcome, <em id="username"></em></h1>
-<p>Key: <em id="key"></em></p>
+
 <script>
-//This if statement checks if a user is logged in
-//If not, dumps them at the log in screen -Matt
 if(!sessionStorage.getItem("username"))
 {
   //At some point this might need to be changed to check for session info aswell
-  alert("User not logged in!");
+  //alert("User not logged in!");
   window.location.href = "login.html";
 }
-  
 var username = sessionStorage.getItem("username");
 var username_ele = document.getElementById("username");
 username_ele.textContent = username;
 
-var key = sessionStorage.getItem("key");
-var key_ele = document.getElementById("key");
-key_ele.textContent = key;
 </script>
+
+<form action="reviewsView_handler.php" method="get">
+    <button type="submit">Show Reviews</button>
+</form>
+

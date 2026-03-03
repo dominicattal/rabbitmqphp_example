@@ -21,7 +21,7 @@ if (!isset($password)) {
 
 require_once('../rabbitMQLib.inc');
 
-$client = new rabbitMQClient("../web_client.ini","web_client");
+$client = new rabbitMQClient("../web_client.ini","db_queue","db");
 
 $request = array();
 $request['type'] = "login";
@@ -38,7 +38,7 @@ if ($response["status"] !== "success") {
 }
 
 $response["sessid"] = "test";
-$location = "home.html";
+$location = "home.php";
 
 fail:
 if ($web_response) {

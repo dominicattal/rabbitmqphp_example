@@ -1,0 +1,57 @@
+#!/bin/php
+<?php
+require_once('rabbitMQLib.inc');
+
+$ini = parse_ini_file(".api.ini", false);
+$key = $ini["API_KEY"];
+
+function getRequest($url)
+{
+    global $key;
+    $curl = curl_init();
+    curl_setopt_array($curl, [
+      CURLOPT_URL => $url,
+      CURLOPT_RETURNTRANSFER => true,
+      CURLOPT_ENCODING => "",
+      CURLOPT_MAXREDIRS => 10,
+      CURLOPT_TIMEOUT => 30,
+      CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+      CURLOPT_CUSTOMREQUEST => "GET",
+      CURLOPT_HTTPHEADER => [
+        "Authorization: Bearer $key",
+        "accept: application/json"
+      ],
+    ]);
+    $response = curl_exec($curl);
+    curl_close($curl);
+    return $response;
+}
+
+function getMovie($id)
+{
+    $encoded_json = getRequest("https://api.themoviedb.org/3/movie/$id?language=en-US");
+    return json_decode($encoded_json, true);
+}
+
+function getRecentMovies($count)
+{
+    $encoded_json = getRequest('https://api.themoviedb.org/3/movie/popular?language=en-US&page=1');
+    return json_decode($encoded_json, true);
+}
+
+function requestProcessor($request)
+{
+    echo "Printing request:\n";
+    var_dump($request);
+    switch ($request["type"]) {
+        case "popular":
+            return getRecentMovies($request["count"]);
+        case "movie":
+            return getMovie($request["id"]);
+    }
+    return array("status" => "failed", "message" => "unrecognized type");
+}
+
+$server = new rabbitMQServer("data_server.ini");
+$server->process_requests('requestProcessor');
+
