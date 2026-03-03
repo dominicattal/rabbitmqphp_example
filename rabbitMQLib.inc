@@ -51,7 +51,7 @@ class rabbitMQServer
             $exchange->setName($this->exchange_name);
             $exchange->setType($this->exchange_type);
 
-            if (!isset($payload["reploy_queue_name"]) || !isset($payload["reply_routing_key"]))
+            if (!isset($payload["reply_queue_name"]) || !isset($payload["reply_routing_key"]))
                 return;
 
             $reply_queue_name = $payload["reply_queue_name"];

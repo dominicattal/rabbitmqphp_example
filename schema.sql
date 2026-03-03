@@ -1,10 +1,9 @@
 CREATE TABLE users (
-    id INT AUTO_INCREMENT,
     username varchar(255) PRIMARY KEY,
     password varchar(255) NOT NULL
 );
 
-INSERT INTO users VALUES ('test', 'test');
+INSERT INTO users (username, password) VALUES ('test', 'test');
 
 CREATE TABLE validations (
   id INT AUTO_INCREMENT PRIMARY KEY,
