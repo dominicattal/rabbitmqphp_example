@@ -38,7 +38,7 @@ if ($response["status"] !== "success") {
 }
 
 $response["sessid"] = "test";
-$location = "home.html";
+$location = "home.php";
 
 fail:
 if ($web_response) {
