@@ -4,7 +4,7 @@ CREATE TABLE users (
     password varchar(255) NOT NULL
 );
 
-INSERT INTO users VALUES ('test', 'test');
+INSERT INTO users (username, password) VALUES ('test', 'test');
 
 CREATE TABLE validations (
   id INT AUTO_INCREMENT PRIMARY KEY,
@@ -24,6 +24,11 @@ CREATE TABLE reviews(
  FOREIGN KEY (username) REFERENCES users(username)
 );
 
-
-
+CREATE TABLE watchlist(
+ id INT AUTO_INCREMENT PRIMARY KEY,
+ username VARCHAR(255) NOT NULL,
+ movie_id VARCHAR(255) NOT NULL,
+ movie_name VARCHAR(255) NOT NULL,
+ FOREIGN KEY (username) REFERENCES users(username)
+);
 

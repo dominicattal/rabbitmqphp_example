@@ -28,7 +28,28 @@ function doLogin($username,$password)
 
   echo "User logging in, validating!\n";
 
+  //First need to check if the user has a valid session already, if yes kill it !!! - ME
+
+  $query = "SELECT username FROM validations WHERE username='$username'";
+  $result = $db_conn->query($query);
+  
+  if ($result->num_rows > 0) 
+  {
+	echo "User has an expired Key! Killing it!\n";
+			
+	$query = "DELETE FROM validations
+		WHERE username = '$username'";
+	$result = $db_conn->query($query);
+  }
+
   $arr = doValidate($username);
+  if (!isset($arr["status"]) || $arr["status"] != "success") {
+      return array(
+          "status" => "failed",
+          "message" => "validation failed"
+      );
+  }
+
   return array(
     "status" => "success",
     "key" => $arr["key"],
@@ -47,7 +68,7 @@ function doRegister($username,$password)
           "message" => "User exists"
       );
   }
-  $query = "INSERT INTO users VALUES ('$username','$password');";
+  $query = "INSERT INTO users (username, password) VALUES ('$username','$password');";
   // need to assert query successfully executed here
   $result = $db_conn->query($query);
   $arr = doValidate($username);
@@ -102,8 +123,6 @@ echo "Trying a validation!\n";
 		$row = $result->fetch_assoc();   
     		$expiresAt = $row['expiresAt']; 
 
-		
-
     		if($expiresAt >= $now)
     		{
     			
@@ -130,6 +149,7 @@ echo "Trying a validation!\n";
 			//echo "Hopefully cleared then added the validation!\n";
 			return array(
 			    "status" => "success",
+                "key" => $key,
 			    "message" => "User can stay logged in!"
 			);
 		}
@@ -154,15 +174,12 @@ echo "Trying a validation!\n";
 	}
 	else
 	  echo "There was an error getting expiresAt from validations table!";
-	
-	
-	
-   }
-  return array(
-    "status" => "success",
-    "key" => $key,
-    "message" => ""
-  );
+    }
+    return array(
+        "status" => "success",
+        "key" => $key,
+        "message" => ""
+    );
 }
 
 //This function creates a review for a movie if it does not exist. if it does, returns fail!
@@ -244,30 +261,27 @@ function updateReview($username, $message, $movieID,$rating)
 //This returns an array with every single user's review for each media thing
 function reviewAll()
 {
-	global $db_conn;
-    	$query = "SELECT username,movie_id,score, review from reviews";
-	$result = $db_conn->query($query);
+    global $db_conn;
+    $query = "SELECT username,movie_id,score, review from reviews";
+    $result = $db_conn->query($query);
 
-	if ($result->num_rows == 0)
-	{
-		echo "No Movies have been reviewed!\n";
-	}
-	else
-	{
-		$reviewsArray = array();
-
-		while ($row = $result->fetch_assoc()) 
-		{
-			$reviewsArray[] = $row;
-		}
-		return $reviewsArray;
-		
-	}
-	
-	 return array(
-          "status" => "failed",
-          "message" => "Internal Error!"
-      );
+    if ($result->num_rows == 0)
+    {
+        echo "No Movies have been reviewed!\n";
+    }
+    else
+    {
+        $reviewsArray = array();
+        while ($row = $result->fetch_assoc()) 
+        {
+            $reviewsArray[] = $row;
+        }
+        return $reviewsArray;
+    }
+    return array(
+        "status" => "failed",
+        "message" => "Internal Error!"
+    );
 }
 
 function requestProcessor($request)
@@ -297,7 +311,7 @@ function requestProcessor($request)
   return array("returnCode" => '0', 'message'=>"Server received request and processed");
 }
 
-$server = new rabbitMQServer("db_server.ini","db_server");
+$server = new rabbitMQServer("db_server.ini");
 $server->process_requests('requestProcessor');
 
 ?>

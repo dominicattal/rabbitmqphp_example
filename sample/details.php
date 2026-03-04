@@ -1,21 +1,14 @@
 <?php
-// 1. Session check to ensure only logged-in users see details
-session_start();
-
-// 2. Capture the Movie ID from the URL
 $movieId = $_GET['id'] ?? null;
-if (!$movieId) {
+if (!$movieId)
     die("Movie ID missing.");
-}
 
-// 3. Load API Key
-$ini = parse_ini_file("../.api.ini", false);
-$key = $ini["API_KEY"];
-
-// 4. Fetch specific movie details from TMDB
-$url = "https://api.themoviedb.org/3/movie/" . $movieId . "?api_key=" . $key . "&language=en-US";
-$response = file_get_contents($url);
-$movie = json_decode($response, true);
+require_once('../rabbitMQLib.inc');
+$client = new rabbitMQClient("web_client.ini", "data_queue", "data");
+$request = array();
+$request['type'] = "movie";
+$request['id'] = $movieId;
+$movie = $client->send_request($request);
 
 $title = htmlspecialchars($movie['title']);
 $overview = htmlspecialchars($movie['overview']);

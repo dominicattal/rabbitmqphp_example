@@ -10,15 +10,13 @@ if(!sessionStorage.getItem("username"))
 </script>
 
 <?php
-// Load API Configuration
-$settings = parse_ini_file("../.api.ini", true);
-$apiKey = $settings['tmdb']['api_key'] ?? '917c0ffbd6f072c36aba70b11674cf39';
-
-// Fetch Data from TMDB
-$url = "https://api.themoviedb.org/3/movie/popular?api_key=" . $apiKey . "&language=en-US&page=1";
-$response = file_get_contents($url);
-$data = json_decode($response, true);
-$movies = $data['results'] ?? [];
+require_once('../rabbitMQLib.inc');
+$client = new rabbitMQClient("web_client.ini", "data_queue", "data");
+$request = array();
+$request['type'] = "popular";
+$request['count'] = 10;
+$response = $client->send_request($request);
+$movies = $response["results"];
 ?>
 
 <!DOCTYPE html>
