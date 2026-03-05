@@ -33,9 +33,15 @@ $backdrop = "https://image.tmdb.org/t/p/original" . $movie['backdrop_path'];
         <div class="details-container">
             <div class="movie-info-card">
                 <img src="<?php echo $poster; ?>" class="details-poster">
-                <div class="text-content">
+	        <div class="text-content">
                     <h1><?php echo $title; ?></h1>
                     <p class="synopsis"><?php echo $overview; ?></p>
+    
+                    <form method="POST" action="watchlist_add.php">
+                        <input type="hidden" name="movie_id" value="<?php echo $movieId; ?>">
+                        <input type="hidden" name="movie_name" value="<?php echo $title; ?>">
+                        <button type="submit" class="nav-btn" style="margin-top: 20px;">+ ADD TO WATCHLIST</button>
+                    </form>
                 </div>
             </div>
 

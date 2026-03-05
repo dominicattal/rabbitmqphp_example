@@ -4,7 +4,6 @@
 if(!sessionStorage.getItem("username"))
 {
   //At some point this might need to be changed to check for session info aswell
-  //alert("User not logged in!");
   window.location.href = "login.html";
 }
 </script>
@@ -17,6 +16,7 @@ $request['type'] = "popular";
 $request['count'] = 10;
 $response = $client->send_request($request);
 $movies = $response["results"];
+// REMOVED upcoming movies request here to restore stability - ME
 ?>
 
 <!DOCTYPE html>
@@ -28,19 +28,31 @@ $movies = $response["results"];
     <link rel="stylesheet" href="madd.css">
 </head>
 <body class="home-body">
-    <nav class="navbar">
-        <div class="logo">MADD FOR MOVIES</div>
-        <div class="nav-links">
-            <span id="user-display">Welcome, <em id="username-span"></em></span>
-            <a href="login.html" class="logout-link" onclick="sessionStorage.clear()">LOGOUT</a>
-        </div>
-    </nav>
+   <nav class="navbar">
+      <div class="logo-container">
+          <a href="home.php" class="logo">MADD FOR MOVIES</a>
+      </div>
+
+      <div class="nav-links">
+         <a href="home.php" class="nav-btn">HOME</a>
+         <div class="profile-dropdown">
+             <button class="nav-btn">PROFILE ▼</button>
+             <div class="dropdown-content">
+                 <a href="profile.php">MY ACCOUNT</a>
+                 <a href="watchlist.php">WATCHLIST</a>
+                 <hr class="dropdown-divider">
+                 <a href="login.html" class="logout-link" onclick="sessionStorage.clear()">LOGOUT</a>
+             </div>
+         </div>
+      </div>
+   </nav>
 
     <main class="content-wrapper">
+    <h2 class="section-title">POPULAR NOW</h2> 
     <div class="movie-grid">
     <?php foreach ($movies as $movie): 
         $title = htmlspecialchars($movie['title']);
-        $movieId = $movie['id']; // Get the unique ID from TMDB
+        $movieId = $movie['id']; 
         $poster = "https://image.tmdb.org/t/p/w500" . $movie['poster_path'];
     ?>
         <a href="details.php?id=<?php echo $movieId; ?>" class="movie-link">
@@ -55,10 +67,6 @@ $movies = $response["results"];
         </a>
     <?php endforeach; ?>
     </div>
-
-<a href="reviews.html">Test Create a Review Page</a><br>
-<a href="reviewsView.html">View all reviews Page</a>
-
-</main>
+    </main>
 </body>
 </html>

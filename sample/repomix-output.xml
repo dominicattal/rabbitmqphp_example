@@ -1,0 +1,1368 @@
+This file is a merged representation of the entire codebase, combined into a single document by Repomix.
+
+<file_summary>
+This section contains a summary of this file.
+
+<purpose>
+This file contains a packed representation of the entire repository's contents.
+It is designed to be easily consumable by AI systems for analysis, code review,
+or other automated processes.
+</purpose>
+
+<file_format>
+The content is organized as follows:
+1. This summary section
+2. Repository information
+3. Directory structure
+4. Repository files (if enabled)
+5. Multiple file entries, each consisting of:
+  - File path as an attribute
+  - Full contents of the file
+</file_format>
+
+<usage_guidelines>
+- This file should be treated as read-only. Any changes should be made to the
+  original repository files, not this packed version.
+- When processing this file, use the file path to distinguish
+  between different files in the repository.
+- Be aware that this file may contain sensitive information. Handle it with
+  the same level of security as you would the original repository.
+</usage_guidelines>
+
+<notes>
+- Some files may have been excluded based on .gitignore rules and Repomix's configuration
+- Binary files are not included in this packed representation. Please refer to the Repository Structure section for a complete list of file paths, including binary files
+- Files matching patterns in .gitignore are excluded
+- Files matching default ignore patterns are excluded
+- Files are sorted by Git change count (files with more changes are at the bottom)
+</notes>
+
+</file_summary>
+
+<directory_structure>
+001-sample.conf
+background.jpg
+details.php
+home.php
+index_old.html
+index.php
+login_handler.php
+login.html
+madd.css
+profile.php
+registration_handler.php
+registration.html
+reviews_handler.php
+reviews.html
+reviewsView_handler.php
+reviewsView.html
+validation_handler.php
+watchlist_add.php
+watchlist.php
+</directory_structure>
+
+<files>
+This section contains the contents of the repository's files.
+
+<file path="001-sample.conf">
+<VirtualHost www.sample.com:80>
+
+	ServerAdmin webmaster@localhost
+	ServerName www.sample.com
+	DocumentRoot /var/www/sample
+
+	ErrorLog ${APACHE_LOG_DIR}/sample_error.log
+	CustomLog ${APACHE_LOG_DIR}/sample_access.log combined
+</VirtualHost>
+</file>
+
+<file path="details.php">
+<?php
+$movieId = $_GET['id'] ?? null;
+if (!$movieId)
+    die("Movie ID missing.");
+
+require_once('../rabbitMQLib.inc');
+$client = new rabbitMQClient("web_client.ini", "data_queue", "data");
+$request = array();
+$request['type'] = "movie";
+$request['id'] = $movieId;
+$movie = $client->send_request($request);
+
+$title = htmlspecialchars($movie['title']);
+$overview = htmlspecialchars($movie['overview']);
+$poster = "https://image.tmdb.org/t/p/w500" . $movie['poster_path'];
+$backdrop = "https://image.tmdb.org/t/p/original" . $movie['backdrop_path'];
+?>
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title><?php echo $title; ?> - Details</title>
+    <link rel="stylesheet" href="madd.css">
+</head>
+<body class="home-body">
+    <nav class="navbar">
+        <div class="logo">MADD FOR MOVIES</div>
+        <a href="home.php" class="logout-link">BACK TO BROWSE</a>
+    </nav>
+
+    <main class="content-wrapper">
+        <div class="details-container">
+            <div class="movie-info-card">
+                <img src="<?php echo $poster; ?>" class="details-poster">
+	        <div class="text-content">
+                    <h1><?php echo $title; ?></h1>
+                    <p class="synopsis"><?php echo $overview; ?></p>
+    
+                    <form method="POST" action="watchlist_add.php">
+                        <input type="hidden" name="movie_id" value="<?php echo $movieId; ?>">
+                        <input type="hidden" name="movie_name" value="<?php echo $title; ?>">
+                        <button type="submit" class="nav-btn" style="margin-top: 20px;">+ ADD TO WATCHLIST</button>
+                    </form>
+                </div>
+            </div>
+
+            <div class="review-section">
+                <h2>USER REVIEWS</h2>
+                <div class="review-box">
+                    <textarea placeholder="Write your review here..."></textarea>
+                    <button class="view-btn">SUBMIT REVIEW</button>
+                </div>
+                <div id="loaded-reviews">
+                    <p>No reviews yet. Be the first!</p>
+                </div>
+            </div>
+        </div>
+    </main>
+</body>
+</html>
+</file>
+
+<file path="home.php">
+<script>
+//This if statement checks if a user is logged in
+//If not, dumps them at the log in screen -Matt
+if(!sessionStorage.getItem("username"))
+{
+  //At some point this might need to be changed to check for session info aswell
+  //alert("User not logged in!");
+  window.location.href = "login.html";
+}
+</script>
+
+<?php
+require_once('../rabbitMQLib.inc');
+$client = new rabbitMQClient("web_client.ini", "data_queue", "data");
+$request = array();
+$request['type'] = "popular";
+$request['count'] = 10;
+$response = $client->send_request($request);
+$movies = $response["results"];
+$upcoming_request = array();
+$upcoming_request['type'] = "upcoming";
+$response_upcoming = $client->send_request($upcoming_request);
+$upcoming_movies = $response_upcoming["results"];
+?>
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MADD FOR MOVIES - Home</title>
+    <link rel="stylesheet" href="madd.css">
+</head>
+<body class="home-body">
+   <nav class="navbar">
+      <div class="logo-container">
+          <a href="home.php" class="logo">MADD FOR MOVIES</a>
+      </div>
+
+      <div class="nav-links">
+         <a href="home.php" class="nav-btn">HOME</a>
+         <a href="higher-lower.php" class="nav-btn">HIGHER/LOWER</a>
+
+         <div class="profile-dropdown">
+             <button class="nav-btn">PROFILE ▼</button>
+             <div class="dropdown-content">
+                 <a href="profile.php">MY ACCOUNT</a>
+                 <a href="watchlist.php">WATCHLIST</a>
+                 <hr class="dropdown-divider">
+                 <a href="login.html" class="logout-link" onclick="sessionStorage.clear()">LOGOUT</a>
+             </div>
+         </div>
+      </div>
+   </nav>
+
+   <main class="content-wrapper">
+        <h2 class="section-title">POPULAR NOW</h2> 
+        
+        <div class="movie-grid">
+        <?php foreach ($movies as $movie): 
+            $title = htmlspecialchars($movie['title']);
+            $movieId = $movie['id'];
+            $poster = "https://image.tmdb.org/t/p/w500" . $movie['poster_path'];
+        ?>
+            <a href="details.php?id=<?php echo $movieId; ?>" class="movie-link">
+                <div class="movie-card">
+                    <div class="poster-container">
+                        <img src="<?php echo $poster; ?>" alt="<?php echo $title; ?>" class="movie-poster">
+                    </div>
+                    <div class="movie-details">
+                        <h3 class="movie-title"><?php echo $title; ?></h3>
+                    </div>
+                </div>
+            </a>
+        <?php endforeach; ?>
+        </div>
+
+        <h2 class="section-title" style="margin-top: 50px;">UPCOMING RELEASES</h2>
+        <div class="movie-grid">
+        <?php foreach ($upcoming_movies as $u_movie): 
+            $u_title = htmlspecialchars($u_movie['title']);
+            $u_movieId = $u_movie['id'];
+            $u_poster = "https://image.tmdb.org/t/p/w500" . $u_movie['poster_path'];
+        ?>
+            <a href="details.php?id=<?php echo $u_movieId; ?>" class="movie-link">
+                <div class="movie-card">
+                    <div class="poster-container">
+                        <img src="<?php echo $u_poster; ?>" alt="<?php echo $u_title; ?>" class="movie-poster">
+                    </div>
+                    <div class="movie-details">
+                        <h3 class="movie-title"><?php echo $u_title; ?></h3>
+                    </div>
+                </div>
+            </a>
+        <?php endforeach; ?>
+        </div>
+        <br>
+        <a href="reviews.html">Test Create a Review Page</a><br>
+        <a href="reviewsView.html">View all reviews Page</a>
+
+   </main>
+</file>
+
+<file path="index_old.html">
+<html>
+<script>
+function HandleLoginResponse(response)
+{
+	var text = JSON.parse(response);
+//	document.getElementById("textResponse").innerHTML = response+"<p>";	
+	document.getElementById("textResponse").innerHTML = "response: "+text+"<p>";
+}
+
+function SendLoginRequest(username,password)
+{
+	var request = new XMLHttpRequest();
+	request.open("POST","login_handler.php",true);
+	request.setRequestHeader("Content-Type","application/x-www-form-urlencoded");
+	request.onreadystatechange= function ()
+	{
+		if ((this.readyState == 4)&&(this.status == 200))
+		{
+			HandleLoginResponse(this.responseText);
+		}		
+	}
+	request.send("type=login&uname="+username+"&pword="+password);
+}
+</script>
+
+<h1>login page</h1>
+<body>
+<div id="textResponse">
+awaiting response
+</div>
+<script>
+SendLoginRequest("kehoed","12345");
+</script>
+</body>
+</html>
+</file>
+
+<file path="index.php">
+<?php
+header("Location: login.html");
+die();
+?>
+</file>
+
+<file path="login_handler.php">
+<script>
+<?php
+
+$web_response = "";
+$location = "login.html";
+
+if (!isset($_POST)) {
+    $web_response = "Missing post data";
+    goto fail;
+}
+$username = $_POST["username"];
+if (!isset($username)) {
+    $web_response = "Missing username";
+    goto fail;
+}
+$password = htmlspecialchars($_POST["password"]);
+if (!isset($password)) {
+    $web_response = "Missing password";
+    goto fail;
+}
+
+require_once('../rabbitMQLib.inc');
+
+$client = new rabbitMQClient("../web_client.ini","db_queue","db");
+
+$request = array();
+$request['type'] = "login";
+$request['username'] = $username;
+$request['password'] = $password;
+$response = $client->send_request($request);
+if (!isset($response["status"])) {
+    $web_response = "Internal Error";
+    goto fail;
+}
+if ($response["status"] === "success") {
+    session_start(); // Start the PHP session
+    $_SESSION['username'] = $username; // Save username for PHP pages
+    
+    $response["sessid"] = "test";
+    $location = "home.php";
+}
+
+$response["sessid"] = "test";
+$location = "home.php";
+
+fail:
+if ($web_response) {
+    trigger_error($web_response, E_USER_WARNING);
+    echo "sessionStorage.setItem('message', '$web_response');\n";
+} else if (isset($response["sessid"])) {
+    echo "sessionStorage.setItem('username', '$username');\n";
+    echo "sessionStorage.setItem('key', '$response[key]')\n";
+} else {
+    trigger_error("how'd this happen", E_USER_WARNING);
+}
+echo "window.location = '$location';\n";
+?>
+</script>
+</file>
+
+<file path="login.html">
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="madd.css">
+</head>
+<body>
+    <div class="login-container">
+        <form action="login_handler.php" method="POST" id="login-form">
+            <h1>MADD FOR MOVIES? LOGIN</h1>
+            
+            <div class="input-group">
+                <label for="username">USERNAME</label>
+                <input type="text" id="username" name="username" placeholder="Enter your username here" required>
+            </div>
+            
+            <div class="input-group">
+                <label for="password">PASSWORD</label>
+                <input type="password" id="password" name="password" placeholder="Enter your password here" required>
+            </div>
+            
+            <button type="submit">SIGN IN</button>
+            
+            <p id="response" class="error-text"></p>
+            
+            <div class="divider">OR</div>
+            
+            <div class="footer">
+                Don't have an account? <a href="registration.html">Sign Up</a>
+            </div>
+        </form>
+    </div>
+
+    <script>
+        // Check sessionStorage for error messages sent by the backend
+        var response = sessionStorage.getItem("message");
+        if (response) {
+            var p_ele = document.getElementById("response");
+            p_ele.textContent = response;
+            sessionStorage.removeItem("message");     
+        }
+    </script>
+</body>
+</html>
+</file>
+
+<file path="madd.css">
+:root {
+  --primary: #000000;
+  --secondary: #FFFFFF;
+  --accent: #FF5E5B; /* Cinema Red */
+  --shadow: 8px 8px 0px var(--primary);
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: 'Courier New', monospace;
+}
+
+body {
+  background: url("background.jpg");
+  background-repeat: no-repeat; 
+  background-size: cover;      
+  background-position: center; 
+  background-attachment: fixed;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  padding: 20px;
+}
+
+.login-container {
+  width: 100%;
+  max-width: 400px;
+  border: 2px solid var(--primary);
+  padding: 40px 30px;
+  background-color: var(--secondary);
+  box-shadow: var(--shadow);
+  position: relative;
+  border-radius: 12px;
+}
+
+/* The "offset" border effect */
+.login-container::before {
+  content: '';
+  position: absolute;
+  top: 6px;
+  left: 6px;
+  right: -6px;
+  bottom: -6px;
+  border: 2px solid var(--primary);
+  z-index: -1;
+  border-radius: 12px;
+  background-color: transparent;
+}
+
+h1 {
+  color: var(--primary);
+  margin-bottom: 30px;
+  font-size: 28px;
+  font-weight: 700;
+  text-align: center;
+}
+
+.input-group {
+  margin-bottom: 20px;
+}
+
+label {
+  display: block;
+  margin-bottom: 8px;
+  font-weight: bold;
+  color: var(--primary);
+}
+
+input {
+  width: 100%;
+  padding: 12px 15px;
+  border: 2px solid var(--primary);
+  background-color: var(--secondary);
+  font-size: 16px;
+  outline: none;
+  transition: all 0.3s;
+}
+
+input:focus {
+  box-shadow: 4px 4px 0px var(--primary);
+}
+
+button {
+  width: 100%;
+  padding: 12px;
+  background-color: var(--accent);
+  color: var(--secondary);
+  border: 2px solid var(--primary);
+  font-size: 16px;
+  font-weight: bold;
+  cursor: pointer;
+  margin-top: 10px;
+  transition: all 0.2s;
+}
+
+button:hover {
+  box-shadow: 4px 4px 0px var(--primary);
+  transform: translate(-2px, -2px);
+}
+
+.error-text {
+  text-align: center;
+  color: var(--accent);
+  margin-top: 15px;
+  font-size: 14px;
+  font-weight: bold;
+}
+
+.divider {
+  display: flex;
+  align-items: center;
+  margin: 25px 0;
+  color: var(--primary);
+  font-weight: bold;
+}
+
+.divider::before, .divider::after {
+  content: "";
+  flex: 1;
+  border-bottom: 2px solid var(--primary);
+  margin: 0 10px;
+}
+
+.social-login {
+  display: flex;
+  justify-content: center;
+  gap: 15px;
+}
+
+.social-btn {
+  width: 50px;
+  height: 50px;
+  border: 2px solid var(--primary);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+  transition: all 0.3s;
+  background-color: var(--secondary);
+  font-weight: bold;
+}
+
+.social-btn:hover {
+  box-shadow: 4px 4px 0px var(--primary);
+  transform: translate(-2px, -2px);
+}
+
+.footer {
+  text-align: center;
+  margin-top: 25px;
+  color: var(--primary);
+  font-size: 14px;
+}
+
+.footer a {
+  color: var(--primary);
+  font-weight: bold;
+  text-decoration: underline;
+}
+
+.movie-grid {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 20px; 
+    padding: 20px;
+    margin-top: 20px;
+}
+
+.movie-card {
+    background-color: var(--secondary);
+    border: 3px solid var(--primary);
+    box-shadow: var(--shadow);
+    border-radius: 12px;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    transition: transform 0.2s ease;
+}
+
+.movie-poster {
+    width: 100%;
+    height: auto; 
+    aspect-ratio: 2 / 3;
+    object-fit: cover;
+    border-bottom: 3px solid var(--primary);
+}
+
+.movie-link {
+    text-decoration: none; 
+    color: inherit; 
+    display: block;
+}
+
+.movie-link:hover .movie-card {
+    transform: translate(-6px, -6px);
+    box-shadow: 12px 12px 0px var(--primary);
+    border-color: var(--accent); 
+}
+
+.details-container {
+    display: flex;
+    gap: 40px;
+    background: var(--secondary);
+    border: 4px solid var(--primary);
+    padding: 30px;
+    box-shadow: var(--shadow);
+}
+
+.movie-info-card {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.details-poster {
+    width: 100%;
+    max-width: 300px;
+    border: 3px solid var(--primary);
+}
+
+.review-section {
+    flex: 1;
+    border-left: 2px solid var(--primary);
+    padding-left: 40px;
+}
+
+textarea {
+    width: 100%;
+    height: 100px;
+    border: 2px solid var(--primary);
+    padding: 10px;
+    font-family: inherit;
+    margin-bottom: 10px;
+}
+
+/* Fix the body layout for App pages */
+.home-body {
+    display: block;      /* Change from flex to block for vertical stacking */
+    padding: 0;          /* Remove padding so navbar touches edges */
+    overflow-y: auto;
+}
+
+.navbar {
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+    display: flex;
+    justify-content: space-between;
+    /* Force vertical centering for everything in the bar */
+    align-items: center; 
+    padding: 10px 50px;
+    background: var(--secondary);
+    border-bottom: 4px solid var(--primary);
+    width: 100%;
+}
+
+.nav-links {
+    display: flex;
+    /* This is the secret sauce to keep the dropdown in line with links */
+    align-items: center; 
+    gap: 15px;
+}
+
+.nav-btn, .dropdown-trigger {
+    text-decoration: none;
+    color: var(--primary);
+    font-weight: 900;
+    padding: 8px 16px;
+    border: 3px solid var(--primary);
+    background: var(--secondary);
+    cursor: pointer;
+    font-family: 'Courier New', monospace;
+    /* Ensure buttons don't have default browser margins */
+    margin: 0; 
+    display: inline-flex;
+    align-items: center;
+    height: 40px; /* Force a consistent height across all types */
+}
+
+.nav-btn:hover {
+    background-color: var(--accent);
+    color: var(--secondary);
+    box-shadow: 4px 4px 0px var(--primary);
+    transform: translate(-2px, -2px);
+}
+
+.logo {
+    text-decoration: none;
+    color: var(--primary);
+    font-weight: 900;
+    font-size: 20px;
+}
+
+/* Dropdown Positioning */
+.profile-dropdown {
+    position: relative;
+    display: flex;
+    display: inline-block;
+}
+
+.dropdown-content {
+    display: none; /* Hidden by default */
+    position: absolute;
+    right: 0;
+    background-color: var(--secondary);
+    min-width: 160px;
+    border: 3px solid var(--primary);
+    box-shadow: var(--shadow);
+    z-index: 1001;
+}
+
+/* Show on Hover */
+.profile-dropdown:hover .dropdown-content {
+    display: block;
+}
+
+/* Dropdown Links */
+.dropdown-content a {
+    color: var(--primary);
+    padding: 12px 16px;
+    text-decoration: none;
+    display: block;
+    font-weight: bold;
+    font-size: 14px;
+    transition: background 0.2s;
+}
+
+.dropdown-content a:hover {
+    background-color: var(--accent);
+    color: var(--secondary);
+}
+
+.dropdown-divider {
+    border: 0;
+    border-top: 2px solid var(--primary);
+    margin: 0;
+}
+
+.content-wrapper {
+    background: rgba(0, 0, 0, 0.75); /* Dark overlay */
+    border: 3px solid var(--primary);
+    box-shadow: var(--shadow);
+    padding: 30px;
+    margin: 40px auto;
+    max-width: 1100px;
+    border-radius: 12px;
+    min-height: 400px;
+}
+
+.section-title {
+	    color: var(--accent); /* Cinema Red */
+	        text-align: center;
+		    font-size: 2.5rem;
+		        margin-bottom: 20px;
+			    text-transform: uppercase;
+		    }
+</file>
+
+<file path="profile.php">
+<h1>Profile Page</h1>
+<p>Username: <em id="username"></em></p>
+<h2>Reviews</h2>
+
+<script>
+    var username = sessionStorage.getItem("username");
+    if (username) {
+        var p_ele = document.getElementById("username");
+        p_ele.textContent = username;
+    }
+</script>
+</file>
+
+<file path="registration_handler.php">
+<script>
+<?php
+
+$web_response = "";
+$location = "registration.html";
+
+if (!isset($_POST)) {
+  trigger_error("Missing post data", E_USER_WARNING);
+  goto fail;
+}
+$username = $_POST["username"];
+if (!isset($username)) {
+  trigger_error("Missing username", E_USER_WARNING);
+  goto fail;
+}
+$password = htmlspecialchars($_POST["password"]);
+if (!isset($password)) {
+  trigger_error("Missing password", E_USER_WARNING);
+  goto fail;
+}
+
+require_once('../rabbitMQLib.inc');
+
+$client = new rabbitMQClient("../web_client.ini","db_queue","db");
+
+$request = array();
+$request['type'] = "register";
+$request['username'] = $username;
+$request['password'] = $password;
+$response = $client->send_request($request);
+if (!isset($response["status"])) {
+    $web_response = "Internal Error";
+    goto fail;
+}
+if ($response["status"] !== "success") {
+    $web_response = $response["message"];
+    goto fail;
+}
+
+$response["sessid"] = "test";
+$location = "home.php";
+
+fail:
+if ($web_response) {
+    trigger_error($web_response, E_USER_WARNING);
+    echo "sessionStorage.setItem('message', '$web_response');\n";
+} else if (isset($response["sessid"])) {
+    echo "sessionStorage.setItem('username', '$username');\n";
+    echo "sessionStorage.setItem('key', '$response[key]')\n";
+} else {
+    trigger_error("how'd this happen", E_USER_WARNING);
+}
+echo "window.location = '$location';\n";
+?>
+</script>
+</file>
+
+<file path="registration.html">
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MADD FOR MOVIES? REGISTER</title>
+    <link rel="stylesheet" href="madd.css">
+</head>
+<body>
+    <div class="login-container">
+        <form action="registration_handler.php" method="POST" id="registration-form">
+            <h1>MADD FOR MOVIES? REGISTER</h1>
+            
+            <div class="input-group">
+                <label for="username">USERNAME</label>
+                <input type="text" id="username" name="username" placeholder="Choose a username" required>
+            </div>
+            
+            <div class="input-group">
+                <label for="password">CREATE PASSWORD</label>
+                <input type="password" id="password" name="password" placeholder="Minimum 4 characters" required minlength="4">
+            </div>
+
+            <div class="input-group">
+                <label for="confirm-password">CONFIRM PASSWORD</label>
+                <input type="password" id="confirm-password" name="confirm-password" placeholder="Re-enter password" required>
+            </div>
+            
+            <button type="submit">CREATE ACCOUNT</button>
+            
+            <p id="response" class="error-text"></p>
+            
+            <div class="divider">OR</div>
+            
+            <div class="footer">
+                Already have an account? <a href="login.html">Sign In</a>
+            </div>
+        </form>
+    </div>
+
+    <script>
+        // Displays error messages
+        var response = sessionStorage.getItem("message");
+        if (response) {
+            var p_ele = document.getElementById("response");
+            p_ele.textContent = response;
+            sessionStorage.removeItem("message");     
+        }
+    </script>
+</body>
+</html>
+</file>
+
+<file path="reviews_handler.php">
+<script>
+<?php
+
+$web_response = "";
+
+if (!isset($_POST)) {
+  trigger_error("Missing post data", E_USER_WARNING);
+  goto fail;
+}
+
+$location = $_POST["currentPage"];
+if (!isset($location)) {
+    $web_response = "Missing location";
+    //goto fail; //Just goin to hard write this one 'cause it broke out of nowhere
+   $location = "home.html";
+}
+
+
+$username = $_POST["username"];
+if (!isset($username)) {
+    $web_response = "Missing username";
+    goto fail;
+}
+
+$message = $_POST["message"];
+if (!isset($message)) {
+  trigger_error("Missing message", E_USER_WARNING);
+  goto fail;
+}
+
+$movieID = $_POST["movieID"];
+if (!isset($movieID)) {
+  trigger_error("Missing movieID", E_USER_WARNING);
+  goto fail;
+}
+
+$UOI = $_POST["UOI"];
+if (!isset($UOI)) {
+  trigger_error("Missing UOI", E_USER_WARNING);
+  goto fail;
+}
+
+$rating = $_POST["rating"];
+if (!isset($rating)) {
+  trigger_error("Missing rating", E_USER_WARNING);
+  goto fail;
+}
+
+require_once('../rabbitMQLib.inc');
+
+$client = new rabbitMQClient("../web_client.ini","web_client");
+
+/*$request = array();
+$request['type'] = "validate_session";
+$request['username'] = $username;
+$request['message'] = $message;
+
+$response = $client->send_request($request);
+
+if($response["status"] == "boot")
+{
+ 	$web_response = $response["message"];
+	$location = "login.html";
+	header("location: login.html");
+	exit();
+}*/
+
+//This is where we make the call to the other terminal to get the data, not worked out on atm
+//For now, just making a connnection to the local DB and adding the user's review
+//Need to do 2 things, 1 check if user has made a review on this movie before, if so output it for them to edit, else let them make a new one
+
+if($UOI == "U" || $UOI == "UPDATE" || $UOI == "u")
+{
+	trigger_error("User is updating a review!", E_USER_WARNING);
+	$request = array();
+	$request['type'] = "review_movie";
+	$request['username'] = $username;
+	$request['message'] = $message;
+	$request['movieID'] = $movieID;
+	$request['rating'] = $rating;
+
+	$response = $client->send_request($request);
+
+	if($response)
+	{
+		if($response["status"] == "success")
+		{	
+		 	$web_response = $response["message"];
+			
+			$location = "home.html"; //This is to prevent an infinite loop of loading hell. Probably 	fixable -ME
+			header("Location: " . $location);
+			exit();
+		}
+		
+
+		if ($response["status"] !== "success") 
+		{
+		    $web_response = $response["message"];
+		    goto fail;
+		}
+	}
+	else
+	{
+	  goto fail;
+	}
+}
+else if($UOI == "I" || $UOI == "INSERT" || $UOI == "i")
+{
+	trigger_error("User is inserting a review!", E_USER_WARNING);
+	$request = array();
+	$request['type'] = "createReview";
+	$request['username'] = $username;
+	$request['message'] = $message;
+	$request['movieID'] = $movieID;
+	$request['rating'] = $rating;
+
+	$response = $client->send_request($request);
+
+	if($response)
+	{
+		if($response["status"] == "success")
+		{	
+		 	$web_response = $response["message"];
+			
+			$location = "home.html"; //This is to prevent an infinite loop of loading hell. Probably 	fixable -ME
+			header("Location: " . $location);
+			exit();
+		}
+		
+
+		if ($response["status"] !== "success") 
+		{
+		    $web_response = $response["message"];
+		    goto fail;
+		}
+	}
+	else
+	{
+	  goto fail;
+	}
+
+}
+else
+{
+trigger_error("User never declared U or I!!!!!!!!!!", E_USER_WARNING);
+	goto fail;
+}
+ 
+
+
+
+
+
+fail:
+if ($web_response) {
+    trigger_error($web_response, E_USER_WARNING);
+    echo "sessionStorage.setItem('message', '$web_response');\n";
+} else if (isset($response["sessid"])) {
+    echo "sessionStorage.setItem('username', '$username');\n";
+    //echo "sessionStorage.setItem('key', '$response[key]')\n";
+} else {
+    trigger_error("how'd this happen", E_USER_WARNING);
+}
+echo "window.location = '$location';\n";
+
+?>
+</script>
+</file>
+
+<file path="reviews.html">
+<h1>Welcome, <em id="username"></em></h1>
+<h2>Movie being reviewed, <em id="movieName"></em></h2>
+<h3>Your Review:  <em id="userReview"></em></h3>
+
+<script>
+if(!sessionStorage.getItem("username"))
+{
+  //At some point this might need to be changed to check for session info aswell
+  //alert("User not logged in!");
+  window.location.href = "login.html";
+}
+var username = sessionStorage.getItem("username");
+var username_ele = document.getElementById("username");
+username_ele.textContent = username;
+
+var movieName= "Test Name!"; //For testing purposes this movie is -1 in the db
+var movieName_ele = document.getElementById("movieName");
+movieName_ele.textContent = movieName;
+
+document.getElementById("username").value = username_ele.textContent;
+</script>
+
+<form action="reviews_handler.php" method="post" id="review_handler">
+<div>
+  <input type="hidden" name="currentPage" id="currentPage" value="">
+    <label for="username">Username</label>
+    <input type="text" name="username" id="username2" value ="TEST VALUE"  readonly />
+
+  </div>
+  <div>
+    <label for="movieID">MovieID</label>
+    <input type="text" name="movieID" id="movieID" required />
+  </div>
+  <div>
+    <label for="message">Message</label>
+    <input type="text" name="message" id="message" required />
+  </div>
+<div>
+  <label for="rating">Rating out of 10</label>
+  <input type="number" name="rating" id="rating" min="0" max="10" step="1" required />
+</div>
+<div>
+    <label for="updateOrInsert">Update or Insert?</label>
+    <input type="text" name="UOI" id="UOI" required />
+  </div>
+  <div>
+    <input type="submit" value="Submit" />
+  </div>
+</form>
+<p id="response"></p>
+
+
+<script>
+
+document.getElementById("username2").value = username_ele.textContent; //DO NOT REMOVE THIS OR STUFF BREAKS! -ME
+
+</script>
+
+<script>
+var userReviewMessage =sessionStorage.getItem("reviewMessage");
+
+  if(userReviewMessage)
+  {
+    document.getElementById("userReview").textContent = userReviewMessage;
+  }
+  else
+  {
+    document.getElementById("userReview").textContent = "You have not reviewed this content yet!";
+  }
+
+</script>
+</file>
+
+<file path="reviewsView_handler.php">
+<?php
+require_once('../rabbitMQLib.inc');
+
+$client = new rabbitMQClient("../web_client.ini","web_client");
+$request = array();
+$request['type'] = "reviewAll";
+
+$response = $client->send_request($request);
+
+echo "<table border='1' cellpadding='5' cellspacing='0'>";
+    echo "<tr>
+            <th>Username</th>
+            <th>Media ID</th>
+            <th>Score</th>
+            <th>Review</th>
+          </tr>";
+
+    foreach ($response as $review) {
+        echo "<tr>
+                <td>{$review['username']}</td>
+                <td>{$review['movie_id']}</td>
+                <td>{$review['score']}</td>
+                <td>{$review['review']}</td>
+              </tr>";
+    }
+
+/*foreach ($response as $review) 
+{
+	
+    echo "<p>{$review['username']} rated the media {$review['movie_id']}: {$review['score']} {$review['review']}<p>";
+}*/
+
+echo "</table>";
+
+?>
+</file>
+
+<file path="reviewsView.html">
+<h1>Welcome, <em id="username"></em></h1>
+
+<script>
+if(!sessionStorage.getItem("username"))
+{
+  //At some point this might need to be changed to check for session info aswell
+  //alert("User not logged in!");
+  window.location.href = "login.html";
+}
+var username = sessionStorage.getItem("username");
+var username_ele = document.getElementById("username");
+username_ele.textContent = username;
+
+</script>
+
+<form action="reviewsView_handler.php" method="get">
+    <button type="submit">Show Reviews</button>
+</form>
+</file>
+
+<file path="validation_handler.php">
+<script>
+<?php
+
+$web_response = "";
+$location = "home.html";
+
+if (!isset($_POST)) {
+  trigger_error("Missing post data", E_USER_WARNING);
+  goto fail;
+}
+
+$username = $_POST["username"];
+if (!isset($username)) {
+    $web_response = "Missing username";
+    goto fail;
+}
+
+$message = $_POST["message"];
+if (!isset($message)) {
+  trigger_error("Missing message", E_USER_WARNING);
+  goto fail;
+}
+
+require_once('../rabbitMQLib.inc');
+
+$client = new rabbitMQClient("../web_client.ini","web_client");
+
+$request = array();
+$request['type'] = "validate_session";
+$request['username'] = $username;
+$request['message'] = $message;
+
+
+
+$response = $client->send_request($request);
+
+
+if (!isset($response["status"])) {
+    $web_response = "Internal Error";
+    goto fail;
+}
+
+if($response["status"] == "boot")
+{
+ 	$web_response = $response["message"];
+	$location = "login.html";
+	header("location: login.html");
+	exit();
+}
+
+if($response["status"] == "success")
+{
+ 	$web_response = $response["message"];
+	$location = "home.html";
+	header("location: home.html");
+	exit();
+}
+
+if ($response["status"] !== "success") {
+    $web_response = $response["message"];
+    goto fail;
+}
+
+
+$location = "home.html";
+
+fail:
+if ($web_response) {
+    trigger_error($web_response, E_USER_WARNING);
+    echo "sessionStorage.setItem('message', '$web_response');\n";
+} else if (isset($response["sessid"])) {
+    echo "sessionStorage.setItem('username', '$username');\n";
+    //echo "sessionStorage.setItem('key', '$response[key]')\n";
+} else {
+    trigger_error("how'd this happen", E_USER_WARNING);
+}
+echo "window.location = '$location';\n";
+
+
+?>
+</script>
+</file>
+
+<file path="watchlist_add.php">
+<?php
+session_start(); // Crucial: This prevents the automatic logout
+require_once('../rabbitMQLib.inc');
+
+$username = $_SESSION['username'] ?? null;
+
+// If the session isn't found, we can't add to the list
+if (!$username) {
+    header("Location: login.html?error=session_expired");
+    exit();
+}
+
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    $movieId = $_POST['movie_id'];
+    $movieName = $_POST['movie_name'];
+
+    $client = new rabbitMQClient("web_client.ini", "db_queue", "db");
+    
+    $request = array();
+    $request['type'] = "add_watchlist"; // This must match your db.php switch case
+    $request['username'] = $username;
+    $request['movie_id'] = $movieId;
+    $request['movie_name'] = $movieName;
+
+    $response = $client->send_request($request);
+
+    // Redirect back to the movie details or the watchlist page
+    header("Location: watchlist.php");
+    exit();
+}
+?>
+</file>
+
+<file path="watchlist.php">
+<?php
+session_start();
+require_once('../rabbitMQLib.inc');
+
+// Use the session username set in the handler
+$username = $_SESSION['username'] ?? null;
+
+if (!$username) { 
+    header("Location: login.html"); 
+    exit(); 
+}
+
+$client = new rabbitMQClient("web_client.ini", "db_queue", "db");
+$request = [
+    'type' => 'watchlist', // Ensure this matches the case in your db.php
+    'username' => $username
+];
+
+$watchlist = $client->send_request($request);
+
+// Ensure $watchlist is an array to prevent foreach errors
+if (!is_array($watchlist)) {
+    $watchlist = [];
+}
+?>
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Your Watchlist</title>
+    <link rel="stylesheet" href="madd.css">
+</head>
+<body class="home-body">
+    <main class="content-wrapper">
+        <h1 class="section-title">YOUR WATCHLIST</h1>
+        <div class="movie-grid">
+            <?php if (!empty($watchlist)): ?>
+                <?php foreach ($watchlist as $movie): ?>
+                    <a href="details.php?id=<?php echo $movie['movie_id']; ?>" class="movie-link">
+                        <div class="movie-card">
+                            <div class="movie-details">
+                                <h3 class="movie-title"><?php echo htmlspecialchars($movie['movie_name']); ?></h3>
+                            </div>
+                        </div>
+                    </a>
+                <?php endforeach; ?>
+            <?php else: ?>
+                <p style="color: white; padding: 20px;">Your watchlist is currently empty.</p>
+            <?php endif; ?>
+        </div>
+    </main>
+</body>
+</html>
+</file>
+
+</files>
