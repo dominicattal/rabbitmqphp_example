@@ -39,6 +39,12 @@ function getRecentMovies($count)
     return json_decode($encoded_json, true);
 }
 
+function getUpcomingMovies()
+{
+    $encoded_json = getRequest('https://api.themoviedb.org/3/movie/upcoming?language=en-US&page=1');
+    return json_decode($encoded_json, true);
+}
+
 function requestProcessor($request)
 {
     echo "Printing request:\n";
@@ -47,7 +53,9 @@ function requestProcessor($request)
         case "popular":
             return getRecentMovies($request["count"]);
         case "movie":
-            return getMovie($request["id"]);
+	    return getMovie($request["id"]);
+	case "upcoming":
+            return getUpcomingMovies();
     }
     return array("status" => "failed", "message" => "unrecognized type");
 }
