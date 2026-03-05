@@ -50,6 +50,7 @@ echo "<table border='1' cellpadding='5' cellspacing='0'>";
 }*/
 
 echo "</table>";
+exit();
 
 fail:
 echo "Something went wrong!";
