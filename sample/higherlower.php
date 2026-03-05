@@ -59,10 +59,13 @@ const btnN=document.getElementById("next1");
 btnN.addEventListener("click",
 function(){
 
-	document.getElementById("gameArea").innerHTML="new movies";
+	document.getElementById("gameArea").innerHTML=verdict();
 }
 );
-
+function verdict(){
+	//If element higher was clicked, and api of movie 1 > rating than movie 2,say correct, if false, incorrect
+	
+}
 
 </script>
 <?php
