@@ -160,6 +160,7 @@ button:hover {
   font-weight: bold;
   text-decoration: underline;
 }
+<<<<<<< HEAD
 
 .movie-grid {
     display: grid;
@@ -236,3 +237,5 @@ textarea {
     font-family: inherit;
     margin-bottom: 10px;
 }
+=======
+>>>>>>> 6bda0a0 (Added css to the login and registration pages)
