@@ -8,6 +8,14 @@ $response = $client->send_request($request);
 $movies = $response["results"];
 ?>
 
+<script>
+//Do not forgot to add this to each webpage to prevent non logged in users from logging in! -ME
+if(!sessionStorage.getItem("username"))
+{
+	window.location.href="login.html";
+}
+</script>
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
