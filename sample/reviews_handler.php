@@ -123,7 +123,7 @@ else if($UOI == "I" || $UOI == "INSERT" || $UOI == "i")
 		{	
 		 	$web_response = $response["message"];
 			
-			$location = "home.html"; //This is to prevent an infinite loop of loading hell. Probably 	fixable -ME
+			$location = "home.php"; //This is to prevent an infinite loop of loading hell. Probably 	fixable -ME
 			header("Location: " . $location);
 			exit();
 		}
