@@ -20,7 +20,7 @@ $backdrop = "https://image.tmdb.org/t/p/original" . $movie['backdrop_path'];
 
 if(!sessionStorage.getItem("username"))
 {
-  //At some point this might need to be changed to check for session info aswell
+  //At some point this might need to be changed to check for session info aswell - ME
   //alert("User not logged in!");
   window.location.href = "login.html";
 }
@@ -94,13 +94,28 @@ if(!sessionStorage.getItem("username"))
   </div>
 </form>
 <p id="response"></p>
+</div>
 
-        </div>
+<form action="reviewsView_handler.php" method="post">
+<div>
+    
+    <input type="hidden" name="username" id="username3" value ="TEST VALUE"  readonly />
+  </div>
+    <div>
+    <input type="hidden" name="movieID" id="movieID2" required />
+  </div>
+  <div>
+    <input type="submit" value="See all reviews here!" />
+  </div>
+</form>
+<p id="reviewListOne"></p>
+</div>
 
-//Rather than just showing all reviews, ya gotta press a button for it! -ME
+<!-- Rather than just showing all reviews, ya gotta press a button for it! -ME
+Button being replace with a form so I can send data - ME
 <form action="reviewsView_handler.php" method="get">
     <button type="submit">Show Reviews</button>
-</form>
+</form>-->
 	
 
     </main>
@@ -109,5 +124,7 @@ if(!sessionStorage.getItem("username"))
 
 <script>
 document.getElementById("username2").value = sessionStorage.getItem("username"); //DO NOT REMOVE THIS OR STUFF BREAKS! -ME
+document.getElementById("username3").value = sessionStorage.getItem("username");
 document.getElementById("movieID").value = <?php echo $movieId; ?> //Same warning to this, this code pre-fills the username + movieId in the table above to be the correct user + movie
+document.getElementById("movieID2").value = <?php echo $movieId; ?>
 </script>

@@ -284,6 +284,39 @@ function reviewAll()
     );
 }
 
+
+//This function returns all reviews by user for movieID as an array! - ME
+function getAllReviewsOne($username,$movieID)
+{
+    global $db_conn;
+    $query = "SELECT username,movie_id,score, review FROM reviews WHERE movie_id = '$movieID'";
+    $result = $db_conn->query($query);
+	
+	//var_dump($username);
+	//var_dump($message);
+	
+
+    if ($result->num_rows == 0)
+    {
+        echo "No reviews exist for this movie!\n";
+    }
+    else
+    {
+        $reviewsArray = array();
+        while ($row = $result->fetch_assoc()) 
+        {
+            $reviewsArray[] = $row;
+        }
+        return $reviewsArray;
+        
+        echo "Success!\n";
+    }
+    return array(
+        "status" => "failed",
+        "message" => "Internal Error!"
+    );
+}
+
 function requestProcessor($request)
 {
   echo "received request".PHP_EOL;
@@ -304,6 +337,8 @@ function requestProcessor($request)
       return updateReview($request['username'],$request['message'],$request['movieID'],$request['rating']);
      case "reviewAll":
      return reviewAll();
+     case "getAllReviewsOne":
+     return getAllReviewsOne($request['username'],$request['movieID']);
      case "createReview":
 	return createReview($request['username'],$request['message'],$request['movieID'],$request['rating']);
   }
