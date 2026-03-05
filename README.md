@@ -13,8 +13,8 @@ execute these like `sudo ./rcbroker.sh`
 
 `db_mysql.ini`        -> ini file for mysql in database, used in db.php \
 `db_server.ini`       -> ini file for creating rabbitmq database server for communicating with database \
-`broker_server.ini`   -> ini file for creating rabbitmq broker server for communicating with web client \
 `web_client.ini`      -> ini file for creating rabbitmq web client for communicating with broker
+`data_client.ini`     -> ini file for creating rabbitmq data server for communitcating with data
 
 The MQ_HOST field in the ini files should all point to the VM hosting the rabbitmq broker
 
