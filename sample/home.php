@@ -34,7 +34,8 @@ $movies = $response["results"];
       </div>
 
       <div class="nav-links">
-         <a href="home.php" class="nav-btn">HOME</a>
+	 <a href="home.php" class="nav-btn">HOME</a>
+         <a href="higher-lower.php" class="nav-btn">HIGHER/LOWER</a>
          <div class="profile-dropdown">
              <button class="nav-btn">PROFILE ▼</button>
              <div class="dropdown-content">
