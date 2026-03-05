@@ -25,29 +25,45 @@ height:100px;
 	<img id="sad1" src="https://www.cambridge.org/elt/blog/wp-content/uploads/2019/07/Sad-Face-Emoji.png" class="sad1">
 	</div>
 </div>
-<button id="higher">Higher</button>
-<button id="lower">Lower</button>
-<button id="next">Next</button>
+<button id="higher1">Higher</button>
+<button id="lower1">Lower</button>
+<button id="next1">Next</button>
+<div id="movie3" style="background-color:blue;">
+</div>
+<div id="movie4" style="background-color:red;">
+</div>
+<button id="higher2">Higher</button>
+<button id="lower2">Lower</button>
+<button id="next2">Next</button>
+<div id="movie5" style="background-color:blue;">
+</div>
+<div id="movie6" style="background-color:red;">
+</div>
+<button id="higher3">Higher</button>
+<button id="lower3">Lower</button>
+<button id="next3">Next</button>
 <script>
-const btnH=document.getElementById("higher");
+const btnH=document.getElementById("higher1");
 btnH.addEventListener("click", 
 function(){ 
 	document.getElementById("movie1").innerHTML="hello";
 }
 );
-const btnL=document.getElementById("lower");
+const btnL=document.getElementById("lower1");
 btnL.addEventListener("click",
 function(){
 	document.getElementById("movie2").innerHTML="loser";
 }
 );
-const btnN=document.getElementById("next");
+const btnN=document.getElementById("next1");
 btnN.addEventListener("click",
 function(){
 
 	document.getElementById("gameArea").innerHTML="new movies";
 }
 );
+
+
 </script>
 <?php
 //require_once('../rabbitMQLib.inc');
