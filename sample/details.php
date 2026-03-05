@@ -36,12 +36,36 @@ $backdrop = "https://image.tmdb.org/t/p/original" . $movie['backdrop_path'];
 	        <div class="text-content">
                     <h1><?php echo $title; ?></h1>
                     <p class="synopsis"><?php echo $overview; ?></p>
-    
-                    <form method="POST" action="watchlist_add.php">
-                        <input type="hidden" name="movie_id" value="<?php echo $movieId; ?>">
-                        <input type="hidden" name="movie_name" value="<?php echo $title; ?>">
-                        <button type="submit" class="nav-btn" style="margin-top: 20px;">+ ADD TO WATCHLIST</button>
-                    </form>
+
+                    <button type="button" 
+                        class="nav-btn" 
+                        onclick="addToWatchlist('<?php echo $movieId; ?>', '<?php echo addslashes($title); ?>')">
+                        + ADD TO WATCHLIST
+                    </button>
+                    <p id="watchlist-msg" style="margin-top: 10px; font-weight: bold;"></p>
+                   
+                   <script>
+                   function addToWatchlist(id, name) {
+                      const msg = document.getElementById('watchlist-msg');
+                      msg.textContent = "Adding...";
+
+                      fetch('watchlist_add.php', {
+                         method: 'POST',
+                         headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                         body: `movie_id=${id}&movie_name=${encodeURIComponent(name)}`
+                      })
+                      .then(response => response.json())
+                      .then(data => {
+                         if (data.status === 'success') {
+                            msg.style.color = "#FF5E5B"; // Cinema Red
+                            msg.textContent = "Added to your watchlist!";
+			 }
+			 else {
+                            msg.textContent = data.message || "Already in watchlist!";
+                         }
+                      })
+                   }
+                   </script>
                 </div>
             </div>
 
