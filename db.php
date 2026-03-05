@@ -270,6 +270,38 @@ function addToWatchlist($user, $m_id, $m_name)
       return array("status" => "exists", "message" => "Already in watchlist");
 }
 
+//This function returns all reviews by user for movieID as an array! - ME
+function getAllReviewsOne($username,$movieID)
+{
+    global $db_conn;
+    $query = "SELECT username,movie_id,score, review FROM reviews WHERE movie_id = '$movieID'";
+    $result = $db_conn->query($query);
+	
+	//var_dump($username);
+	//var_dump($message);
+	
+
+    if ($result->num_rows == 0)
+    {
+        echo "No reviews exist for this movie!\n";
+    }
+    else
+    {
+        $reviewsArray = array();
+        while ($row = $result->fetch_assoc()) 
+        {
+            $reviewsArray[] = $row;
+        }
+        return $reviewsArray;
+        
+        echo "Success!\n";
+    }
+    return array(
+        "status" => "failed",
+        "message" => "Internal Error!"
+    );
+}
+
 function requestProcessor($request)
 {
   global $db_conn;     
@@ -295,6 +327,14 @@ function requestProcessor($request)
       return getWatchlist($request["username"]);
     case "add_watchlist":
       return addToWatchlist($request["username"], $request["movie_id"], $request["movie_name"]);
+    case "review_movie":
+      return updateReview($request['username'],$request['message'],$request['movieID'],$request['rating']);
+    case "reviewAll":
+      return reviewAll();
+    case "getAllReviewsOne":
+      return getAllReviewsOne($request['username'],$request['movieID']);
+    case "createReview":
+	  return createReview($request['username'],$request['message'],$request['movieID'],$request['rating']);
   }
   return array("returnCode" => '0', 'message'=>"Server received request and processed");
 }
