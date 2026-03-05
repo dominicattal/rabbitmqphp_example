@@ -97,8 +97,10 @@ if(!sessionStorage.getItem("username"))
 
         </div>
 
-
-
+//Rather than just showing all reviews, ya gotta press a button for it! -ME
+<form action="reviewsView_handler.php" method="get">
+    <button type="submit">Show Reviews</button>
+</form>
 	
 
     </main>
@@ -107,5 +109,5 @@ if(!sessionStorage.getItem("username"))
 
 <script>
 document.getElementById("username2").value = sessionStorage.getItem("username"); //DO NOT REMOVE THIS OR STUFF BREAKS! -ME
-document.getElementById("movieID").value = <?php echo $movieId; ?> //Same warning to this, this code prefils the username + movieId in the table above to be the correct user + movie
+document.getElementById("movieID").value = <?php echo $movieId; ?> //Same warning to this, this code pre-fills the username + movieId in the table above to be the correct user + movie
 </script>
