@@ -11,8 +11,8 @@ if (!isset($_POST)) {
 $location = $_POST["currentPage"];
 if (!isset($location)) {
     $web_response = "Missing location";
-    //goto fail; //Just goin to hard write this one 'cause it broke out of nowhere
-   $location = "home.html";
+    //goto fail; //Just goin to hard write this one 'cause it broke out of nowhere - ME
+   $location = "home.php";
 }
 
 
