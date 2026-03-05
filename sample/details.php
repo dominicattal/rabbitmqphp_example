@@ -65,7 +65,7 @@ if(!sessionStorage.getItem("username"))
                 </div>
             </div>-->
 
-//The stuff to make a review possible -ME
+<!--The stuff to make a review possible -ME -->
 <form action="reviews_handler.php" method="post" id="review_handler">
 <div>
   <input type="hidden" name="currentPage" id="currentPage" value="">
