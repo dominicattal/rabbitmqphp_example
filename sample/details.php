@@ -16,6 +16,19 @@ $poster = "https://image.tmdb.org/t/p/w500" . $movie['poster_path'];
 $backdrop = "https://image.tmdb.org/t/p/original" . $movie['backdrop_path'];
 ?>
 
+<script>
+
+if(!sessionStorage.getItem("username"))
+{
+  //At some point this might need to be changed to check for session info aswell
+  //alert("User not logged in!");
+  window.location.href = "login.html";
+}
+
+
+
+</script>
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -29,6 +42,7 @@ $backdrop = "https://image.tmdb.org/t/p/original" . $movie['backdrop_path'];
         <a href="home.php" class="logout-link">BACK TO BROWSE</a>
     </nav>
 
+
     <main class="content-wrapper">
         <div class="details-container">
             <div class="movie-info-card">
@@ -39,7 +53,8 @@ $backdrop = "https://image.tmdb.org/t/p/original" . $movie['backdrop_path'];
                 </div>
             </div>
 
-            <div class="review-section">
+	
+            <!--<div class="review-section">
                 <h2>USER REVIEWS</h2>
                 <div class="review-box">
                     <textarea placeholder="Write your review here..."></textarea>
@@ -48,8 +63,49 @@ $backdrop = "https://image.tmdb.org/t/p/original" . $movie['backdrop_path'];
                 <div id="loaded-reviews">
                     <p>No reviews yet. Be the first!</p>
                 </div>
-            </div>
+            </div>-->
+
+//The stuff to make a review possible -ME
+<form action="reviews_handler.php" method="post" id="review_handler">
+<div>
+  <input type="hidden" name="currentPage" id="currentPage" value="">
+    <label for="username">Username</label>
+    <input type="text" name="username" id="username2" value ="TEST VALUE"  readonly />
+
+  </div>
+  <div>
+    <label for="movieID"></label>
+    <input type="hidden" name="movieID" id="movieID" required />
+  </div>
+  <div>
+    <label for="message">Write your review here</label>
+    <input type="text" name="message" id="message" required />
+  </div>
+<div>
+  <label for="rating">Rating out of 10</label>
+  <input type="number" name="rating" id="rating" min="0" max="10" step="1" required />
+</div>
+<div>
+    <label for="updateOrInsert">Update or Insert?</label>
+    <input type="text" name="UOI" id="UOI" required />
+  </div>
+  <div>
+    <input type="submit" value="Submit" />
+  </div>
+</form>
+<p id="response"></p>
+
         </div>
+
+
+
+	
+
     </main>
 </body>
 </html>
+
+<script>
+document.getElementById("username2").value = sessionStorage.getItem("username"); //DO NOT REMOVE THIS OR STUFF BREAKS! -ME
+document.getElementById("movieID").value = <?php echo $movieId; ?> //Same warning to this, this code prefils the username + movieId in the table above to be the correct user + movie
+</script>
