@@ -17,9 +17,9 @@
 	<div id="movie1" class="movieArea" style="background-color:blue;"></div>
 	<div id="movie2" class="movieArea" style="background-color:red;"></div>
 </div>
+<div id="result1"></div>
 <button id="higher1">Higher</button>
 <button id="lower1">Lower</button>
-<button id="next1">Next</button>
 <div id="movie3" style="background-color:blue;">
 </div>
 <div id="movie4" style="background-color:red;">
@@ -34,7 +34,10 @@
 <button id="higher3">Higher</button>
 <button id="lower3">Lower</button>
 <button id="next3">Next</button>
+<p>Score:</p>
+<p id="score">0</p>
 <script>
+let score=0;
 const movies=[
 	{title:"IT", rating: 8.1},
 	{title:"Jaws", rating: 10},
@@ -52,31 +55,29 @@ document.getElementById("movie6").innerHTML=movies[5].title;
 const btnH=document.getElementById("higher1");
 btnH.addEventListener("click", 
 function(){ 
+	verdict();
 	document.getElementById("movie1").innerHTML=movies[0].rating;
 }
 );
 const btnL=document.getElementById("lower1");
 btnL.addEventListener("click",
 function(){
+	verdict();
 	document.getElementById("movie2").innerHTML=movies[1].rating;
 }
 );
-const btnN=document.getElementById("next1");
-btnN.addEventListener("click",
-function(){
-	document.getElementById("gameArea").innerHTML=verdict();
-}
-);
 function verdict(){
-	//If element higher was clicked, and api of movie 1 > rating than movie 2,say correct, if false, incorrect
 	if(movies[0].rating>movies[1].rating){
-		document.getElementById("gameArea").innerHTML="Correct";
+		document.getElementById("result1").innerHTML="Correct";
+		score++;
+		document.getElementById("score").innerHTML=score;
 	}	
 	else{
-		document.getElementById("gameArea").innerHTML="Incorrect";
+		document.getElementById("result1").innerHTML="Incorrect";
+		score--;
+		document.getElementById("score").innerHTML=score;
 	}
 }
-
 </script>
 <?php
 //require_once('../rabbitMQLib.inc');
