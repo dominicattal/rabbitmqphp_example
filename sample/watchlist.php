@@ -1,5 +1,4 @@
 <?php
-session_start(); // Ensures the session is active to pull the username
 require_once('../rabbitMQLib.inc');
 
 // Use the session username set in the login handler
@@ -10,7 +9,7 @@ if (!$username) {
     exit(); 
 }
 
-$client = new rabbitMQClient("web_client.ini", "db_queue", "db");
+$client = new rabbitMQClient("web_client.ini", "db_web_queue", "db_web");
 $request = [
     'type' => 'watchlist',
     'username' => $username

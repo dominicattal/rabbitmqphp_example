@@ -1,7 +1,7 @@
 <?php
 require_once('../rabbitMQLib.inc');
 
-$client = new rabbitMQClient("../web_client.ini","web_client");
+$client = new rabbitMQClient("../web_client.ini","db_web_queue","db_web");
 $request = array();
 $request['type'] = "reviewAll";
 

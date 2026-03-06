@@ -10,7 +10,7 @@ if(!sessionStorage.getItem("username"))
 
 <?php
 require_once('../rabbitMQLib.inc');
-$client = new rabbitMQClient("web_client.ini", "data_queue", "data");
+$client = new rabbitMQClient("web_client.ini", "db_web_queue", "db_web");
 $request = array();
 $request['type'] = "popular";
 $request['count'] = 10;

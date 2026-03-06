@@ -1,6 +1,3 @@
-<?php
-session_start(); 
-?>
 <script>
 <?php
 $web_response = "";
@@ -16,7 +13,7 @@ $password = htmlspecialchars($_POST["password"]);
 
 require_once('../rabbitMQLib.inc');
 
-$client = new rabbitMQClient("../web_client.ini", "db_queue", "db");
+$client = new rabbitMQClient("../web_client.ini", "db_web_queue", "db_web");
 
 $request = array();
 $request['type'] = "login";
@@ -47,9 +44,8 @@ if ($web_response) {
 } else {
     // Set local session storage for the frontend
     echo "sessionStorage.setItem('username', '$username');\n";
-    if (isset($response["key"])) {
+    if (isset($response["key"]))
         echo "sessionStorage.setItem('key', '{$response['key']}');\n";
-    }
 }
 
 echo "window.location = '$location';\n";

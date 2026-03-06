@@ -6,6 +6,8 @@ $config = parse_ini_file('db_mysql.ini');
 
 $db_conn = new mysqli($config["MYSQL_HOST"],$config["MYSQL_USER"],$config["MYSQL_PASS"],$config["MYSQL_DB"]);
 
+define("API_CACHE_DURATION", 60*60*24);
+
 function doLogin($username, $password)
 {
   global $db_conn;
@@ -146,6 +148,101 @@ function doValidate($username)
   );
 }
 
+function getMovieInfo($movieId)
+{
+    global $db_conn;
+    if (!isset($movieId)) {
+        echo "You made a dumb mistake on line " . __LINE__ . "\n";
+        return;
+    }
+    $query = "SELECT * FROM movies WHERE id='$movieId'";
+    $result = $db_conn->query($query);
+    $now = time();
+    if ($result->num_rows > 0) {
+        $row = $result->fetch_assoc();
+        if ($row["createdAt"] + API_CACHE_DURATION > $now) {
+            echo "Movie id $movieId ($row[title]) found in cache\n";
+            return array(
+                "title" => $row['title'],
+                "overview" => $row['overview'],
+                "poster_img_url" => $row['poster_img_url']
+            );
+        }
+    }
+
+    $client = new rabbitMQClient("db_client.ini", "data_queue", "data");
+    $request = array();
+    $request['type'] = "movie";
+    $request['id'] = $movieId;
+    $movie = $client->send_request($request);
+    var_dump($movie);
+
+    $title = htmlspecialchars($movie['title']);
+    $overview = htmlspecialchars($movie['overview']);
+    $poster_img_url = "https://image.tmdb.org/t/p/w500" . $movie['poster_path'];
+
+    echo "Movie id $movieId ($title) not found in cache or expired, adding now\n";
+
+    $query = "INSERT INTO movies (id, title, overview, poster_img_url, createdAt) 
+                VALUES ('$movieId', '$title', '$overview', '$poster_img_url', $now)";
+    $result = $db_conn->query($query);
+
+    // verify cache was successful here
+
+    return array(
+        "title" => $title,
+        "overview" => $overview,
+        "poster_img_url" => $poster_img_url
+    );
+}
+
+function getPopularMovies($count)
+{
+    global $db_conn;
+    $query = "SELECT * FROM popular_movies";
+    $popular = array();
+    $result = $db_conn->query($query);
+    $now = time();
+    if ($result->num_rows == 0)
+        goto update_popular;
+    $row = $result->fetch_assoc();
+    if ($row["createdAt"] + API_CACHE_DURATION < $now)
+        goto delete_popular;
+    echo "Retrieving popular movies from cache\n";
+    while ($row) {
+        var_dump($row);
+        array_push($popular, getMovieInfo($row["id"]));
+        $row = $result->fetch_assoc();
+    }
+    return $popular;
+
+delete_popular:
+    //$query = "DELETE FROM popular_movies";
+    //$result = $db_conn->query($query);
+    // verify success here
+
+update_popular:
+    echo "Popular movies either not cached or expired, retrieving now\n";
+    $client = new rabbitMQClient("db_client.ini", "data_queue", "data");
+    $request = array();
+    $request['type'] = "popular";
+    $request['count'] = 10;
+    $movies_data = $client->send_request($request);
+    //$movies = $movies_data["results"];
+    //foreach ($movies as $movie) {
+    //    $query = "INSERT INTO popular_movies (id, createdAt) VALUES ('$movie[id]', $now)";
+    //    array_push($popular, getMovieInfo($movie['id']));
+    //    $db_conn->query($query);
+
+    //    // this is lazy way of doing it, it does many redundant data api calls
+    //    // can improve this by updating the movies table from data retrieved from the popular data api call
+    //    getMovieInfo($movie['id']);
+    //}
+
+    $popular = $movies_data;
+    return $popular;
+}
+
 function requestProcessor($request)
 {
   global $db_conn;     
@@ -163,6 +260,10 @@ function requestProcessor($request)
       return doRegister($request['username'],$request['password']);
     case "validate_session":
       return doValidate($request['username']);
+    case "movie":
+      return getMovieInfo($request['id']);
+    case "popular":
+      return getPopularMovies($request['count']);
     case "watchlist":
       $user = $request['username'];
       $query = "SELECT movie_id, movie_name FROM watchlist WHERE username='$user'";

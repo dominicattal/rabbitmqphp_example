@@ -1,5 +1,4 @@
 <?php
-session_start();
 require_once('../rabbitMQLib.inc');
 
 $username = $_SESSION['username'] ?? null;
@@ -9,7 +8,14 @@ if (!$username) {
 }
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+<<<<<<< HEAD
     $client = new rabbitMQClient("web_client.ini", "db_queue", "db");
+=======
+    $movieId = $_POST['movie_id'];
+    $movieName = $_POST['movie_name'];
+
+    $client = new rabbitMQClient("web_client.ini", "db_web_queue", "db_web");
+>>>>>>> 428e5a6 (added new script, added caching for api calls, fixed rabbitMQClient bug where persistent connection messes everything up by disconnecting once client receives message)
     
     $request = [
         'type' => "add_watchlist",

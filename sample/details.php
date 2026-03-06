@@ -4,7 +4,7 @@ if (!$movieId)
     die("Movie ID missing.");
 
 require_once('../rabbitMQLib.inc');
-$client = new rabbitMQClient("web_client.ini", "data_queue", "data");
+$client = new rabbitMQClient("web_client.ini", "db_web_queue", "db_web");
 $request = array();
 $request['type'] = "movie";
 $request['id'] = $movieId;
@@ -12,8 +12,7 @@ $movie = $client->send_request($request);
 
 $title = htmlspecialchars($movie['title']);
 $overview = htmlspecialchars($movie['overview']);
-$poster = "https://image.tmdb.org/t/p/w500" . $movie['poster_path'];
-$backdrop = "https://image.tmdb.org/t/p/original" . $movie['backdrop_path'];
+$poster = "https://image.tmdb.org/t/p/w500" . $movie['poster_img_url'];
 ?>
 
 <!DOCTYPE html>
