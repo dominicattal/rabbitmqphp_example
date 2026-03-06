@@ -1,13 +1,12 @@
 <?php
 require_once('../rabbitMQLib.inc');
 
-// Use the session username set in the login handler
-$username = $_SESSION['username'] ?? null;
-
-if (!$username) { 
-    header("Location: login.html"); 
-    exit(); 
-}
+//$username = $_SESSION['username'] ?? null;
+//
+//if (!$username) { 
+//    header("Location: login.html"); 
+//    exit(); 
+//}
 
 $client = new rabbitMQClient("web_client.ini", "db_web_queue", "db_web");
 $request = [
