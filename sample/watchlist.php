@@ -12,15 +12,25 @@ if (!$username) {
 
 $client = new rabbitMQClient("web_client.ini", "db_queue", "db");
 $request = [
-    'type' => 'watchlist', // Matches the case in your db.php
+    'type' => 'watchlist',
     'username' => $username
 ];
 
 $watchlist = $client->send_request($request);
 
-// Safety check to prevent foreach errors
-if (!is_array($watchlist)) {
-    $watchlist = [];
+$released = [];
+$upcoming = [];
+$today = date("Y-m-d");
+
+if (is_array($watchlist)) {
+   foreach ($watchlist as $movie) {
+      if (!empty($movie['release_date']) && $movie['release_date'] > $today) {
+         $upcoming[] = $movie;
+      }
+      else {
+         $released[] = $movie;
+      }
+   }
 }
 ?>
 
@@ -52,24 +62,40 @@ if (!is_array($watchlist)) {
       </div>
    </nav>
 
-    <main class="content-wrapper">
-        <h1 class="section-title">YOUR WATCHLIST</h1>
-        
-        <div class="movie-grid">
-            <?php if (!empty($watchlist)): ?>
-                <?php foreach ($watchlist as $movie): ?>
-                    <a href="details.php?id=<?php echo $movie['movie_id']; ?>" class="movie-link">
-                        <div class="movie-card">
-                            <div class="movie-details">
-                                <h3 class="movie-title"><?php echo htmlspecialchars($movie['movie_name']); ?></h3>
-                            </div>
-                        </div>
-                    </a>
-                <?php endforeach; ?>
-            <?php else: ?>
-                <p style="color: white; text-align: center; padding: 20px;">Your watchlist is currently empty.</p>
-            <?php endif; ?>
-        </div>
-    </main>
+   <main class="content-wrapper">
+      <h1 class="section-title">YOUR WATCHLIST</h1>
+      <div class="movie-grid">
+         <?php if (!empty($released)): ?>
+            <?php foreach ($released as $movie): ?>
+               <a href="details.php?id=<?php echo $movie['movie_id']; ?>" class="movie-link">
+                  <div class="movie-card">
+                     <div class="movie-details">
+                        <h3 class="movie-title"><?php echo htmlspecialchars($movie['movie_name']); ?></h3>
+                     </div>
+		  </div>
+	       </a>
+            <?php endforeach; ?>
+         <?php else: ?>
+            <p style="color: white; text-align: center; padding: 20px;">No released movies in your watchlist.</p>
+         <?php endif; ?>
+      </div>
+
+      <h1 class="section-title" style="margin-top: 40px;">UPCOMING MOVIES</h1>
+      <div class="movie-grid">
+         <?php if (!empty($upcoming)): ?>
+            <?php foreach ($upcoming as $movie): ?>
+               <a href="details.php?id=<?php echo $movie['movie_id']; ?>" class="movie-link">
+		  <div class="movie-card" style="border-color: #FF5E5B;"> <div class="movie-details">
+		     <h3 class="movie-title"><?php echo htmlspecialchars($movie['movie_name']); ?></h3>
+		     <p style="color: #FF5E5B; font-size: 0.8em;">Releasing: <?php echo $movie['release_date']; ?></p>
+                     </div>
+                  </div>
+               </a>
+	    <?php endforeach; ?>
+	 <?php else: ?>
+            <p style="color: white; text-align: center; padding: 20px;">No upcoming movies in your watchlist.</p>
+         <?php endif; ?>
+      </div>
+   </main>
 </body>
 </html>

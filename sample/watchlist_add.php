@@ -16,7 +16,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         'username' => $username,
         'movie_id' => $_POST['movie_id'],
         'movie_name' => $_POST['movie_name']
-        // Notice: NO backdrop_path here as requested
+        'release_date' => $_POST['release_date']
     ];
 
     $response = $client->send_request($request);
