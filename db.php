@@ -243,6 +243,33 @@ update_popular:
     return $popular;
 }
 
+function getWatchlist($user)
+{
+      $user = $request['username'];
+      $query = "SELECT movie_id, movie_name FROM watchlist WHERE username='$user'";
+      $result = $db_conn->query($query);
+      $list = [];
+      while ($row = $result->fetch_assoc()) { 
+          $list[] = $row; 
+      }
+      return $list; // Added the return to fix the hang - ME
+}
+
+function addToWatchlist($user, $m_id, $m_name)
+{
+      // Check for duplicates
+      $check = "SELECT id FROM watchlist WHERE username='$user' AND movie_id='$m_id'";
+      $result = $db_conn->query($check);
+
+      if ($result->num_rows == 0) {
+        $query = "INSERT INTO watchlist (username, movie_id, movie_name) VALUES ('$user', '$m_id', '$m_name')";
+        $db_conn->query($query);
+        return array("status" => "success", "message" => "Added successfully");
+      }
+
+      return array("status" => "exists", "message" => "Already in watchlist");
+}
+
 function requestProcessor($request)
 {
   global $db_conn;     
@@ -265,27 +292,9 @@ function requestProcessor($request)
     case "popular":
       return getPopularMovies($request['count']);
     case "watchlist":
-      $user = $request['username'];
-      $query = "SELECT movie_id, movie_name FROM watchlist WHERE username='$user'";
-      $result = $db_conn->query($query);
-      $list = [];
-      while($row = $result->fetch_assoc()) { $list[] = $row; }
-      return $list; // Added the return to fix the hang - ME
+      return getWatchlist($request["username"]);
     case "add_watchlist":
-      $user = $request['username'];
-      $m_id = $request['movie_id'];
-      $m_name = $request['movie_name'];
-
-      // Check for duplicates
-      $check = "SELECT id FROM watchlist WHERE username='$user' AND movie_id='$m_id'";
-      $result = $db_conn->query($check);
-
-      if ($result->num_rows == 0) {
-        $query = "INSERT INTO watchlist (username, movie_id, movie_name) VALUES ('$user', '$m_id', '$m_name')";
-        $db_conn->query($query);
-	return array("status" => "success", "message" => "Added successfully");
-      }
-      return array("status" => "exists", "message" => "Already in watchlist");
+      return addToWatchlist($request["username"], $request["movie_id"], $request["movie_name"]);
   }
   return array("returnCode" => '0', 'message'=>"Server received request and processed");
 }

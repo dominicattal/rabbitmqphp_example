@@ -1,12 +1,6 @@
 <?php
 require_once('../rabbitMQLib.inc');
 
-$username = $_SESSION['username'] ?? null;
-if (!$username) {
-    echo json_encode(["status" => "error", "message" => "Login required"]);
-    exit();
-}
-
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $movieId = $_POST['movie_id'];
     $movieName = $_POST['movie_name'];
@@ -25,3 +19,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     echo json_encode($response);
     exit();
 }
+
+$response = array(
+    "status" => "failed",
+    "message" => "Not post method"
+);
+echo json_encode($response);

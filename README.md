@@ -73,6 +73,16 @@ Documentation for types of queries you can make to DB VM
 < [overview]            ovewview of movie
 < [poster_img_url]      full url path to the poster img
 = gets the info about a movie
+
+[watchlist]
+> [username] [string] user whose watchlist should be fetched
+= gets every movie in a user's watchlist
+
+[add_watchlist]
+> [username] [string] username to add review for
+> [movie_id] [int] id of the movie to add to watchlist
+> [movie_name] [int] name of the movie to add to watchlist
+= adds a movie to a user's watchlist
 ```
 
 ### Data Endpoints

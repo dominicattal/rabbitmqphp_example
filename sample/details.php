@@ -58,8 +58,7 @@ $poster = "https://image.tmdb.org/t/p/w500" . $movie['poster_img_url'];
                          if (data.status === 'success') {
                             msg.style.color = "#FF5E5B"; // Cinema Red
                             msg.textContent = "Added to your watchlist!";
-			 }
-			 else {
+                         } else {
                             msg.textContent = data.message || "Already in watchlist!";
                          }
                       })
