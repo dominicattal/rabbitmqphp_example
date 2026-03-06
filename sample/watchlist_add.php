@@ -15,7 +15,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         'type' => "add_watchlist",
         'username' => $username,
         'movie_id' => $_POST['movie_id'],
-        'movie_name' => $_POST['movie_name']
+        'movie_name' => $_POST['movie_name'],
         'release_date' => $_POST['release_date']
     ];
 

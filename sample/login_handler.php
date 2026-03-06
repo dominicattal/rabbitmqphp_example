@@ -1,5 +1,4 @@
 <?php
-// session_start() MUST be the very first line before any HTML is printed
 session_start(); 
 ?>
 <script>
@@ -24,7 +23,6 @@ $request['type'] = "login";
 $request['username'] = $username;
 $request['password'] = $password;
 
-// This will hang here if db.php is not running on your DB environment!
 $response = $client->send_request($request);
 
 if (!isset($response["status"])) {
@@ -47,14 +45,13 @@ if ($web_response) {
     echo "sessionStorage.setItem('message', '$web_response');\n";
     $location = "login.html";
 } else {
-    // Success: Set local session storage for the frontend
+    // Set local session storage for the frontend
     echo "sessionStorage.setItem('username', '$username');\n";
     if (isset($response["key"])) {
         echo "sessionStorage.setItem('key', '{$response['key']}');\n";
     }
 }
 
-// Execute the redirect
 echo "window.location = '$location';\n";
 ?>
 </script>
