@@ -15,7 +15,7 @@ $request = array();
 $request['type'] = "popular";
 $request['count'] = 10;
 $response = $client->send_request($request);
-$movies = $response["results"];
+$movies = $response;
 // REMOVED upcoming movies request here to restore stability - ME
 ?>
 
@@ -62,7 +62,7 @@ if(!sessionStorage.getItem("username"))
     <?php foreach ($movies as $movie): 
         $title = htmlspecialchars($movie['title']);
         $movieId = $movie['id']; 
-        $poster = "https://image.tmdb.org/t/p/w500" . $movie['poster_path'];
+        $poster = "https://image.tmdb.org/t/p/w500" . $movie['poster_img_url'];
     ?>
         <a href="details.php?id=<?php echo $movieId; ?>" class="movie-link">
             <div class="movie-card">
