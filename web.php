@@ -9,15 +9,15 @@ $request = array();
 //$request['type'] = "movie";
 //$request['id'] = 1266798;
 
-//$request['type'] = "popular";
-//$request['count'] = 10;
+$request['type'] = "popular";
+$request['count'] = 10;
 
 //$request['type'] = "add_watchlist";
 //$request['movie_id'] = 1266798;
 //$request['movie_name'] = "blah blah";
 
-$request['type'] = "recommend";
-$request['username'] = "test_recommend";
+//$request['type'] = "recommend";
+//$request['username'] = "test_recommend";
 
 $response = $client->send_request($request);
 //$response = $client->publish($request);

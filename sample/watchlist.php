@@ -1,13 +1,7 @@
 <?php
 require_once('../rabbitMQLib.inc');
 
-//$username = $_SESSION['username'] ?? null;
-//
-//if (!$username) { 
-//    header("Location: login.html"); 
-//    exit(); 
-//}
-
+$username = "test";
 $client = new rabbitMQClient("web_client.ini", "db_web_queue", "db_web");
 $request = [
     'type' => 'watchlist',

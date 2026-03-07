@@ -203,6 +203,7 @@ function getMovieInfo($movieId)
         if ($row["createdAt"] + API_CACHE_DURATION > $now) {
             echo "Movie id $movieId ($row[title]) found in cache\n";
             return array(
+                "id" => $movieId,
                 "title" => $row['title'],
                 "overview" => $row['overview'],
                 "poster_img_url" => $row['poster_img_url'],
@@ -232,6 +233,7 @@ function getMovieInfo($movieId)
     // verify cache was successful here
 
     return array(
+        "id" => $movieId,
         "title" => $title,
         "overview" => $overview,
         "poster_img_url" => $poster_img_url,
@@ -253,7 +255,6 @@ function getPopularMovies($count)
         goto delete_popular;
     echo "Retrieving popular movies from cache\n";
     while ($row) {
-        var_dump($row);
         array_push($popular, getMovieInfo($row["id"]));
         $row = $result->fetch_assoc();
     }
@@ -274,9 +275,6 @@ update_popular:
     $movies = $movies_data["results"];
     foreach ($movies as $movie) {
         $query = "INSERT INTO popular_movies (id, createdAt) VALUES ('$movie[id]', $now)";
-
-        // this is lazy way of doing it, it does many redundant data api calls
-        // can improve this by updating the movies table from data retrieved from the popular data api call
         array_push($popular, getMovieInfo($movie['id']));
         $db_conn->query($query);
     }
@@ -328,7 +326,6 @@ function getRecommendations($username)
 function getWatchlist($user)
 {
       global $db_conn;
-      $user = $request['username'];
       $query = "SELECT movie_id, movie_name FROM watchlist WHERE username='$user'";
       $result = $db_conn->query($query);
       $list = [];
