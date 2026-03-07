@@ -22,6 +22,9 @@ CREATE TABLE IF NOT EXISTS reviews (
     review VARCHAR(255) NOT NULL
 );
 
+INSERT INTO users (username, password) VALUES ('test_recommend', 'test');
+INSERT INTO reviews (username, movie_id, score, review) VALUES ('test_recommend', '1266798', 8, 'This movie freaking rules');
+
 CREATE TABLE IF NOT EXISTS watchlist (
     id INT AUTO_INCREMENT PRIMARY KEY,
     username VARCHAR(255) NOT NULL,
@@ -32,6 +35,7 @@ CREATE TABLE IF NOT EXISTS watchlist (
 CREATE TABLE IF NOT EXISTS movies (
     id VARCHAR(255) PRIMARY KEY,
     title VARCHAR(255) NOT NULL,
+    genre_id INT NOT NULL,
     overview VARCHAR(2048) NOT NULL,
     poster_img_url VARCHAR(255) NOT NULL,
     createdAt BIGINT NOT NULL
@@ -39,5 +43,11 @@ CREATE TABLE IF NOT EXISTS movies (
 
 CREATE TABLE IF NOT EXISTS popular_movies (
     id VARCHAR(255) PRIMARY KEY,
+    createdAt BIGINT NOT NULL
+);
+
+CREATE TABLE IF NOT EXISTS genres (
+    id INT PRIMARY KEY,
+    name VARCHAR(255) NOT NULL,
     createdAt BIGINT NOT NULL
 );

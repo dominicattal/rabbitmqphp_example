@@ -45,6 +45,12 @@ function getUpcomingMovies()
     return json_decode($encoded_json, true);
 }
 
+function getGenres()
+{
+    $encoded_json = getRequest('https://api.themoviedb.org/3/genre/movie/list');
+    return json_decode($encoded_json, true);
+}
+
 function requestProcessor($request)
 {
     echo "Printing request:\n";
@@ -56,6 +62,8 @@ function requestProcessor($request)
 	        return getMovie($request["id"]);
 	    case "upcoming":
             return getUpcomingMovies();
+        case "genres":
+            return getGenres();
     }
     return array("status" => "failed", "message" => "unrecognized type");
 }

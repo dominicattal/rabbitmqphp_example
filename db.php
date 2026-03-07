@@ -148,6 +148,46 @@ function doValidate($username)
   );
 }
 
+function getGenres()
+{
+    global $db_conn;
+    $query = "SELECT * FROM genres";
+    $result = $db_conn->query($query);
+    $now = time();
+    if ($result->num_rows == 0)
+        goto create_genres;
+    $row = $result->fetch_assoc();
+    if ($row["createdAt"] + API_CACHE_DURATION > $now)
+        goto destroy_genres;
+
+    $genres = array();
+    while ($row) {
+        $genres[$row["id"]] = $row["name"];
+        $row = $result->fetch_assoc();
+    }
+
+    return $genres;
+
+destroy_genres:
+    $query = "DELETE FROM genres";
+    $result = $db_conn->query($query);
+
+create_genres:
+    $client = new rabbitMQClient("db_client.ini", "data_queue", "data");
+    $request = array();
+    $request['type'] = "genres";
+    $raw_genres = $client->send_request($request)["genres"];
+
+    $genres = array();
+    foreach ($raw_genres as $genre) {
+        $genres[$genre["id"]] = $genre["name"];
+        $query = "INSERT INTO genres (id, name, createdAt) VALUES ($genre[id], '$genre[name]', $now)";
+        $db_conn->query($query);
+    }
+
+    return $genres;
+}
+
 function getMovieInfo($movieId)
 {
     global $db_conn;
@@ -165,7 +205,8 @@ function getMovieInfo($movieId)
             return array(
                 "title" => $row['title'],
                 "overview" => $row['overview'],
-                "poster_img_url" => $row['poster_img_url']
+                "poster_img_url" => $row['poster_img_url'],
+                "genre_id" => $row["genre_id"]
             );
         }
     }
@@ -175,16 +216,17 @@ function getMovieInfo($movieId)
     $request['type'] = "movie";
     $request['id'] = $movieId;
     $movie = $client->send_request($request);
-    var_dump($movie);
 
     $title = htmlspecialchars($movie['title']);
     $overview = htmlspecialchars($movie['overview']);
     $poster_img_url = "https://image.tmdb.org/t/p/w500" . $movie['poster_path'];
+    $genres = $movie['genres'];
+    $genre_id = $genres[0]["id"];
 
     echo "Movie id $movieId ($title) not found in cache or expired, adding now\n";
 
-    $query = "INSERT INTO movies (id, title, overview, poster_img_url, createdAt) 
-                VALUES ('$movieId', '$title', '$overview', '$poster_img_url', $now)";
+    $query = "INSERT INTO movies (id, title, overview, genre_id, poster_img_url, createdAt) 
+                VALUES ('$movieId', '$title', '$overview', $genre_id, '$poster_img_url', $now)";
     $result = $db_conn->query($query);
 
     // verify cache was successful here
@@ -192,7 +234,8 @@ function getMovieInfo($movieId)
     return array(
         "title" => $title,
         "overview" => $overview,
-        "poster_img_url" => $poster_img_url
+        "poster_img_url" => $poster_img_url,
+        "genre_id" => $genre_id
     );
 }
 
@@ -217,8 +260,8 @@ function getPopularMovies($count)
     return $popular;
 
 delete_popular:
-    //$query = "DELETE FROM popular_movies";
-    //$result = $db_conn->query($query);
+    $query = "DELETE FROM popular_movies";
+    $result = $db_conn->query($query);
     // verify success here
 
 update_popular:
@@ -228,19 +271,38 @@ update_popular:
     $request['type'] = "popular";
     $request['count'] = 10;
     $movies_data = $client->send_request($request);
-    //$movies = $movies_data["results"];
-    //foreach ($movies as $movie) {
-    //    $query = "INSERT INTO popular_movies (id, createdAt) VALUES ('$movie[id]', $now)";
-    //    array_push($popular, getMovieInfo($movie['id']));
-    //    $db_conn->query($query);
+    $movies = $movies_data["results"];
+    foreach ($movies as $movie) {
+        $query = "INSERT INTO popular_movies (id, createdAt) VALUES ('$movie[id]', $now)";
 
-    //    // this is lazy way of doing it, it does many redundant data api calls
-    //    // can improve this by updating the movies table from data retrieved from the popular data api call
-    //    getMovieInfo($movie['id']);
-    //}
+        // this is lazy way of doing it, it does many redundant data api calls
+        // can improve this by updating the movies table from data retrieved from the popular data api call
+        array_push($popular, getMovieInfo($movie['id']));
+        $db_conn->query($query);
+    }
 
     $popular = $movies_data;
     return $popular;
+}
+
+function getRecommendations($username)
+{
+    global $db_conn;
+    $query = "SELECT movie_id FROM reviews WHERE username='$username' AND score >= 7";
+    $result = $db_conn->query($query);
+    if ($result->num_rows == 0) {
+        echo "User $username doesn't have a review with 7 or higher score, returing popular movies as recommendation\n";
+        return getPopularMovies($username);
+    }
+    $row = $result->fetch_assoc();
+    $movie_id = $row["movie_id"];
+    $movie = getMovieInfo($movie_id);
+    $genres = getGenres();
+    var_dump($movie);
+
+    return array(
+        "genre" => $genres[$movie["genre_id"]]
+    );
 }
 
 function getWatchlist($user)
@@ -427,6 +489,8 @@ function requestProcessor($request)
       return getMovieInfo($request['id']);
     case "popular":
       return getPopularMovies($request['count']);
+    case "recommend":
+      return getRecommendations($request["username"]);
     case "watchlist":
       return getWatchlist($request["username"]);
     case "add_watchlist":

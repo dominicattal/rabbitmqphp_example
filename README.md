@@ -83,6 +83,11 @@ Documentation for types of queries you can make to DB VM
 > [movie_id] [int] id of the movie to add to watchlist
 > [movie_name] [int] name of the movie to add to watchlist
 = adds a movie to a user's watchlist
+
+[recommend]
+> [username] [string] user to recommend to
+< [result] [array] array of movies
+= gets some movies that the user might like. recommendations are based on reviews; if the user has one or more movies rated 7 or above, it will look for movies in the same genre. otherwise, it will just return popular movies
 ```
 
 ### Data Endpoints
@@ -108,5 +113,9 @@ If the frontend wants to call an endpoint, do it from the db.
 [popular]
 > [count] [int] the number of movies to return
 = returns popular movies, basically just the basicaly tmdb api call
+
+[genres]
+< [result] [array] the genres and their ids
+= returns all of the genres recognized by tmdb
     
 ```
