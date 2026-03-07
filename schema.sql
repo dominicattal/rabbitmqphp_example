@@ -38,6 +38,7 @@ CREATE TABLE IF NOT EXISTS movies (
     genre_id INT NOT NULL,
     overview VARCHAR(2048) NOT NULL,
     poster_img_url VARCHAR(255) NOT NULL,
+    score INT NOT NULL,
     createdAt BIGINT NOT NULL
 );
 

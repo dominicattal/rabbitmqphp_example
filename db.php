@@ -207,7 +207,8 @@ function getMovieInfo($movieId)
                 "title" => $row['title'],
                 "overview" => $row['overview'],
                 "poster_img_url" => $row['poster_img_url'],
-                "genre_id" => $row["genre_id"]
+                "genre_id" => $row["genre_id"],
+		"score" => $row['score']
             );
         }
     }
@@ -223,6 +224,7 @@ function getMovieInfo($movieId)
     $poster_img_url = "https://image.tmdb.org/t/p/w500" . $movie['poster_path'];
     $genres = $movie['genres'];
     $genre_id = $genres[0]["id"];
+    $score=$movie['score'];
 
     echo "Movie id $movieId ($title) not found in cache or expired, adding now\n";
 
@@ -237,7 +239,8 @@ function getMovieInfo($movieId)
         "title" => $title,
         "overview" => $overview,
         "poster_img_url" => $poster_img_url,
-        "genre_id" => $genre_id
+        "genre_id" => $genre_id,
+	"score" => $score
     );
 }
 
@@ -484,40 +487,31 @@ function reviewAll()
         "message" => "Internal Error!"
     );
 }
-
-
-//This function returns all reviews by user for movieID as an array! - ME
-function getAllReviewsOne($username,$movieID)
-{
-    global $db_conn;
-    $query = "SELECT username,movie_id,score, review FROM reviews WHERE movie_id = '$movieID'";
-    $result = $db_conn->query($query);
-	
-	//var_dump($username);
-	//var_dump($message);
-	
-
-    if ($result->num_rows == 0)
-    {
-        echo "No reviews exist for this movie!\n";
-    }
-    else
-    {
-        $reviewsArray = array();
-        while ($row = $result->fetch_assoc()) 
-        {
-            $reviewsArray[] = $row;
-        }
-        return $reviewsArray;
-        
-        echo "Success!\n";
-    }
-    return array(
-        "status" => "failed",
-        "message" => "Internal Error!"
-    );
+function higherlower($count){
+	global $db_conn;
+	$query="SELECT * FROM movies";
+	$higherlower=array();
+	$result=$db_conn->query($query);
+	if($result->num_rows==0){
+		goto new_round;
+	}
+	$row=$result->fetch_assoc();
+	while ($row){
+		array_push($higherlower, getMovieInfo($row["id"]));
+		$row=$result->fetch_assoc();
+	}
+	return $higherlower;
+	new_round:
+		$client=new rabbitMQClient("db_client.ini", "data_que","data");
+		$request=array();
+		$request['type']="higherlower";
+		$request['count']=6;
+		$movies_data=$client->send_request($request);
+		$movies=$movies_data["results"];
+		foreach ($movies as $movie){
+			$query="INSERT INTO movies (id, title, genre_id, overview, poster_img_url, createdAt, rating) VALUES ('$movie[id]','$movie[title]', $now)";
+		}
 }
-
 function requestProcessor($request)
 {
   global $db_conn;     
