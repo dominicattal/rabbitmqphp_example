@@ -245,6 +245,7 @@ update_popular:
 
 function getWatchlist($user)
 {
+      global $db_conn;
       $user = $request['username'];
       $query = "SELECT movie_id, movie_name FROM watchlist WHERE username='$user'";
       $result = $db_conn->query($query);
@@ -257,6 +258,7 @@ function getWatchlist($user)
 
 function addToWatchlist($user, $m_id, $m_name)
 {
+      global $db_conn;
       // Check for duplicates
       $check = "SELECT id FROM watchlist WHERE username='$user' AND movie_id='$m_id'";
       $result = $db_conn->query($check);
@@ -295,6 +297,108 @@ function getAllReviewsOne($username,$movieID)
         return $reviewsArray;
         
         echo "Success!\n";
+    }
+    return array(
+        "status" => "failed",
+        "message" => "Internal Error!"
+    );
+}
+
+//This function creates a review for a movie if it does not exist. if it does, returns fail!
+function createReview($username, $message, $movieID, $rating)
+{
+	//to do, at somepoint sanatize message!!!!!!!!!!!!!!!!!!!!!
+	//var_dump($username);
+	//var_dump($message);
+	//var_dump($movieID);
+	
+	global $db_conn;
+    	$query = "SELECT * from reviews where username='$username' and movie_id ='$movieID'";
+	$result = $db_conn->query($query);
+	
+	if ($result->num_rows == 0)
+	{
+		echo "No rows from movie!\n";
+		
+		//IMPORTANT MAKE SURE TO VERIFY WITH THE DATA THAT THE MOVIE ID EXIST!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+		
+		//$query = "INSERT INTO users VALUES ('$username','$password');";
+		$query = "INSERT INTO reviews (username, movie_id, score, review) VALUES ('$username', '$movieID', 	$rating, '$message');";
+
+		$result = $db_conn->query($query);
+
+		return array (
+	"status" => "success",
+	"message" => "Inserted User's review into DB!"
+		);
+	}
+	else
+	{
+		echo "Rows from movie!\n";
+	}
+
+  	      return array(
+          "status" => "failed",
+          "message" => "Internal Error or user+movie combo not exists!"
+      );
+}
+
+//This function checks if a person has made a review on a movie and updates their review with what they have sent
+function updateReview($username, $message, $movieID,$rating)
+{
+	//to do, at somepoint sanatize message!!!!!!!!!!!!!!!!!!!!!
+	var_dump($username);
+	var_dump($message);
+	var_dump($movieID);
+	var_dump($rating);
+	
+	global $db_conn;
+    	$query = "SELECT * from reviews where username='$username' and movie_id ='$movieID'";
+	$result = $db_conn->query($query);
+	
+	if ($result->num_rows == 0)
+	{
+		echo "No rows from movie! Either no reviews or movie not real!\n";
+	}
+	else
+	{
+		//echo "Rows from movie!\n";
+
+		$query = "UPDATE reviews set review = '$message', score = $rating where username ='$username'";
+		 $result = $db_conn->query($query);
+		
+		echo "Review should be updated!\n";
+		  return array(
+		    "status" => "success",
+		    "message" => $message
+		  );
+	}
+
+  	      return array(
+          "status" => "failed",
+          "message" => "Internal Error or user+movie combo not exists!"
+      );
+}
+
+//This returns an array with every single user's review for each media thing
+function reviewAll()
+{
+    global $db_conn;
+    $query = "SELECT username,movie_id,score, review from reviews";
+    $result = $db_conn->query($query);
+
+    if ($result->num_rows == 0)
+    {
+        echo "No Movies have been reviewed!\n";
+    }
+    else
+    {
+        $reviewsArray = array();
+        while ($row = $result->fetch_assoc()) 
+        {
+            $reviewsArray[] = $row;
+        }
+        return $reviewsArray;
     }
     return array(
         "status" => "failed",

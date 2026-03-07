@@ -8,10 +8,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $client = new rabbitMQClient("web_client.ini", "db_web_queue", "db_web");
     $request = [
         'type' => "add_watchlist",
-        'username' => $username,
+        'username' => $_POST["username"],
         'movie_id' => $_POST['movie_id'],
         'movie_name' => $_POST['movie_name'],
-        'release_date' => $_POST['release_date']
     ];
 
     $response = $client->send_request($request);

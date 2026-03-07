@@ -24,8 +24,6 @@ if(!sessionStorage.getItem("username"))
   window.location.href = "login.html";
 }
 
-
-
 </script>
 
 <!DOCTYPE html>
@@ -61,11 +59,12 @@ if(!sessionStorage.getItem("username"))
                    function addToWatchlist(id, name) {
                       const msg = document.getElementById('watchlist-msg');
                       msg.textContent = "Adding...";
+                      let username = sessionStorage.getItem("username");
 
                       fetch('watchlist_add.php', {
                          method: 'POST',
                          headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-                         body: `movie_id=${id}&movie_name=${encodeURIComponent(name)}`
+                         body: `username=${username}&movie_id=${id}&movie_name=${encodeURIComponent(name)}`
                       })
                       .then(response => response.json())
                       .then(data => {
@@ -80,18 +79,6 @@ if(!sessionStorage.getItem("username"))
                    </script>
                 </div>
             </div>
-
-	
-            <!--<div class="review-section">
-                <h2>USER REVIEWS</h2>
-                <div class="review-box">
-                    <textarea placeholder="Write your review here..."></textarea>
-                    <button class="view-btn">SUBMIT REVIEW</button>
-                </div>
-                <div id="loaded-reviews">
-                    <p>No reviews yet. Be the first!</p>
-                </div>
-            </div>-->
 
 <!--The stuff to make a review possible -ME -->
 <form action="reviews_handler.php" method="post" id="review_handler">
