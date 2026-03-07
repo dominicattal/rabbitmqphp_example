@@ -338,7 +338,7 @@ function getWatchlist($user)
       return $list; // Added the return to fix the hang - ME
 }
 
-function addToWatchlist($user, $m_id, $m_name)
+function addToWatchlist($user, $m_id, $m_name, $r_date)
 {
       global $db_conn;
       // Check for duplicates
@@ -346,7 +346,7 @@ function addToWatchlist($user, $m_id, $m_name)
       $result = $db_conn->query($check);
 
       if ($result->num_rows == 0) {
-        $query = "INSERT INTO watchlist (username, movie_id, movie_name) VALUES ('$user', '$m_id', '$m_name')";
+        $query = "INSERT INTO watchlist (username, movie_id, movie_name, release_date) VALUES ('$user', '$m_id', '$m_name', '$r_date')";
         $db_conn->query($query);
         return array("status" => "success", "message" => "Added successfully");
       }
@@ -514,7 +514,7 @@ function requestProcessor($request)
     case "watchlist":
       return getWatchlist($request["username"]);
     case "add_watchlist":
-      return addToWatchlist($request["username"], $request["movie_id"], $request["movie_name"]);
+      return addToWatchlist($request["username"], $request["movie_id"], $request["movie_name"], $request['release_date'] ?? 'TBD');
     case "review_movie":
       return updateReview($request['username'],$request['message'],$request['movieID'],$request['rating']);
     case "reviewAll":
