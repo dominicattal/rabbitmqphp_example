@@ -1,19 +1,13 @@
 <?php
-session_start();
 require_once('../rabbitMQLib.inc');
 $client=new rabbitMQClient("web_client.ini", "db_queue","db");
 $request=array();
-$request=['type']="rated";
-$request=['count']=6;
+$request['type']='rated';
+$request['count']=6;
 $response=$client->send_request($request);
 $movies=$response["results"];
-//shuffle($movies);
-foreach($movies as $movie):
-	$movieId=$movie['id'];
-	$title=htmlspecialchars($movie['title']);
-	$rating=$movie['rating'];
-	$poster="https://image.tmdb.org/t/p/w500" . $movie['poster_path'];
-
+var_dump($response);
+die();
 ?>
 <!DOCTYPE html>
 <html>
@@ -29,13 +23,13 @@ foreach($movies as $movie):
 	<div id="result1"></div>
 	<button id="higher1">Higher</button>
 	<button id="lower1">Lower</button>
-<div class="gameArea" id="gameArea">
+<div class="gameArea">
 	<div id="movie3" class="movieAreaA"></div>
 	<div id="movie4" class="movieAreaB"></div>
 </div>
 	<button id="higher2">Higher</button>
 	<button id="lower2">Lower</button>
-<div class="gameArea" id="gameArea">
+<div class="gameArea">
 	<div id="movie5" class="movieAreaA"></div>
 	<div id="movie6" class="movieAreaB"></div>
 </div>
@@ -44,9 +38,9 @@ foreach($movies as $movie):
 <p>Score:</p>
 <p id="score">0</p>
 <script>
-let score=0;
 const movies=<?php echo json_encode($movies); ?>;
-document.getElementById("movie1").innerHTML=movies[0].title;
+let score=0;
+document.getElementById("movie1").innerHTML=<?php $title?>;
 document.getElementById("movie2").innerHTML=movies[1].title;
 document.getElementById("movie3").innerHTML=movies[2].title;
 document.getElementById("movie4").innerHTML=movies[3].title;
