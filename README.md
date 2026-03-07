@@ -69,9 +69,10 @@ Documentation for types of queries you can make to DB VM
 
 [movie]
 > [id] [int] id of the movie to get
-< [title]               title of movie
-< [overview]            ovewview of movie
-< [poster_img_url]      full url path to the poster img
+< [title] title of movie
+< [overview] overview of movie
+< [poster_img_url] full url path to the poster img
+< [genre_id] the genre id of the movie
 = gets the info about a movie
 
 [watchlist]
@@ -86,7 +87,10 @@ Documentation for types of queries you can make to DB VM
 
 [recommend]
 > [username] [string] user to recommend to
-< [result] [array] array of movies
+< [found_movie] [bool] whether a movie was found to recommend based off of
+< [movie_id] [string] if `found_movie` is true, then it is the id of the movie used for recommendation
+< [movie_title] [string] if `found_movie` is true, then it is the title of the movie used for recommendation
+< [results] [array] the recommended movies, formatted the same way as in movie
 = gets some movies that the user might like. recommendations are based on reviews; if the user has one or more movies rated 7 or above, it will look for movies in the same genre. otherwise, it will just return popular movies
 ```
 

@@ -292,11 +292,15 @@ function getRecommendations($username)
     $result = $db_conn->query($query);
     if ($result->num_rows == 0) {
         echo "User $username doesn't have a review with 7 or higher score, returing popular movies as recommendation\n";
-        return getPopularMovies($username);
+        return array(
+            "found_movie" => false,
+            "results" => getPopularMovies($username)
+        );
     }
     $row = $result->fetch_assoc();
     $movie_id = $row["movie_id"];
     $movie = getMovieInfo($movie_id);
+    $movie_title = $movie["title"];
     $genres = getGenres();
 
     $client = new rabbitMQClient("db_client.ini", "data_queue", "data");
@@ -308,12 +312,17 @@ function getRecommendations($username)
     $movies = array();
 
     foreach ($raw_movies as $movie) {
-        array_push($movies, getMovieInfo($movie_id));
+        array_push($movies, getMovieInfo($movie["id"]));
     }
 
     // cache
 
-    return $movies;
+    return array(
+        "found_movie" => true,
+        "movie_id" => $movie_id,
+        "movie_title" => $movie_title,
+        "results" => $movies
+    );
 }
 
 function getWatchlist($user)
