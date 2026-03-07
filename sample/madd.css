@@ -160,8 +160,6 @@ button:hover {
   font-weight: bold;
   text-decoration: underline;
 }
-<<<<<<< HEAD
-
 .movie-grid {
     display: grid;
     grid-template-columns: repeat(5, 1fr);
@@ -237,5 +235,28 @@ textarea {
     font-family: inherit;
     margin-bottom: 10px;
 }
-=======
->>>>>>> 6bda0a0 (Added css to the login and registration pages)
+.higherlower-body{
+    background:none;
+    background-color:var(--primary);
+    display:block;
+    padding:20px;
+    color: var(--secondary);
+    font-size:25px;
+    font-weight:bold;
+}
+.gameArea{
+    display:grid;
+    grid-template-columns:20% 20%;
+}
+.movieAreaA{
+    width:150px;
+    height:150px;
+    background-color:#FFC0CB;
+    outline:5px solid #66ff00;
+}
+.movieAreaB{
+    width:150px;
+    height:150px;
+    background-color:#8aecff;
+}
+
