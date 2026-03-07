@@ -51,6 +51,12 @@ function getGenres()
     return json_decode($encoded_json, true);
 }
 
+function getPopularInGenre($genre_id)
+{
+    $encoded_json = getRequest("https://api.themoviedb.org/3/discover/movie?language=en-US&with_genres=$genre_id");
+    return json_decode($encoded_json, true);
+}
+
 function requestProcessor($request)
 {
     echo "Printing request:\n";
@@ -64,6 +70,8 @@ function requestProcessor($request)
             return getUpcomingMovies();
         case "genres":
             return getGenres();
+        case "popular_in_genre":
+            return getPopularInGenre($request["genre_id"]);
     }
     return array("status" => "failed", "message" => "unrecognized type");
 }

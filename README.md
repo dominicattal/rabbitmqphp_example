@@ -117,5 +117,10 @@ If the frontend wants to call an endpoint, do it from the db.
 [genres]
 < [result] [array] the genres and their ids
 = returns all of the genres recognized by tmdb
+
+[popular_in_genre]
+> [genre_id] [int] the id of the genre
+< [result] [array] returned movies
+= Like popular, except it gives the most popular by genre
     
 ```

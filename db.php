@@ -298,11 +298,22 @@ function getRecommendations($username)
     $movie_id = $row["movie_id"];
     $movie = getMovieInfo($movie_id);
     $genres = getGenres();
-    var_dump($movie);
 
-    return array(
-        "genre" => $genres[$movie["genre_id"]]
-    );
+    $client = new rabbitMQClient("db_client.ini", "data_queue", "data");
+    $request = array();
+    $request['type'] = "popular_in_genre";
+    $request['genre_id'] = $movie["genre_id"];
+    $raw_movies = $client->send_request($request)["results"];
+
+    $movies = array();
+
+    foreach ($raw_movies as $movie) {
+        array_push($movies, getMovieInfo($movie_id));
+    }
+
+    // cache
+
+    return $movies;
 }
 
 function getWatchlist($user)
