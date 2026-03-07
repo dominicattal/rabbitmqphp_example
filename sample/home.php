@@ -1,11 +1,22 @@
+<script>
+//This if statement checks if a user is logged in
+//If not, dumps them at the log in screen -Matt
+if(!sessionStorage.getItem("username"))
+{
+  //At some point this might need to be changed to check for session info aswell
+  window.location.href = "login.html";
+}
+</script>
+
 <?php
 require_once('../rabbitMQLib.inc');
-$client = new rabbitMQClient("web_client.ini", "data_queue", "data");
+$client = new rabbitMQClient("web_client.ini", "db_web_queue", "db_web");
 $request = array();
 $request['type'] = "popular";
 $request['count'] = 10;
 $response = $client->send_request($request);
 $movies = $response["results"];
+// REMOVED upcoming movies request here to restore stability - ME
 ?>
 
 <script>
@@ -25,19 +36,32 @@ if(!sessionStorage.getItem("username"))
     <link rel="stylesheet" href="madd.css">
 </head>
 <body class="home-body">
-    <nav class="navbar">
-        <div class="logo">MADD FOR MOVIES</div>
-        <div class="nav-links">
-            <span id="user-display">Welcome, <em id="username-span"></em></span>
-            <a href="login.html" class="logout-link" onclick="sessionStorage.clear()">LOGOUT</a>
-        </div>
-    </nav>
+   <nav class="navbar">
+      <div class="logo-container">
+          <a href="home.php" class="logo">MADD FOR MOVIES</a>
+      </div>
+
+      <div class="nav-links">
+	 <a href="home.php" class="nav-btn">HOME</a>
+         <a href="higher-lower.php" class="nav-btn">HIGHER/LOWER</a>
+         <div class="profile-dropdown">
+             <button class="nav-btn">PROFILE ▼</button>
+             <div class="dropdown-content">
+                 <a href="profile.php">MY ACCOUNT</a>
+                 <a href="watchlist.php">WATCHLIST</a>
+                 <hr class="dropdown-divider">
+                 <a href="login.html" class="logout-link" onclick="sessionStorage.clear()">LOGOUT</a>
+             </div>
+         </div>
+      </div>
+   </nav>
 
     <main class="content-wrapper">
+    <h2 class="section-title">POPULAR NOW</h2> 
     <div class="movie-grid">
     <?php foreach ($movies as $movie): 
         $title = htmlspecialchars($movie['title']);
-        $movieId = $movie['id']; // Get the unique ID from TMDB
+        $movieId = $movie['id']; 
         $poster = "https://image.tmdb.org/t/p/w500" . $movie['poster_path'];
     ?>
         <a href="details.php?id=<?php echo $movieId; ?>" class="movie-link">
@@ -52,6 +76,6 @@ if(!sessionStorage.getItem("username"))
         </a>
     <?php endforeach; ?>
     </div>
-</main>
+    </main>
 </body>
 </html>

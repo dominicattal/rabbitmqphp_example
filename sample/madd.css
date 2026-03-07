@@ -260,3 +260,124 @@ textarea {
     background-color:#8aecff;
 }
 
+/* Fix the body layout for App pages */
+.home-body {
+    display: block;      /* Change from flex to block for vertical stacking */
+    padding: 0;          /* Remove padding so navbar touches edges */
+    overflow-y: auto;
+}
+
+.navbar {
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+    display: flex;
+    justify-content: space-between;
+    /* Force vertical centering for everything in the bar */
+    align-items: center; 
+    padding: 10px 50px;
+    background: var(--secondary);
+    border-bottom: 4px solid var(--primary);
+    width: 100%;
+}
+
+.nav-links {
+    display: flex;
+    /* This is the secret sauce to keep the dropdown in line with links */
+    align-items: center; 
+    gap: 15px;
+}
+
+.nav-btn, .dropdown-trigger {
+    text-decoration: none;
+    color: var(--primary);
+    font-weight: 900;
+    padding: 8px 16px;
+    border: 3px solid var(--primary);
+    background: var(--secondary);
+    cursor: pointer;
+    font-family: 'Courier New', monospace;
+    /* Ensure buttons don't have default browser margins */
+    margin: 0; 
+    display: inline-flex;
+    align-items: center;
+    height: 40px; /* Force a consistent height across all types */
+}
+
+.nav-btn:hover {
+    background-color: var(--accent);
+    color: var(--secondary);
+    box-shadow: 4px 4px 0px var(--primary);
+    transform: translate(-2px, -2px);
+}
+
+.logo {
+    text-decoration: none;
+    color: var(--primary);
+    font-weight: 900;
+    font-size: 20px;
+}
+
+/* Dropdown Positioning */
+.profile-dropdown {
+    position: relative;
+    display: flex;
+    display: inline-block;
+}
+
+.dropdown-content {
+    display: none; /* Hidden by default */
+    position: absolute;
+    right: 0;
+    background-color: var(--secondary);
+    min-width: 160px;
+    border: 3px solid var(--primary);
+    box-shadow: var(--shadow);
+    z-index: 1001;
+}
+
+/* Show on Hover */
+.profile-dropdown:hover .dropdown-content {
+    display: block;
+}
+
+/* Dropdown Links */
+.dropdown-content a {
+    color: var(--primary);
+    padding: 12px 16px;
+    text-decoration: none;
+    display: block;
+    font-weight: bold;
+    font-size: 14px;
+    transition: background 0.2s;
+}
+
+.dropdown-content a:hover {
+    background-color: var(--accent);
+    color: var(--secondary);
+}
+
+.dropdown-divider {
+    border: 0;
+    border-top: 2px solid var(--primary);
+    margin: 0;
+}
+
+.content-wrapper {
+    background: rgba(0, 0, 0, 0.75); /* Dark overlay */
+    border: 3px solid var(--primary);
+    box-shadow: var(--shadow);
+    padding: 30px;
+    margin: 40px auto;
+    max-width: 1100px;
+    border-radius: 12px;
+    min-height: 400px;
+}
+
+.section-title {
+	    color: var(--accent); /* Cinema Red */
+	        text-align: center;
+		    font-size: 2.5rem;
+		        margin-bottom: 20px;
+			    text-transform: uppercase;
+		    }

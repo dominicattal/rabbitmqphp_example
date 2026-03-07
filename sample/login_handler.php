@@ -1,55 +1,53 @@
 <script>
 <?php
-
 $web_response = "";
 $location = "login.html";
 
-if (!isset($_POST)) {
+if (!isset($_POST["username"]) || !isset($_POST["password"])) {
     $web_response = "Missing post data";
     goto fail;
 }
+
 $username = $_POST["username"];
-if (!isset($username)) {
-    $web_response = "Missing username";
-    goto fail;
-}
 $password = htmlspecialchars($_POST["password"]);
-if (!isset($password)) {
-    $web_response = "Missing password";
-    goto fail;
-}
 
 require_once('../rabbitMQLib.inc');
 
-$client = new rabbitMQClient("../web_client.ini","db_queue","db");
+$client = new rabbitMQClient("../web_client.ini", "db_web_queue", "db_web");
 
 $request = array();
 $request['type'] = "login";
 $request['username'] = $username;
 $request['password'] = $password;
+
 $response = $client->send_request($request);
+
 if (!isset($response["status"])) {
-    $web_response = "Internal Error";
+    $web_response = "Internal Error: No response from database.";
     goto fail;
 }
-if ($response["status"] !== "success") {
+
+if ($response["status"] === "success") {
+    $_SESSION['username'] = $username;
+    $location = "home.php";
+} else {
+    // The password was wrong or user wasn't found
     $web_response = $response["message"];
     goto fail;
 }
 
-$response["sessid"] = "test";
-$location = "home.php";
-
 fail:
 if ($web_response) {
-    trigger_error($web_response, E_USER_WARNING);
+    // Send the error message back to the login screen
     echo "sessionStorage.setItem('message', '$web_response');\n";
-} else if (isset($response["sessid"])) {
-    echo "sessionStorage.setItem('username', '$username');\n";
-    echo "sessionStorage.setItem('key', '$response[key]')\n";
+    $location = "login.html";
 } else {
-    trigger_error("how'd this happen", E_USER_WARNING);
+    // Set local session storage for the frontend
+    echo "sessionStorage.setItem('username', '$username');\n";
+    if (isset($response["key"]))
+        echo "sessionStorage.setItem('key', '{$response['key']}');\n";
 }
+
 echo "window.location = '$location';\n";
 ?>
 </script>

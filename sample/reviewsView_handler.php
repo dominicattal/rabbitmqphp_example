@@ -19,8 +19,8 @@ if (!isset($movieID)) {
 }
 
 
-//$client = new rabbitMQClient("../web_client.ini","web_client");
-$client = new rabbitMQClient("../web_client.ini","db_queue","db");
+
+$client = new rabbitMQClient("../web_client.ini","db_web_queue","db_web");
 $request = array();
 $request['type'] = "getAllReviewsOne";
 $request['movieID'] = $movieID;

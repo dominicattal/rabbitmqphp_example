@@ -6,10 +6,11 @@ $config = parse_ini_file('db_mysql.ini');
 
 $db_conn = new mysqli($config["MYSQL_HOST"],$config["MYSQL_USER"],$config["MYSQL_PASS"],$config["MYSQL_DB"]);
 
-function doLogin($username,$password)
+define("API_CACHE_DURATION", 60*60*24);
+
+function doLogin($username, $password)
 {
   global $db_conn;
-  $response_str = "Success";
   $query = "SELECT username, password FROM users WHERE username='$username'";
   $result = $db_conn->query($query);
   if ($result->num_rows == 0) {
@@ -29,17 +30,14 @@ function doLogin($username,$password)
   echo "User logging in, validating!\n";
 
   //First need to check if the user has a valid session already, if yes kill it !!! - ME
-
   $query = "SELECT username FROM validations WHERE username='$username'";
   $result = $db_conn->query($query);
   
   if ($result->num_rows > 0) 
   {
-	echo "User has an expired Key! Killing it!\n";
-			
-	$query = "DELETE FROM validations
-		WHERE username = '$username'";
-	$result = $db_conn->query($query);
+    echo "User has an expired Key! Killing it!\n";
+    $query = "DELETE FROM validations WHERE username = '$username'";
+    $result = $db_conn->query($query);
   }
 
   $arr = doValidate($username);
@@ -53,7 +51,7 @@ function doLogin($username,$password)
   return array(
     "status" => "success",
     "key" => $arr["key"],
-    "message" => ""
+    "message" => "Login Successful"
   );
 }
 
@@ -69,7 +67,6 @@ function doRegister($username,$password)
       );
   }
   $query = "INSERT INTO users (username, password) VALUES ('$username','$password');";
-  // need to assert query successfully executed here
   $result = $db_conn->query($query);
   $arr = doValidate($username);
 
@@ -82,103 +79,310 @@ function doRegister($username,$password)
 
 function doValidate($username)
 {
-//Making the validations update to make a sessionKey -ME
-echo "Trying a validation!\n";
+  //Making the validations update to make a sessionKey -ME
+  echo "Trying a validation!\n";
     global $db_conn;
     $query = "SELECT username from validations where username='$username'";
     $result = $db_conn->query($query);
     $key = "";
     $timeToAdd=300;
 	
-   //var_dump($username);	
-	
    if ($result->num_rows == 0)
    {
-	echo "No user sessions, creating one!\n";
-	//Good means no former sessionKey
-	$key = bin2hex(random_bytes(10));
-	$now = time();
-        $expTime = $now + $timeToAdd;
-	$query = "INSERT INTO validations (username,      		
-	sessionKey, createdAt, expiresAt)
+    echo "No user sessions, creating one!\n";
+    $key = bin2hex(random_bytes(10));
+    $now = time();
+    $expTime = $now + $timeToAdd;
+    $query = "INSERT INTO validations (username, sessionKey, createdAt, expiresAt)
         VALUES ('$username', '$key', $now, $expTime);";
-	
-	$result = $db_conn->query($query);
-	//echo "Hopefully added the validation!\n";
+    $result = $db_conn->query($query);
    }
    else
    {
-   	//Check if the user is expired. If not clear the old time and give them a new one/new key
-	//ME -2/27/26
-	//echo "Check if user is expired!\n";
-	$query = "SELECT expiresAt FROM validations WHERE username = '$username'";
- 	$result = $db_conn->query($query);
-
-	//echo "Check if user is expired after result!\n";
-	$now = time();
+    //Check if the user is expired. If not clear the old time and give them a new one/new key - ME
+    $query = "SELECT expiresAt FROM validations WHERE username = '$username'";
+    $result = $db_conn->query($query);
+    $now = time();
 	
-	if ($result->num_rows > 0) 
-	{
-		//echo "Result has rows!\n";
-		$row = $result->fetch_assoc();   
-    		$expiresAt = $row['expiresAt']; 
+    if ($result->num_rows > 0) 
+    {
+        $row = $result->fetch_assoc();   
+        $expiresAt = $row['expiresAt']; 
 
-    		if($expiresAt >= $now)
-    		{
-    			
-			//Not expired yet
-			//Need to clear the current key
-			 //var_dump($username);
-			echo "User has prior session, clearing then adding!\n";
-			$query = "DELETE FROM validations
-				WHERE username = '$username'";
+        if($expiresAt >= $now)
+        {
+          echo "User has prior session, clearing then adding!\n";
+          $query = "DELETE FROM validations WHERE username = '$username'";
+          $result = $db_conn->query($query);
 
-			$result = $db_conn->query($query);
-			
+          $key = bin2hex(random_bytes(10));
+          $now = time();
+          $expTime = $now + $timeToAdd;
+          $query = "INSERT INTO validations (username, sessionKey, createdAt, expiresAt)
+          VALUES ('$username', '$key', $now, $expTime);";
+          $result = $db_conn->query($query);
 
+          return array(
+            "status" => "success",
+            "key" => $key,
+            "message" => "User can stay logged in!"
+          );
+        }
+        else
+        {
+          echo "User has an expired Key! Boot 'em!\n";
+          $query = "DELETE FROM validations WHERE username = '$username'";
+          $result = $db_conn->query($query);
 
-			$key = bin2hex(random_bytes(10));
-			$now = time();
-			$expTime = $now + $timeToAdd;
-			$query = "INSERT INTO validations (username,      		
-			sessionKey, createdAt, expiresAt)
-			VALUES ('$username', '$key', $now, $expTime);";
-			
-			$result = $db_conn->query($query);
+          return array(
+            "status" => "boot",
+            "message" => "User needs to be logged out!"
+          );
+        }
+    }
+  }
+  return array(
+      "status" => "success",
+      "key" => $key,
+      "message" => ""
+  );
+}
 
-			//echo "Hopefully cleared then added the validation!\n";
-			return array(
-			    "status" => "success",
-                "key" => $key,
-			    "message" => "User can stay logged in!"
-			);
-		}
-		else
-		{
-			echo "User has an expired Key! Boot 'em!\n";
-			
-			$query = "DELETE FROM validations
-				WHERE username = '$username'";
-			$result = $db_conn->query($query);
+function getGenres()
+{
+    global $db_conn;
+    $query = "SELECT * FROM genres";
+    $result = $db_conn->query($query);
+    $now = time();
+    if ($result->num_rows == 0)
+        goto create_genres;
+    $row = $result->fetch_assoc();
+    if ($row["createdAt"] + API_CACHE_DURATION > $now)
+        goto destroy_genres;
 
-			//Expired Key, tell system to kick them out!	
-			  return array(
-			    "status" => "boot",
-			    "message" => "User needs to be logged out!"
-			);
-		}
-	}
-	else if($result->num_rows == 0)
-	{
-		echo "No rows from validations!\n";
-	}
-	else
-	  echo "There was an error getting expiresAt from validations table!";
+    $genres = array();
+    while ($row) {
+        $genres[$row["id"]] = $row["name"];
+        $row = $result->fetch_assoc();
+    }
+
+    return $genres;
+
+destroy_genres:
+    $query = "DELETE FROM genres";
+    $result = $db_conn->query($query);
+
+create_genres:
+    $client = new rabbitMQClient("db_client.ini", "data_queue", "data");
+    $request = array();
+    $request['type'] = "genres";
+    $raw_genres = $client->send_request($request)["genres"];
+
+    $genres = array();
+    foreach ($raw_genres as $genre) {
+        $genres[$genre["id"]] = $genre["name"];
+        $query = "INSERT INTO genres (id, name, createdAt) VALUES ($genre[id], '$genre[name]', $now)";
+        $db_conn->query($query);
+    }
+
+    return $genres;
+}
+
+function getMovieInfo($movieId)
+{
+    global $db_conn;
+    if (!isset($movieId)) {
+        echo "You made a dumb mistake on line " . __LINE__ . "\n";
+        return;
+    }
+    $query = "SELECT * FROM movies WHERE id='$movieId'";
+    $result = $db_conn->query($query);
+    $now = time();
+    if ($result->num_rows > 0) {
+        $row = $result->fetch_assoc();
+        if ($row["createdAt"] + API_CACHE_DURATION > $now) {
+            echo "Movie id $movieId ($row[title]) found in cache\n";
+            return array(
+                "title" => $row['title'],
+                "overview" => $row['overview'],
+                "poster_img_url" => $row['poster_img_url'],
+                "genre_id" => $row["genre_id"]
+            );
+        }
+    }
+
+    $client = new rabbitMQClient("db_client.ini", "data_queue", "data");
+    $request = array();
+    $request['type'] = "movie";
+    $request['id'] = $movieId;
+    $movie = $client->send_request($request);
+
+    $title = htmlspecialchars($movie['title']);
+    $overview = htmlspecialchars($movie['overview']);
+    $poster_img_url = "https://image.tmdb.org/t/p/w500" . $movie['poster_path'];
+    $genres = $movie['genres'];
+    $genre_id = $genres[0]["id"];
+
+    echo "Movie id $movieId ($title) not found in cache or expired, adding now\n";
+
+    $query = "INSERT INTO movies (id, title, overview, genre_id, poster_img_url, createdAt) 
+                VALUES ('$movieId', '$title', '$overview', $genre_id, '$poster_img_url', $now)";
+    $result = $db_conn->query($query);
+
+    // verify cache was successful here
+
+    return array(
+        "title" => $title,
+        "overview" => $overview,
+        "poster_img_url" => $poster_img_url,
+        "genre_id" => $genre_id
+    );
+}
+
+function getPopularMovies($count)
+{
+    global $db_conn;
+    $query = "SELECT * FROM popular_movies";
+    $popular = array();
+    $result = $db_conn->query($query);
+    $now = time();
+    if ($result->num_rows == 0)
+        goto update_popular;
+    $row = $result->fetch_assoc();
+    if ($row["createdAt"] + API_CACHE_DURATION < $now)
+        goto delete_popular;
+    echo "Retrieving popular movies from cache\n";
+    while ($row) {
+        var_dump($row);
+        array_push($popular, getMovieInfo($row["id"]));
+        $row = $result->fetch_assoc();
+    }
+    return $popular;
+
+delete_popular:
+    $query = "DELETE FROM popular_movies";
+    $result = $db_conn->query($query);
+    // verify success here
+
+update_popular:
+    echo "Popular movies either not cached or expired, retrieving now\n";
+    $client = new rabbitMQClient("db_client.ini", "data_queue", "data");
+    $request = array();
+    $request['type'] = "popular";
+    $request['count'] = 10;
+    $movies_data = $client->send_request($request);
+    $movies = $movies_data["results"];
+    foreach ($movies as $movie) {
+        $query = "INSERT INTO popular_movies (id, createdAt) VALUES ('$movie[id]', $now)";
+
+        // this is lazy way of doing it, it does many redundant data api calls
+        // can improve this by updating the movies table from data retrieved from the popular data api call
+        array_push($popular, getMovieInfo($movie['id']));
+        $db_conn->query($query);
+    }
+
+    $popular = $movies_data;
+    return $popular;
+}
+
+function getRecommendations($username)
+{
+    global $db_conn;
+    $query = "SELECT movie_id FROM reviews WHERE username='$username' AND score >= 7";
+    $result = $db_conn->query($query);
+    if ($result->num_rows == 0) {
+        echo "User $username doesn't have a review with 7 or higher score, returing popular movies as recommendation\n";
+        return array(
+            "found_movie" => false,
+            "results" => getPopularMovies($username)
+        );
+    }
+    $row = $result->fetch_assoc();
+    $movie_id = $row["movie_id"];
+    $movie = getMovieInfo($movie_id);
+    $movie_title = $movie["title"];
+    $genres = getGenres();
+
+    $client = new rabbitMQClient("db_client.ini", "data_queue", "data");
+    $request = array();
+    $request['type'] = "popular_in_genre";
+    $request['genre_id'] = $movie["genre_id"];
+    $raw_movies = $client->send_request($request)["results"];
+
+    $movies = array();
+
+    foreach ($raw_movies as $movie) {
+        array_push($movies, getMovieInfo($movie["id"]));
+    }
+
+    // cache
+
+    return array(
+        "found_movie" => true,
+        "movie_id" => $movie_id,
+        "movie_title" => $movie_title,
+        "results" => $movies
+    );
+}
+
+function getWatchlist($user)
+{
+      global $db_conn;
+      $user = $request['username'];
+      $query = "SELECT movie_id, movie_name FROM watchlist WHERE username='$user'";
+      $result = $db_conn->query($query);
+      $list = [];
+      while ($row = $result->fetch_assoc()) { 
+          $list[] = $row; 
+      }
+      return $list; // Added the return to fix the hang - ME
+}
+
+function addToWatchlist($user, $m_id, $m_name)
+{
+      global $db_conn;
+      // Check for duplicates
+      $check = "SELECT id FROM watchlist WHERE username='$user' AND movie_id='$m_id'";
+      $result = $db_conn->query($check);
+
+      if ($result->num_rows == 0) {
+        $query = "INSERT INTO watchlist (username, movie_id, movie_name) VALUES ('$user', '$m_id', '$m_name')";
+        $db_conn->query($query);
+        return array("status" => "success", "message" => "Added successfully");
+      }
+
+      return array("status" => "exists", "message" => "Already in watchlist");
+}
+
+//This function returns all reviews by user for movieID as an array! - ME
+function getAllReviewsOne($username,$movieID)
+{
+    global $db_conn;
+    $query = "SELECT username,movie_id,score, review FROM reviews WHERE movie_id = '$movieID'";
+    $result = $db_conn->query($query);
+	
+	//var_dump($username);
+	//var_dump($message);
+	
+
+    if ($result->num_rows == 0)
+    {
+        echo "No reviews exist for this movie!\n";
+    }
+    else
+    {
+        $reviewsArray = array();
+        while ($row = $result->fetch_assoc()) 
+        {
+            $reviewsArray[] = $row;
+        }
+        return $reviewsArray;
+        
+        echo "Success!\n";
     }
     return array(
-        "status" => "success",
-        "key" => $key,
-        "message" => ""
+        "status" => "failed",
+        "message" => "Internal Error!"
     );
 }
 
@@ -319,6 +523,7 @@ function getAllReviewsOne($username,$movieID)
 
 function requestProcessor($request)
 {
+  global $db_conn;     
   echo "received request".PHP_EOL;
   var_dump($request);
   if(!isset($request['type']))
@@ -333,6 +538,16 @@ function requestProcessor($request)
       return doRegister($request['username'],$request['password']);
     case "validate_session":
       return doValidate($request['username']);
+    case "movie":
+      return getMovieInfo($request['id']);
+    case "popular":
+      return getPopularMovies($request['count']);
+    case "recommend":
+      return getRecommendations($request["username"]);
+    case "watchlist":
+      return getWatchlist($request["username"]);
+    case "add_watchlist":
+      return addToWatchlist($request["username"], $request["movie_id"], $request["movie_name"]);
     case "review_movie":
       return updateReview($request['username'],$request['message'],$request['movieID'],$request['rating']);
      case "reviewAll":
@@ -342,11 +557,9 @@ function requestProcessor($request)
      case "createReview":
 	return createReview($request['username'],$request['message'],$request['movieID'],$request['rating']);
   }
-
   return array("returnCode" => '0', 'message'=>"Server received request and processed");
 }
 
 $server = new rabbitMQServer("db_server.ini");
 $server->process_requests('requestProcessor');
-
 ?>
