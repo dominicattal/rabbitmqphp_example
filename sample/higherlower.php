@@ -1,3 +1,20 @@
+<?php
+session_start();
+require_once('../rabbitMQLib.inc');
+$client=new rabbitMQClient("web_client.ini", "db_queue","db");
+$request=array();
+$request=['type']="rated";
+$request=['count']=6;
+$response=$client->send_request($request);
+$movies=$response["results"];
+//shuffle($movies);
+foreach($movies as $movie):
+	$movieId=$movie['id'];
+	$title=htmlspecialchars($movie['title']);
+	$rating=$movie['rating'];
+	$poster="https://image.tmdb.org/t/p/w500" . $movie['poster_path'];
+
+?>
 <!DOCTYPE html>
 <html>
 <link rel="stylesheet" href="madd.css">
@@ -5,7 +22,6 @@
 <h1 style="font-size:40px; color:#FF5E5B;">Higher or Lower?</h1>
 <p>Guess which movie or tv show is rated the highest!</p>
 <p style="font-size:10px; padding:10px;">Getting a question correct earns points, but incorrect will deduct them</p>
-<div id="result"></div>
 <div class="gameArea">
 	<div id="movie1" class="movieAreaA"></div>
 	<div id="movie2" class="movieAreaB"></div>
@@ -29,14 +45,7 @@
 <p id="score">0</p>
 <script>
 let score=0;
-const movies=[
-	{title:"IT", rating: 8.1},
-	{title:"Jaws", rating: 10},
-	{title:"Chips", rating: 3.1},
-	{title:"Rings", rating: 1.1},
-	{title:"Mouse", rating:7},
-	{title:"Door", rating:2}
-];
+const movies=<?php echo json_encode($movies); ?>;
 document.getElementById("movie1").innerHTML=movies[0].title;
 document.getElementById("movie2").innerHTML=movies[1].title;
 document.getElementById("movie3").innerHTML=movies[2].title;
@@ -104,13 +113,5 @@ function verdict(rating1, rating2){
 	}
 }
 </script>
-<?php
-//require_once('../rabbitMQLib.inc');
-//$client=new rabbitMQClient("web_client.ini", "data_queue", "data");
-//$request['type']="title";
-//$response =$client->send_request($request);
-//echo $request;
-?>
 </body>
 </html>
-
