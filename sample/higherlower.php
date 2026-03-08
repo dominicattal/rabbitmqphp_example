@@ -1,16 +1,16 @@
 <?php
 require_once('../rabbitMQLib.inc');
-$client=new rabbitMQClient("web_client.ini", "db_web_queue","db");
+$client=new rabbitMQClient("../web_client.ini", "db_web_queue","db");
 $request=array();
 $request['type']='higherlower';
 $request['count']=6;
 $response=$client->send_request($request);
 $movies=$response["results"];
 ?>
-<!DOCTYPE html>
-<html>
-<link rel="stylesheet" href="madd.css">
+
+<?php include "header.php"; ?>
 <body class="higherlower-body">
+<?php include "navbar.php"; ?>
 <h1 style="font-size:40px; color:#FF5E5B;">Higher or Lower?</h1>
 <p>Guess which movie or tv show is rated the highest!</p>
 <p style="font-size:15px; padding:10px;">Getting a question correct earns points, but incorrect will deduct them</p>

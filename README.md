@@ -53,6 +53,8 @@ To verify that the api keys are correct, run `./testtmdbapi.php`
 
 We use `PHPMailer` for our email api (https://github.com/PHPMailer/PHPMailer) 
 
+Make sure you run `composer install` and `composer update` 
+
 Test that email works by running `./testemailapi.php`. It sends a simple email to ourselves.
 
 ### Database Endpoints
