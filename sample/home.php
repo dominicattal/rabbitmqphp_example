@@ -27,34 +27,9 @@ if(!sessionStorage.getItem("username"))
 }
 </script>
 
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MADD FOR MOVIES - Home</title>
-    <link rel="stylesheet" href="madd.css">
-</head>
+<?php include "header.php"; ?>
 <body class="home-body">
-   <nav class="navbar">
-      <div class="logo-container">
-          <a href="home.php" class="logo">MADD FOR MOVIES</a>
-      </div>
-
-      <div class="nav-links">
-	 <a href="home.php" class="nav-btn">HOME</a>
-         <a href="higher-lower.php" class="nav-btn">HIGHER/LOWER</a>
-         <div class="profile-dropdown">
-             <button class="nav-btn">PROFILE ▼</button>
-             <div class="dropdown-content">
-                 <a href="profile.php">MY ACCOUNT</a>
-                 <a href="watchlist.php">WATCHLIST</a>
-                 <hr class="dropdown-divider">
-                 <a href="login.html" class="logout-link" onclick="sessionStorage.clear()">LOGOUT</a>
-             </div>
-         </div>
-      </div>
-   </nav>
+    <?php include "navbar.php"; ?>
 
     <main class="content-wrapper">
     <h2 class="section-title">POPULAR NOW</h2> 

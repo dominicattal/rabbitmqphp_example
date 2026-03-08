@@ -46,12 +46,18 @@ if ($response["status"] !== "success") {
 $response["sessid"] = "test";
 $location = "home.php";
 
+$request = array();
+$request['type'] = "get_email";
+$request['username'] = $username;
+$email = $client->send_request($request);
+
 fail:
 if ($web_response) {
     trigger_error($web_response, E_USER_WARNING);
     echo "sessionStorage.setItem('message', '$web_response');\n";
 } else if (isset($response["sessid"])) {
     echo "sessionStorage.setItem('username', '$username');\n";
+    echo "sessionStorage.setItem('email', '$email');\n";
     echo "sessionStorage.setItem('key', '$response[key]')\n";
 } else {
     trigger_error("how'd this happen", E_USER_WARNING);

@@ -80,6 +80,11 @@ Documentation for types of queries you can make to DB VM
 > [password] [string] password of user trying to register
 = attempts to register a user. will generate session key for user on success.
 
+[get_email]
+> [username] [string]
+< [email] [string]
+= gets user's email
+
 [movie]
 > [id] [int] id of the movie to get
 < [title] title of movie

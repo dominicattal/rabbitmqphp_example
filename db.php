@@ -77,6 +77,17 @@ function doRegister($username,$email,$password)
   );
 }
 
+function getEmail($username)
+{
+  global $db_conn;
+  $query = "SELECT email FROM users WHERE username='$username'";
+  $result = $db_conn->query($query);
+  if ($result->num_rows == 0)
+      return "404";
+  $row = $result->fetch_assoc();
+  return $row["email"];
+}
+
 function doValidate($username)
 {
   //Making the validations update to make a sessionKey -ME
@@ -521,6 +532,24 @@ function higherlower($count){
 	}
 	return array("results"=>$movies);
 }
+
+function getAllReviewsForUser($username)
+{
+	global $db_conn;
+    $query = "SELECT * from reviews where username='$username'";
+    $result = $db_conn->query($query);
+    $reviews = array();
+    while ($row = $result->fetch_assoc()) {
+        $review = array(
+            "score" => $row["score"],
+            "review" => $row["review"],
+            "movie" => getMovieInfo($row["movie_id"])
+        );
+        array_push($reviews, $review);
+    }
+    return $reviews;
+}
+
 function requestProcessor($request)
 {
   global $db_conn;     
@@ -536,6 +565,8 @@ function requestProcessor($request)
       return doLogin($request['username'],$request['password']);
     case "register":
       return doRegister($request['username'],$request['email'],$request['password']);
+    case "get_email":
+      return getEmail($request['username']);
     case "validate_session":
       return doValidate($request['username']);
     case "movie":
@@ -550,14 +581,16 @@ function requestProcessor($request)
       return addToWatchlist($request["username"], $request["movie_id"], $request["movie_name"]);
     case "review_movie":
       return updateReview($request['username'],$request['message'],$request['movieID'],$request['rating']);
-     case "reviewAll":
-     return reviewAll();
-     case "getAllReviewsOne":
-     return getAllReviewsOne($request['username'],$request['movieID']);
-     case "createReview":
-	return createReview($request['username'],$request['message'],$request['movieID'],$request['rating']);
-     case "higherlower":
-	return higherlower($request['count']);
+    case "reviewAll":
+      return reviewAll();
+    case "getAllReviewsOne":
+      return getAllReviewsOne($request['username'],$request['movieID']);
+    case "get_all_reviews_for_user":
+      return getAllReviewsForUser($request['username']);
+    case "createReview":
+	  return createReview($request['username'],$request['message'],$request['movieID'],$request['rating']);
+    case "higherlower":
+	  return higherlower($request['count']);
   }
   return array("returnCode" => '0', 'message'=>"Server received request and processed");
 }

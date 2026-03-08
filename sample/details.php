@@ -26,19 +26,9 @@ if(!sessionStorage.getItem("username"))
 
 </script>
 
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title><?php echo $title; ?> - Details</title>
-    <link rel="stylesheet" href="madd.css">
-</head>
+<?php include "header.php"; ?>
 <body class="home-body">
-    <nav class="navbar">
-        <div class="logo">MADD FOR MOVIES</div>
-        <a href="home.php" class="logout-link">BACK TO BROWSE</a>
-    </nav>
-
+    <?php include "navbar.php"; ?>
 
     <main class="content-wrapper">
         <div class="details-container">

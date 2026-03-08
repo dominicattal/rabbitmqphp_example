@@ -28,24 +28,25 @@ if (!isset($response["status"])) {
 }
 
 if ($response["status"] === "success") {
-    $_SESSION['username'] = $username;
     $location = "home.php";
 } else {
-    // The password was wrong or user wasn't found
     $web_response = $response["message"];
     goto fail;
 }
 
+$request = array();
+$request['type'] = "get_email";
+$request['username'] = $username;
+$email = $client->send_request($request);
+
 fail:
 if ($web_response) {
-    // Send the error message back to the login screen
     echo "sessionStorage.setItem('message', '$web_response');\n";
     $location = "login.html";
 } else {
-    // Set local session storage for the frontend
     echo "sessionStorage.setItem('username', '$username');\n";
-    if (isset($response["key"]))
-        echo "sessionStorage.setItem('key', '{$response['key']}');\n";
+    echo "sessionStorage.setItem('email', '$email');\n";
+    echo "sessionStorage.setItem('key', '{$response['key']}');\n";
 }
 
 echo "window.location = '$location';\n";
