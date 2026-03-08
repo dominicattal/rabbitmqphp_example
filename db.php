@@ -490,7 +490,7 @@ function reviewAll()
 function higherlower($count){
 	global $db_conn;
 	$now=time();
-	$query="SELECT id,title,score,poster_img_url FROM movies";
+	$query="SELECT id, title, vote_average, poster_img_url FROM movies";
 	$result=$db_conn->query($query);
 	if($result->num_rows>=$count){
 		echo "get movies for higher lower\n";
@@ -499,8 +499,8 @@ function higherlower($count){
 		$movies[]=array(
 			"id"	=>$row["id"],
 			"title"	=>$row["title"],
-			"score" =>$row["score"],	
-			"poster_img_url"=>$row["poster_img_url"]);
+			"vote_average" =>$row["vote_average"],	
+			"poster_img_url"=>$row["poster_path"]);
 		}
 		return array("results"=>$movies);
 	}
@@ -517,8 +517,8 @@ function higherlower($count){
 		$movies[]=array(
 		"id"	=>$info["id"],
 		"title"	=>$info["title"],
-		"score"	=>$info["score"],
-		"poster_img_url"=>$info["poster_img_url"]
+		"score"=>$info["vote_average"],
+		"poster_img_url"=>$info["poster_path"]
 	);
 	}
 	return array("results"=>$movies);

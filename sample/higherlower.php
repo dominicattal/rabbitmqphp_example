@@ -54,7 +54,7 @@ const btnH3=document.getElementById("higher3");
 const btnL3=document.getElementById("lower3");
 btnH1.addEventListener("click", function(){ 
 	verdict(movies[0].score,movies[1].score);
-	document.getElementById("movie1").innerHTML=movies[0].score;
+	document.getElementById("movie1").innerHTML=movies[0].voter_average;
 	document.getElementById("movie2").innerHTML=movies[1].score;
 	btnH1.disabled=true;
 	btnL1.disabled=true;
