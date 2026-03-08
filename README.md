@@ -71,6 +71,7 @@ Documentation for types of queries you can make to DB VM
 
 [login]
 > [username] [string] username of user trying to login
+> [email] [string] email of user trying to login
 > [password] [string] password of user trying to login
 = attempts to login user. will genereate session key for user on success
 

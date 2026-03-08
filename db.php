@@ -55,7 +55,7 @@ function doLogin($username, $password)
   );
 }
 
-function doRegister($username,$password)
+function doRegister($username,$email,$password)
 {
   global $db_conn;
   $query = "SELECT username FROM users WHERE username='$username'";
@@ -66,7 +66,7 @@ function doRegister($username,$password)
           "message" => "User exists"
       );
   }
-  $query = "INSERT INTO users (username, password) VALUES ('$username','$password');";
+  $query = "INSERT INTO users (username, email, password) VALUES ('$username','$email','$password');";
   $result = $db_conn->query($query);
   $arr = doValidate($username);
 
@@ -535,7 +535,7 @@ function requestProcessor($request)
     case "login":
       return doLogin($request['username'],$request['password']);
     case "register":
-      return doRegister($request['username'],$request['password']);
+      return doRegister($request['username'],$request['email'],$request['password']);
     case "validate_session":
       return doValidate($request['username']);
     case "movie":

@@ -13,6 +13,11 @@ if (!isset($username)) {
   trigger_error("Missing username", E_USER_WARNING);
   goto fail;
 }
+$email = $_POST["email"];
+if (!isset($email)) {
+  trigger_error("Missing email", E_USER_WARNING);
+  goto fail;
+}
 $password = htmlspecialchars($_POST["password"]);
 if (!isset($password)) {
   trigger_error("Missing password", E_USER_WARNING);
@@ -26,6 +31,7 @@ $client = new rabbitMQClient("../web_client.ini","db_web_queue","db_web");
 $request = array();
 $request['type'] = "register";
 $request['username'] = $username;
+$request['email'] = $email;
 $request['password'] = $password;
 $response = $client->send_request($request);
 if (!isset($response["status"])) {

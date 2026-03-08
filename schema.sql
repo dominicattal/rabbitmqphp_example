@@ -1,10 +1,11 @@
 CREATE TABLE IF NOT EXISTS users (
     id INT AUTO_INCREMENT PRIMARY KEY,
     username varchar(255) NOT NULL,
+    email varchar(255) NOT NULL,
     password varchar(255) NOT NULL
 );
 
-INSERT INTO users (username, password) VALUES ('test', 'test');
+INSERT INTO users (username, email, password) VALUES ('test', 'it490madd@gmail.com', 'test');
 
 CREATE TABLE IF NOT EXISTS validations (
     id INT AUTO_INCREMENT PRIMARY KEY,
@@ -22,7 +23,7 @@ CREATE TABLE IF NOT EXISTS reviews (
     review VARCHAR(255) NOT NULL
 );
 
-INSERT INTO users (username, password) VALUES ('test_recommend', 'test');
+INSERT INTO users (username, email, password) VALUES ('test_recommend', 'it490madd@gmail.com', 'test');
 INSERT INTO reviews (username, movie_id, score, review) VALUES ('test_recommend', '1266798', 8, 'This movie freaking rules');
 
 CREATE TABLE IF NOT EXISTS watchlist (
