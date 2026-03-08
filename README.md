@@ -2,7 +2,7 @@
 
 ### Running locally
 
-For the website to successfully run locally, the db, broker, and data processor must all be setup. Everything in the ini files should point to localhost for `MQ_HOST`. `db.php` and `data.php` should both be running when making requests from the web.
+For the website to successfully run locally, the db, broker, and data processor must all be setup. Everything in the ini files should point to localhost for `MQ_HOST`. `db.php` and `data.php` should both be running.
 
 ### Run commands
 
@@ -21,7 +21,8 @@ execute these like `sudo ./rcbroker.sh`
 `db_server.ini`       -> ini file for creating rabbitmq database server for communicating with database \
 `db_client.ini`       -> ini file for creating rabbitmq database client for communicating with data \
 `web_client.ini`      -> ini file for creating rabbitmq web client for communicating with broker \
-`data_client.ini`     -> ini file for creating rabbitmq data server for communitcating with data
+`data_client.ini`     -> ini file for creating rabbitmq data server for communitcating with data \
+`.api.ini`            -> ini file with our tmdb and elasticemail api keys
 
 The MQ_HOST field in the ini files should all point to the VM hosting the rabbitmq broker
 
@@ -40,8 +41,14 @@ We have 4 queues, `web_queue`, `db_web_queue`, `db_data_queue`, and `data_queue`
 
 ### API
 
-Use tmdb for the api (link https://developer.themoviedb.org/reference/getting-started) \
-Create file called `.api.ini` in this directory and run `./testapi.php` to test connectivity
+The `.api.ini` must be created (since it is not tracked by git) and have the `TMDB_KEY` and `EMAIL_KEY` api keys.
+
+Use tmdb for the api (link https://developer.themoviedb.org/reference/getting-started)
+
+Our email api, elasticemail, requires composer, so run `composer install` or `composer update`. \
+link: https://elasticemail.com/developers/api-libraries/php
+
+To verify that the api keys are correct, run `./testemailapi.php` and `./testtmdbapi.php`
 
 ### Database Endpoints
 

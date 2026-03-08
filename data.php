@@ -3,7 +3,7 @@
 require_once('rabbitMQLib.inc');
 
 $ini = parse_ini_file(".api.ini", false);
-$key = $ini["API_KEY"];
+$key = $ini["TMDB_KEY"];
 
 function getRequest($url)
 {
