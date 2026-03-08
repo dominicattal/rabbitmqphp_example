@@ -208,7 +208,7 @@ function getMovieInfo($movieId)
                 "overview" => $row['overview'],
                 "poster_img_url" => $row['poster_img_url'],
                 "genre_id" => $row["genre_id"],
-		"score" => $row['score']
+		"vote_average" => $row['vote_average']
             );
         }
     }
@@ -224,12 +224,12 @@ function getMovieInfo($movieId)
     $poster_img_url = "https://image.tmdb.org/t/p/w500" . $movie['poster_path'];
     $genres = $movie['genres'];
     $genre_id = $genres[0]["id"];
-    $score=$movie['score'];
+    $vote_average=$movie['vote_average'];
 
     echo "Movie id $movieId ($title) not found in cache or expired, adding now\n";
 
-    $query = "INSERT INTO movies (id, title, overview, genre_id, poster_img_url, createdAt) 
-                VALUES ('$movieId', '$title', '$overview', $genre_id, '$poster_img_url', $now)";
+    $query = "INSERT INTO movies (id, title, overview, genre_id, poster_img_url, vote_average, createdAt) 
+                VALUES ('$movieId', '$title', '$overview', $genre_id, '$poster_img_url', '$vote_average', $now)";
     $result = $db_conn->query($query);
 
     // verify cache was successful here
@@ -240,7 +240,7 @@ function getMovieInfo($movieId)
         "overview" => $overview,
         "poster_img_url" => $poster_img_url,
         "genre_id" => $genre_id,
-	"score" => $score
+	"vote_average" => $vote_average
     );
 }
 
@@ -490,17 +490,16 @@ function reviewAll()
 function higherlower($count){
 	global $db_conn;
 	$now=time();
-	$query="SELECT id, title, vote_average, poster_img_url FROM movies";
+	$query="SELECT id, title, vote_average, poster_img_url FROM movies ORDER BY rand() limit $count";
 	$result=$db_conn->query($query);
 	if($result->num_rows>=$count){
 		echo "get movies for higher lower\n";
-		$movies[]=array();
 		while($row=$result->fetch_assoc()){
 		$movies[]=array(
 			"id"	=>$row["id"],
 			"title"	=>$row["title"],
 			"vote_average" =>$row["vote_average"],	
-			"poster_img_url"=>$row["poster_path"]);
+			"poster_img_url"=>$row["poster_img_url"]);
 		}
 		return array("results"=>$movies);
 	}
@@ -511,14 +510,13 @@ function higherlower($count){
 	$request['count']= $count;
 	$moviesdata=$client->send_request($request);
 	$movieList=$moviesdata["results"];
-	$movies=array();
 	foreach ($movieList as $movie){
 		$info=getMovieInfo($movie["id"]);
 		$movies[]=array(
 		"id"	=>$info["id"],
 		"title"	=>$info["title"],
-		"score"=>$info["vote_average"],
-		"poster_img_url"=>$info["poster_path"]
+		"vote_average"=>$info["vote_average"],
+		"poster_img_url"=>$info["poster_img_url"]
 	);
 	}
 	return array("results"=>$movies);
