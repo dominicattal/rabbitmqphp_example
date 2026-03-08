@@ -10,8 +10,8 @@ $request['type'] = "movie";
 $request['id'] = $movieId;
 $movie = $client->send_request($request);
 
-$title = htmlspecialchars($movie['title']);
-$overview = htmlspecialchars($movie['overview']);
+$title = $movie['title'];
+$overview = $movie['overview'];
 $poster = "https://image.tmdb.org/t/p/w500" . $movie['poster_img_url'];
 ?>
 

@@ -60,7 +60,7 @@ if(!sessionStorage.getItem("username"))
     <h2 class="section-title">POPULAR NOW</h2> 
     <div class="movie-grid">
     <?php foreach ($movies as $movie): 
-        $title = htmlspecialchars($movie['title']);
+        $title = $movie['title'];
         $movieId = $movie['id']; 
         $poster = "https://image.tmdb.org/t/p/w500" . $movie['poster_img_url'];
     ?>

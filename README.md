@@ -22,9 +22,11 @@ execute these like `sudo ./rcbroker.sh`
 `db_client.ini`       -> ini file for creating rabbitmq database client for communicating with data \
 `web_client.ini`      -> ini file for creating rabbitmq web client for communicating with broker \
 `data_client.ini`     -> ini file for creating rabbitmq data server for communitcating with data \
-`.api.ini`            -> ini file with our tmdb and elasticemail api keys
+`.api.ini`            -> ini file with our api keys
 
 The MQ_HOST field in the ini files should all point to the VM hosting the rabbitmq broker
+
+The `.api.ini` must be created (since it is not tracked by git) and have the `TMDB_KEY`, `MADD_EMAIL`, and `MADD_PASS` fields.
 
 ### Webpage
 
@@ -41,14 +43,17 @@ We have 4 queues, `web_queue`, `db_web_queue`, `db_data_queue`, and `data_queue`
 
 ### API
 
-The `.api.ini` must be created (since it is not tracked by git) and have the `TMDB_KEY` and `EMAIL_KEY` api keys.
+Add `TMDB_KEY` to `.api.ini`
 
-Use tmdb for the api (link https://developer.themoviedb.org/reference/getting-started)
+Use tmdb for the data api (link https://developer.themoviedb.org/reference/getting-started)
 
-Our email api, elasticemail, requires composer, so run `composer install` or `composer update`. \
-link: https://elasticemail.com/developers/api-libraries/php
+To verify that the api keys are correct, run `./testtmdbapi.php`
 
-To verify that the api keys are correct, run `./testemailapi.php` and `./testtmdbapi.php`
+### Email
+
+We use `PHPMailer` for our email api (https://github.com/PHPMailer/PHPMailer) 
+
+Test that email works by running `./testemailapi.php`. It sends a simple email to ourselves.
 
 ### Database Endpoints
 

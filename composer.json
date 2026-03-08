@@ -1,11 +1,5 @@
 {
-  "repositories": [
-    {
-      "type": "vcs",
-      "url": "https://github.com/elasticemail/elasticemail-php.git"
+    "require": {
+        "phpmailer/phpmailer": "^7.0"
     }
-  ],
-  "require": {
-    "elasticemail/elasticemail-php": "*@dev"
-  }
 }
