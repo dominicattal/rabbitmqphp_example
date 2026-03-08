@@ -329,11 +329,11 @@ function getRecommendations($username)
 function getWatchlist($user)
 {
       global $db_conn;
-      $query = "SELECT movie_id, movie_name FROM watchlist WHERE username='$user'";
+      $query = "SELECT movie_id FROM watchlist WHERE username='$user'";
       $result = $db_conn->query($query);
       $list = [];
       while ($row = $result->fetch_assoc()) { 
-          $list[] = $row; 
+          $list[] = getMovieInfo($row["movie_id"]); 
       }
       return $list; // Added the return to fix the hang - ME
 }
