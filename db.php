@@ -489,28 +489,39 @@ function reviewAll()
 }
 function higherlower($count){
 	global $db_conn;
-	$query="SELECT * FROM movies";
-	$higherlower=array();
+	$now=time();
+	$query="SELECT id,title,score,poster_img_url FROM movies";
 	$result=$db_conn->query($query);
-	if($result->num_rows==0){
-		goto new_round;
-	}
-	$row=$result->fetch_assoc();
-	while ($row){
-		array_push($higherlower, getMovieInfo($row["id"]));
-		$row=$result->fetch_assoc();
-	}
-	return $higherlower;
-	new_round:
-		$client=new rabbitMQClient("db_client.ini", "data_que","data");
-		$request=array();
-		$request['type']="higherlower";
-		$request['count']=6;
-		$movies_data=$client->send_request($request);
-		$movies=$movies_data["results"];
-		foreach ($movies as $movie){
-			$query="INSERT INTO movies (id, title, genre_id, overview, poster_img_url, createdAt, rating) VALUES ('$movie[id]','$movie[title]', $now)";
+	if($result->num_rows>=$count){
+		echo "get movies for higher lower\n";
+		$movies[]=array();
+		while($row=$result->fetch_assoc()){
+		$movies[]=array(
+			"id"	=>$row["id"],
+			"title"	=>$row["title"],
+			"score" =>$row["score"],	
+			"poster_img_url"=>$row["poster_img_url"]);
 		}
+		return array("results"=>$movies);
+	}
+	echo "new movies\n";
+	$client=new rabbitMQClient("db_client.ini", "data_queue","data");
+	$request=array();
+	$request['type']="higherlower";
+	$request['count']= $count;
+	$moviesdata=$client->send_request($request);
+	$movieList=$moviesdata["results"];
+	$movies=array();
+	foreach ($movieList as $movie){
+		$info=getMovieInfo($movie["id"]);
+		$movies[]=array(
+		"id"	=>$info["id"],
+		"title"	=>$info["title"],
+		"score"	=>$info["score"],
+		"poster_img_url"=>$info["poster_img_url"]
+	);
+	}
+	return array("results"=>$movies);
 }
 function requestProcessor($request)
 {
@@ -547,6 +558,8 @@ function requestProcessor($request)
      return getAllReviewsOne($request['username'],$request['movieID']);
      case "createReview":
 	return createReview($request['username'],$request['message'],$request['movieID'],$request['rating']);
+     case "higherlower":
+	return higherlower($request['count']);
   }
   return array("returnCode" => '0', 'message'=>"Server received request and processed");
 }

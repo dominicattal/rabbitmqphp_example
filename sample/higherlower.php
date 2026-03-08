@@ -1,13 +1,13 @@
 <?php
 require_once('../rabbitMQLib.inc');
-$client=new rabbitMQClient("web_client.ini", "db_queue","db");
+$client=new rabbitMQClient("web_client.ini", "db_web_queue","db");
 $request=array();
-$request['type']='rated';
+$request['type']='higherlower';
 $request['count']=6;
 $response=$client->send_request($request);
 $movies=$response["results"];
 var_dump($response);
-die();
+
 ?>
 <!DOCTYPE html>
 <html>
@@ -40,7 +40,7 @@ die();
 <script>
 const movies=<?php echo json_encode($movies); ?>;
 let score=0;
-document.getElementById("movie1").innerHTML=<?php $title?>;
+document.getElementById("movie1").innerHTML=movies[0].title;
 document.getElementById("movie2").innerHTML=movies[1].title;
 document.getElementById("movie3").innerHTML=movies[2].title;
 document.getElementById("movie4").innerHTML=movies[3].title;
@@ -53,44 +53,44 @@ const btnL2=document.getElementById("lower2");
 const btnH3=document.getElementById("higher3");
 const btnL3=document.getElementById("lower3");
 btnH1.addEventListener("click", function(){ 
-	verdict(movies[0].rating,movies[1].rating);
-	document.getElementById("movie1").innerHTML=movies[0].rating;
-	document.getElementById("movie2").innerHTML=movies[1].rating;
+	verdict(movies[0].score,movies[1].score);
+	document.getElementById("movie1").innerHTML=movies[0].score;
+	document.getElementById("movie2").innerHTML=movies[1].score;
 	btnH1.disabled=true;
 	btnL1.disabled=true;
 });
 btnL1.addEventListener("click",function(){
-	verdict(movies[1].rating,movies[0].rating);
-	document.getElementById("movie1").innerHTML=movies[0].rating;
-	document.getElementById("movie2").innerHTML=movies[1].rating;
+	verdict(movies[1].score,movies[0].score);
+	document.getElementById("movie1").innerHTML=movies[0].score;
+	document.getElementById("movie2").innerHTML=movies[1].score;
 	btnH1.disabled=true;
 	btnL1.disabled=true;
 });
 btnH2.addEventListener("click",function(){
-	verdict(movies[2].rating,movies[3].rating);
-	document.getElementById("movie3").innerHTML=movies[2].rating;
-	document.getElementById("movie4").innerHTML=movies[3].rating;
+	verdict(movies[2].score,movies[3].score);
+	document.getElementById("movie3").innerHTML=movies[2].score;
+	document.getElementById("movie4").innerHTML=movies[3].score;
 	btnH2.disabled=true;
 	btnL2.disabled=true;
 });
 btnL2.addEventListener("click",function(){
-	verdict(movies[3].rating,movies[2].rating);
-	document.getElementById("movie3").innerHTML=movies[2].rating;
-	document.getElementById("movie4").innerHTML=movies[3].rating;
+	verdict(movies[3].score,movies[2].score);
+	document.getElementById("movie3").innerHTML=movies[2].score;
+	document.getElementById("movie4").innerHTML=movies[3].score;
 	btnH2.disabled=true;
 	btnL2.disabled=true;
 });
 btnH3.addEventListener("click",function(){
-	verdict(movies[4].rating,movies[5].rating);
-	document.getElementById("movie5").innerHTML=movies[4].rating;
-	document.getElementById("movie6").innerHTML=movies[5].rating;
+	verdict(movies[4].score,movies[5].score);
+	document.getElementById("movie5").innerHTML=movies[4].score;
+	document.getElementById("movie6").innerHTML=movies[5].score;
 	btnH3.disabled=true;
 	btnL3.disabled=true;
 });
 btnL3.addEventListener("click",function(){
-	verdict(movies[5].rating,movies[4].rating);
-	document.getElementById("movie5").innerHTML=movies[4].rating;
-	document.getElementById("movie6").innerHTML=movies[5].rating;
+	verdict(movies[5].score,movies[4].score);
+	document.getElementById("movie5").innerHTML=movies[4].score;
+	document.getElementById("movie6").innerHTML=movies[5].score;
 	btnH3.disabled=true;
 	btnL3.disabled=true;
 });
