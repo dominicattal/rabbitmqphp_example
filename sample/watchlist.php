@@ -31,25 +31,7 @@ if (is_array($watchlist)) {
     <?php include "navbar.php"; ?>
    <main class="content-wrapper">
       <h1 class="section-title">YOUR WATCHLIST</h1>
-
       <div class="movie-grid">
-      </div>
-
-      <h1 class="section-title" style="margin-top: 40px;">UPCOMING MOVIES</h1>
-      <div class="movie-grid">
-         <?php if (!empty($upcoming)): ?>
-            <?php foreach ($upcoming as $movie): ?>
-               <a href="details.php?id=<?php echo $movie['movie_id']; ?>" class="movie-link">
-		  <div class="movie-card" style="border-color: #FF5E5B;"> <div class="movie-details">
-		     <h3 class="movie-title"><?php echo htmlspecialchars($movie['movie_name']); ?></h3>
-		     <p style="color: #FF5E5B; font-size: 0.8em;">Releasing: <?php echo $movie['release_date']; ?></p>
-                     </div>
-                  </div>
-               </a>
-	    <?php endforeach; ?>
-	 <?php else: ?>
-            <p style="color: white; text-align: center; padding: 20px;">No upcoming movies in your watchlist.</p>
-         <?php endif; ?>
       </div>
    </main>
 </body>
