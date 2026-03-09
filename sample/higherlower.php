@@ -1,3 +1,8 @@
+<script>
+	if(!sessionStorage.getItem("username")){
+		window.location.href="login.html";
+	}
+</script>
 <?php
 require_once('../rabbitMQLib.inc');
 $client=new rabbitMQClient("../web_client.ini", "db_web_queue","db");
