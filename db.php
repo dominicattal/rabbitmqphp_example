@@ -199,6 +199,10 @@ create_genres:
     return $genres;
 }
 
+function cacheMovieInfo($movieId, $title, $overview, $poster_img_url, $genre_id, $release_data, $vote_average)
+{
+}
+
 function getMovieInfo($movieId)
 {
     global $db_conn;
@@ -222,6 +226,8 @@ function getMovieInfo($movieId)
 		"vote_average" => $row['vote_average']
             );
         }
+        $query = "DELETE FROM movies WHERE id='$movieId'";
+        $db_conn->query($query);
     }
 
     $client = new rabbitMQClient("db_client.ini", "data_queue", "data");
@@ -234,13 +240,14 @@ function getMovieInfo($movieId)
     $overview = htmlspecialchars($movie['overview']);
     $poster_img_url = "https://image.tmdb.org/t/p/w500" . $movie['poster_path'];
     $genres = $movie['genres'];
-    $genre_id = $genres[0]["id"];
+    $genre_id = ($genres) ? $genres[0]["id"] : -1;
     $vote_average=$movie['vote_average'];
+    $release_date = $movie["release_date"];
 
     echo "Movie id $movieId ($title) not found in cache or expired, adding now\n";
 
-    $query = "INSERT INTO movies (id, title, overview, genre_id, poster_img_url, vote_average, createdAt) 
-                VALUES ('$movieId', '$title', '$overview', $genre_id, '$poster_img_url', '$vote_average', $now)";
+    $query = "INSERT INTO movies (id, title, overview, genre_id, poster_img_url, release_date, vote_average, createdAt) 
+                VALUES ('$movieId', '$title', '$overview', $genre_id, '$poster_img_url', '$release_date', '$vote_average', $now)";
     $result = $db_conn->query($query);
 
     // verify cache was successful here
@@ -250,8 +257,9 @@ function getMovieInfo($movieId)
         "title" => $title,
         "overview" => $overview,
         "poster_img_url" => $poster_img_url,
+        "release_date" => $release_date,
         "genre_id" => $genre_id,
-	"vote_average" => $vote_average
+        "vote_average" => $vote_average
     );
 }
 
@@ -347,6 +355,21 @@ function getWatchlist($user)
           $list[] = getMovieInfo($row["movie_id"]); 
       }
       return $list; // Added the return to fix the hang - ME
+}
+
+function getUpcoming()
+{
+    global $db_conn;
+    $client = new rabbitMQClient("db_client.ini", "data_queue", "data");
+    $request = array();
+    $request['type'] = "upcoming";
+    $raw_upcoming = $client->send_request($request);
+    var_dump($raw_upcoming);
+    $upcoming = array();
+    foreach ($raw_upcoming["results"] as $movie) {
+        array_push($upcoming, getMovieInfo($movie["id"]));
+    }
+    return $upcoming;
 }
 
 function addToWatchlist($user, $m_id, $m_name)
@@ -577,6 +600,8 @@ function requestProcessor($request)
       return getRecommendations($request["username"]);
     case "watchlist":
       return getWatchlist($request["username"]);
+    case "upcoming":
+      return getUpcoming();
     case "add_watchlist":
       return addToWatchlist($request["username"], $request["movie_id"], $request["movie_name"]);
     case "review_movie":

@@ -39,9 +39,9 @@ function getPopularMovies($count)
     return json_decode($encoded_json, true);
 }
 
-function getUpcomingMovies()
+function getUpcoming()
 {
-    $encoded_json = getRequest('https://api.themoviedb.org/3/movie/upcoming?language=en-US&page=1');
+    $encoded_json = getRequest('https://api.themoviedb.org/3/discover/movie?page=1&sort_by=popularity.desc&primary_release_date.gte=2026-03-10&primary_release_date.lte=2026-04-10&with_release_type=3&language=en-US&region=US');
     return json_decode($encoded_json, true);
 }
 
@@ -56,6 +56,7 @@ function getPopularInGenre($genre_id)
     $encoded_json = getRequest("https://api.themoviedb.org/3/discover/movie?language=en-US&with_genres=$genre_id");
     return json_decode($encoded_json, true);
 }
+
 function getHigherLower($count){
 	$encoded_json=getRequest("https://api.themoviedb.org/3/discover/movie");
 	return json_decode($encoded_json,true);
@@ -70,8 +71,8 @@ function requestProcessor($request)
             return getPopularMovies($request["count"]);
         case "movie":
 	        return getMovie($request["id"]);
-	case "upcoming":
-            return getUpcomingMovies();
+        case "upcoming":
+            return getUpcoming();
         case "genres":
             return getGenres();
         case "popular_in_genre":
