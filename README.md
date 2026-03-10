@@ -105,6 +105,9 @@ Documentation for types of queries you can make to DB VM
 > [movie_name] [int] name of the movie to add to watchlist
 = adds a movie to a user's watchlist
 
+[upcoming]
+= gets upcoming movies
+
 [recommend]
 > [username] [string] user to recommend to
 < [found_movie] [bool] whether a movie was found to recommend based off of
@@ -141,6 +144,9 @@ If the frontend wants to call an endpoint, do it from the db.
 [genres]
 < [result] [array] the genres and their ids
 = returns all of the genres recognized by tmdb
+
+[upcoming]
+= gets upcoming movies
 
 [popular_in_genre]
 > [genre_id] [int] the id of the genre
