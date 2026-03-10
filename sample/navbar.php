@@ -4,6 +4,7 @@
    </div>
 
    <div class="nav-links">
+	<input type="text" placeholder="Search movies...">
       <a href="home.php" class="nav-btn">HOME</a>
   <a href="higherlower.php" class="nav-btn">HIGHER/LOWER</a>
       <div class="profile-dropdown">
