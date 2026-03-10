@@ -44,7 +44,7 @@ if ($response["status"] !== "success") {
 }
 
 $response["sessid"] = "test";
-$location = "home.php";
+$location = "login.html";
 
 $request = array();
 $request['type'] = "get_email";

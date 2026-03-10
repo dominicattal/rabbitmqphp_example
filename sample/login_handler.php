@@ -41,7 +41,7 @@ $email = $client->send_request($request);
 
 fail:
 if ($web_response) {
-    echo "sessionStorage.setItem('message', '$web_response');\n";
+    //echo "sessionStorage.setItem('message', '$web_response');\n";
     $location = "login.html";
 } else {
     echo "sessionStorage.setItem('username', '$username');\n";
