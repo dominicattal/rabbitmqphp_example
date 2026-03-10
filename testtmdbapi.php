@@ -2,7 +2,7 @@
 <?php
 
 $ini = parse_ini_file(".api.ini", false);
-$key = $ini["API_KEY"];
+$key = $ini["TMDB_KEY"];
 $curl = curl_init();
 
 curl_setopt_array($curl, [

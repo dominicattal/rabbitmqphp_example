@@ -11,8 +11,8 @@ if (!isset($_POST)) {
 $location = $_POST["currentPage"];
 if (!isset($location)) {
     $web_response = "Missing location";
-    //goto fail; //Just goin to hard write this one 'cause it broke out of nowhere
-   $location = "home.html";
+    //goto fail; //Just goin to hard write this one 'cause it broke out of nowhere - ME
+   $location = "home.php";
 }
 
 
@@ -48,7 +48,7 @@ if (!isset($rating)) {
 
 require_once('../rabbitMQLib.inc');
 
-$client = new rabbitMQClient("../web_client.ini","web_client");
+$client = new rabbitMQClient("../web_client.ini", "db_web_queue", "db_web");
 
 /*$request = array();
 $request['type'] = "validate_session";
@@ -87,7 +87,7 @@ if($UOI == "U" || $UOI == "UPDATE" || $UOI == "u")
 		{	
 		 	$web_response = $response["message"];
 			
-			$location = "home.html"; //This is to prevent an infinite loop of loading hell. Probably 	fixable -ME
+			$location = "home.php"; //This is to prevent an infinite loop of loading hell. Probably 	fixable -ME
 			header("Location: " . $location);
 			exit();
 		}
@@ -122,7 +122,7 @@ else if($UOI == "I" || $UOI == "INSERT" || $UOI == "i")
 		{	
 		 	$web_response = $response["message"];
 			
-			$location = "home.html"; //This is to prevent an infinite loop of loading hell. Probably 	fixable -ME
+			$location = "home.php"; //This is to prevent an infinite loop of loading hell. Probably 	fixable -ME
 			header("Location: " . $location);
 			exit();
 		}

@@ -1,36 +1,43 @@
+<script>
+//This if statement checks if a user is logged in
+//If not, dumps them at the log in screen -Matt
+if(!sessionStorage.getItem("username"))
+{
+  //At some point this might need to be changed to check for session info aswell
+  window.location.href = "login.html";
+}
+</script>
+
 <?php
 require_once('../rabbitMQLib.inc');
-$client = new rabbitMQClient("web_client.ini", "data_queue", "data");
+$client = new rabbitMQClient("web_client.ini", "db_web_queue", "db_web");
 $request = array();
 $request['type'] = "popular";
 $request['count'] = 10;
 $response = $client->send_request($request);
-$movies = $response["results"];
+$movies = $response;
+// REMOVED upcoming movies request here to restore stability - ME
 ?>
 
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MADD FOR MOVIES - Home</title>
-    <link rel="stylesheet" href="madd.css">
-</head>
+<script>
+//Do not forgot to add this to each webpage to prevent non logged in users from logging in! -ME
+if(!sessionStorage.getItem("username"))
+{
+	window.location.href="login.html";
+}
+</script>
+
+<?php include "header.php"; ?>
 <body class="home-body">
-    <nav class="navbar">
-        <div class="logo">MADD FOR MOVIES</div>
-        <div class="nav-links">
-            <span id="user-display">Welcome, <em id="username-span"></em></span>
-            <a href="login.html" class="logout-link" onclick="sessionStorage.clear()">LOGOUT</a>
-        </div>
-    </nav>
+    <?php include "navbar.php"; ?>
 
     <main class="content-wrapper">
+    <h2 class="section-title">POPULAR NOW</h2> 
     <div class="movie-grid">
     <?php foreach ($movies as $movie): 
-        $title = htmlspecialchars($movie['title']);
-        $movieId = $movie['id']; // Get the unique ID from TMDB
-        $poster = "https://image.tmdb.org/t/p/w500" . $movie['poster_path'];
+        $title = $movie['title'];
+        $movieId = $movie['id']; 
+        $poster = "https://image.tmdb.org/t/p/w500" . $movie['poster_img_url'];
     ?>
         <a href="details.php?id=<?php echo $movieId; ?>" class="movie-link">
             <div class="movie-card">
@@ -44,6 +51,6 @@ $movies = $response["results"];
         </a>
     <?php endforeach; ?>
     </div>
-</main>
+    </main>
 </body>
 </html>

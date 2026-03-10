@@ -142,7 +142,6 @@ class rabbitMQClient
 
 	function process_response(AMQPEnvelope $response)
 	{
-		$correlation_id = $response->getCorrelationId();
         if (!($this->correlation_id == $response->getCorrelationId()))
             return true;
 		$this->send_queue->ack($response->getDeliveryTag());
@@ -190,10 +189,12 @@ class rabbitMQClient
 
 			$exchange->publish($json_message,$this->send_routing_key,AMQP_NOPARAM,array('correlation_id'=>$this->correlation_id));
 
-			$reply_queue->consume(array($this,'process_response'));
+            $reply_queue->consume(array($this,'process_response'));
 
 			$response = $this->response;
             unset($this->response);
+
+            $conn->disconnect();
 
 			return $response;
 		}
