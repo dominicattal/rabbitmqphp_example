@@ -1,9 +1,10 @@
 <script>
 //This if statement checks if a user is logged in
-//If not, dumps them at the log in screen -Matt
+//If not, dumps them at the log in screen
+  //At some point this might need to be changed to check for session info aswell - ME
 if(!sessionStorage.getItem("username"))
 {
-  //At some point this might need to be changed to check for session info aswell
+
   window.location.href = "login.html";
 }
 </script>
@@ -16,16 +17,7 @@ $request['type'] = "popular";
 $request['count'] = 10;
 $response = $client->send_request($request);
 $movies = $response;
-// REMOVED upcoming movies request here to restore stability - ME
 ?>
-
-<script>
-//Do not forgot to add this to each webpage to prevent non logged in users from logging in! -ME
-if(!sessionStorage.getItem("username"))
-{
-	window.location.href="login.html";
-}
-</script>
 
 <?php include "header.php"; ?>
 <body class="home-body">

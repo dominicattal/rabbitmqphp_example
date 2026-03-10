@@ -70,7 +70,9 @@ if(!sessionStorage.getItem("username"))
                 </div>
             </div>
 
-<!--The stuff to make a review possible -ME -->
+
+<!--The stuff to make a review possible -ME
+Post request to reviews_handler sending currentpage (defunct), username, movieID, and user's review-->
 <form action="reviews_handler.php" method="post" id="review_handler">
 <div>
   <input type="hidden" name="currentPage" id="currentPage" value="">
@@ -115,15 +117,7 @@ if(!sessionStorage.getItem("username"))
 </form>
 <p id="reviewListOne"></p>
 </div>
-
-<!-- Rather than just showing all reviews, ya gotta press a button for it! -ME
-Button being replace with a form so I can send data - ME
-<form action="reviewsView_handler.php" method="get">
-    <button type="submit">Show Reviews</button>
-</form>-->
-	
-
-    </main>
+</main>
 </body>
 </html>
 

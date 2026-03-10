@@ -271,10 +271,10 @@ textarea {
    height:50px;
 }
 
-/* Fix the body layout for App pages */
+
 .home-body {
-    display: block;      /* Change from flex to block for vertical stacking */
-    padding: 0;          /* Remove padding so navbar touches edges */
+    display: block;      
+    padding: 0;          
     overflow-y: auto;
 }
 
@@ -284,7 +284,7 @@ textarea {
     z-index: 1000;
     display: flex;
     justify-content: space-between;
-    /* Force vertical centering for everything in the bar */
+    
     align-items: center; 
     padding: 10px 50px;
     background: var(--secondary);
@@ -294,7 +294,7 @@ textarea {
 
 .nav-links {
     display: flex;
-    /* This is the secret sauce to keep the dropdown in line with links */
+    
     align-items: center; 
     gap: 15px;
 }
@@ -308,11 +308,11 @@ textarea {
     background: var(--secondary);
     cursor: pointer;
     font-family: 'Courier New', monospace;
-    /* Ensure buttons don't have default browser margins */
+    
     margin: 0; 
     display: inline-flex;
     align-items: center;
-    height: 40px; /* Force a consistent height across all types */
+    height: 40px; 
 }
 
 .nav-btn:hover {
@@ -329,7 +329,7 @@ textarea {
     font-size: 20px;
 }
 
-/* Dropdown Positioning */
+
 .profile-dropdown {
     position: relative;
     display: flex;
@@ -337,7 +337,7 @@ textarea {
 }
 
 .dropdown-content {
-    display: none; /* Hidden by default */
+    display: none;
     position: absolute;
     right: 0;
     background-color: var(--secondary);
@@ -347,12 +347,12 @@ textarea {
     z-index: 1001;
 }
 
-/* Show on Hover */
+
 .profile-dropdown:hover .dropdown-content {
     display: block;
 }
 
-/* Dropdown Links */
+
 .dropdown-content a {
     color: var(--primary);
     padding: 12px 16px;

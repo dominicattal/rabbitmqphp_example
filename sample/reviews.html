@@ -2,10 +2,11 @@
 <h2>Movie being reviewed, <em id="movieName"></em></h2>
 <h3>Your Review:  <em id="userReview"></em></h3>
 
+//This page was a testing page to get the review creation + receiving pages working - ME
+
 <script>
 if(!sessionStorage.getItem("username"))
 {
-  //At some point this might need to be changed to check for session info aswell
   //alert("User not logged in!");
   window.location.href = "login.html";
 }
@@ -13,7 +14,7 @@ var username = sessionStorage.getItem("username");
 var username_ele = document.getElementById("username");
 username_ele.textContent = username;
 
-var movieName= "Test Name!"; //For testing purposes this movie is -1 in the db
+var movieName= "Test Name!"; 
 var movieName_ele = document.getElementById("movieName");
 movieName_ele.textContent = movieName;
 
@@ -52,7 +53,7 @@ document.getElementById("username").value = username_ele.textContent;
 
 <script>
 
-document.getElementById("username2").value = username_ele.textContent; //DO NOT REMOVE THIS OR STUFF BREAKS! -ME
+document.getElementById("username2").value = username_ele.textContent;
 
 </script>
 
