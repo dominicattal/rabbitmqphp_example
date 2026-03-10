@@ -66,7 +66,7 @@ if($response["status"] == "boot")
 }*/
 
 //This is where we make the call to the other terminal to get the data, not worked out on atm
-//For now, just making a connnection to the local DB and adding the user's review
+//For now, just making a connection to the local DB and adding the user's review
 //Need to do 2 things, 1 check if user has made a review on this movie before, if so output it for them to edit, else let them make a new one
 
 if($UOI == "U" || $UOI == "UPDATE" || $UOI == "u")
