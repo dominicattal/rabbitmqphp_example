@@ -127,9 +127,10 @@ Button being replace with a form so I can send data - ME
 </body>
 </html>
 
+
 <script>
-document.getElementById("username2").value = sessionStorage.getItem("username"); //DO NOT REMOVE THIS OR STUFF BREAKS! -ME
+document.getElementById("username2").value = sessionStorage.getItem("username");
 document.getElementById("username3").value = sessionStorage.getItem("username");
-document.getElementById("movieID").value = <?php echo $movieId; ?> //Same warning to this, this code pre-fills the username + movieId in the table above to be the correct user + movie
+document.getElementById("movieID").value = <?php echo $movieId; ?>
 document.getElementById("movieID2").value = <?php echo $movieId; ?>
 </script>
