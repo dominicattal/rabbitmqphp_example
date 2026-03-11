@@ -62,6 +62,12 @@ function getHigherLower($count){
 	return json_decode($encoded_json,true);
 }
 
+function getSearch($query) {
+   $encoded_query = urlencode($query);
+   $encoded_json = getRequest("https://api.themoviedb.org/3/search/movie?query=$encoded_query&language=en-US&page=1");
+   return json_decode($encoded_json, true);
+}
+
 function requestProcessor($request)
 {
     echo "Printing request:\n";
@@ -79,6 +85,8 @@ function requestProcessor($request)
             return getPopularInGenre($request["genre_id"]);
 	case "higherlower":
 		return getHigherLower($request["count"]);
+	case "search":
+	    return getSearch($request["query"]); 
     }
     return array("status" => "failed", "message" => "unrecognized type");
 }

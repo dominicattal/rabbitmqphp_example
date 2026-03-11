@@ -1,7 +1,7 @@
 :root {
   --primary: #000000;
   --secondary: #FFFFFF;
-  --accent: #FF5E5B; /* Cinema Red */
+  --accent: #FF5E5B;
   --shadow: 8px 8px 0px var(--primary);
 }
 
@@ -375,7 +375,7 @@ textarea {
 }
 
 .content-wrapper {
-    background: rgba(0, 0, 0, 0.75); /* Dark overlay */
+    background: rgba(0, 0, 0, 0.75);
     border: 3px solid var(--primary);
     box-shadow: var(--shadow);
     padding: 30px;
@@ -386,12 +386,12 @@ textarea {
 }
 
 .section-title {
-	    color: var(--accent); /* Cinema Red */
-	        text-align: center;
-		    font-size: 2.5rem;
-		        margin-bottom: 20px;
-			    text-transform: uppercase;
-		    }
+    color: var(--accent); 
+    text-align: center;
+    font-size: 2.5rem;
+    margin-bottom: 20px;
+    text-transform: uppercase;
+ }
 
 .review-container {
     display: flex;
@@ -402,3 +402,46 @@ textarea {
     padding: 30px;
     box-shadow: var(--shadow);
 }
+
+.searchbar-container form {
+    display: flex;
+    align-items: center;
+}
+
+.searchbar-input {
+    border: 3px solid var(--primary);
+    padding: 8px 12px;
+    background: var(--secondary);
+    font-weight: 900;
+    width: 250px;
+    outline: none;
+    height: 45px;
+}
+
+.searchbar-btn {
+    width: 45px;
+    height: 45px;
+    background: var(--secondary);
+    color: var(--primary);
+    border: 3px solid var(--primary);
+    border-left: none;
+    cursor: pointer;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 0;
+    margin: 0;
+}
+
+.searchbar-btn::before {
+    content: "\1F50D";
+    font-size: 20px;
+}
+
+.searchbar-btn:hover {
+   background-color: var(--accent);
+   color: var(--secondary);
+   box-shadow: 4px 4px 0px var(--primary);
+   transform: translate(-2px, -2px);
+}
+

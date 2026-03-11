@@ -2,6 +2,13 @@
    <div class="logo-container">
        <a href="home.php" class="logo">MADD FOR MOVIES</a>
    </div>
+  
+   <div class="searchbar-container">
+      <form action="search.php" method="GET" style="display: flex; gap: 0; align-items: center;">
+         <input type="text" name="search" placeholder="Type movie name here" class="searchbar-input">
+         <button type="submit" class="searchbar-btn"></button>
+      </form>
+   </div>
 
    <div class="nav-links">
       <a href="home.php" class="nav-btn">HOME</a>

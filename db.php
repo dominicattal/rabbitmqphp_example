@@ -375,7 +375,6 @@ function getUpcoming()
 function addToWatchlist($user, $m_id, $m_name)
 {
       global $db_conn;
-      // Check for duplicates
       $check = "SELECT id FROM watchlist WHERE username='$user' AND movie_id='$m_id'";
       $result = $db_conn->query($check);
 
@@ -573,6 +572,23 @@ function getAllReviewsForUser($username)
     return $reviews;
 }
 
+function getSearch($request) {
+   global $db_conn;
+   $client = new rabbitMQClient("db_client.ini", "data_queue", "data");
+   $raw_search = $client->send_request($request);
+   $search = array();
+   foreach ($raw_search['results'] as $movie){
+      $info=getMovieInfo($movie["id"]);
+      $search[]=array(
+        "id"    =>$info["id"],
+        "title" =>$info["title"],
+        "vote_average"=>$info["vote_average"],
+        "poster_img_url"=>$info["poster_img_url"]
+      );
+   }
+   return array("results"=>$search);
+}
+
 function requestProcessor($request)
 {
   global $db_conn;     
@@ -616,6 +632,8 @@ function requestProcessor($request)
 	  return createReview($request['username'],$request['message'],$request['movieID'],$request['rating']);
     case "higherlower":
 	  return higherlower($request['count']);
+    case "search":
+	  return getSearch($request);
   }
   return array("returnCode" => '0', 'message'=>"Server received request and processed");
 }
