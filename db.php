@@ -579,45 +579,58 @@ function requestProcessor($request)
   echo "received request".PHP_EOL;
   var_dump($request);
   if(!isset($request['type']))
-  {
     return "ERROR: unsupported message type";
+  try {
+      switch ($request['type'])
+      {
+        case "login":
+          return doLogin($request['username'],$request['password']);
+        case "register":
+          return doRegister($request['username'],$request['email'],$request['password']);
+        case "get_email":
+          return getEmail($request['username']);
+        case "validate_session":
+          return doValidate($request['username']);
+        case "movie":
+          return getMovieInfo($request['id']);
+        case "popular":
+          return getPopularMovies($request['count']);
+        case "recommend":
+          return getRecommendations($request["username"]);
+        case "watchlist":
+          return getWatchlist($request["username"]);
+        case "upcoming":
+          return getUpcoming();
+        case "add_watchlist":
+          return addToWatchlist($request["username"], $request["movie_id"], $request["movie_name"]);
+        case "review_movie":
+          return updateReview($request['username'],$request['message'],$request['movieID'],$request['rating']);
+        case "reviewAll":
+          return reviewAll();
+        case "getAllReviewsOne":
+          return getAllReviewsOne($request['username'],$request['movieID']);
+        case "get_all_reviews_for_user":
+          return getAllReviewsForUser($request['username']);
+        case "createReview":
+          return createReview($request['username'],$request['message'],$request['movieID'],$request['rating']);
+        case "higherlower":
+          return higherlower($request['count']);
+      }
+      return array("returnCode" => '0', 'message'=>"Server received request and processed");
+  } catch (Exception $e) {
+      echo "PHP ERROR: " . $e->getMessage() . "\n";
+      $i = 1;
+      foreach ($e->getTrace() as $call) {
+          $file = $call["file"] ?? "unknown";
+          $line = $call["line"] ?? "0";
+          $function = $call["function"] ?? "unknown";
+          $class = $call["class"] ?? "";
+          $type = $call["type"] ?? "";
+          echo "  #$i $file($line): $class$type$function\n";
+          $i++;
+      }
+      return array("status" => "failed");
   }
-  switch ($request['type'])
-  {
-    case "login":
-      return doLogin($request['username'],$request['password']);
-    case "register":
-      return doRegister($request['username'],$request['email'],$request['password']);
-    case "get_email":
-      return getEmail($request['username']);
-    case "validate_session":
-      return doValidate($request['username']);
-    case "movie":
-      return getMovieInfo($request['id']);
-    case "popular":
-      return getPopularMovies($request['count']);
-    case "recommend":
-      return getRecommendations($request["username"]);
-    case "watchlist":
-      return getWatchlist($request["username"]);
-    case "upcoming":
-      return getUpcoming();
-    case "add_watchlist":
-      return addToWatchlist($request["username"], $request["movie_id"], $request["movie_name"]);
-    case "review_movie":
-      return updateReview($request['username'],$request['message'],$request['movieID'],$request['rating']);
-    case "reviewAll":
-      return reviewAll();
-    case "getAllReviewsOne":
-      return getAllReviewsOne($request['username'],$request['movieID']);
-    case "get_all_reviews_for_user":
-      return getAllReviewsForUser($request['username']);
-    case "createReview":
-	  return createReview($request['username'],$request['message'],$request['movieID'],$request['rating']);
-    case "higherlower":
-	  return higherlower($request['count']);
-  }
-  return array("returnCode" => '0', 'message'=>"Server received request and processed");
 }
 
 $server = new rabbitMQServer("db_server.ini");
