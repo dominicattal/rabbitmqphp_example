@@ -21,13 +21,16 @@ $request = array();
 //$request['movie_id'] = 1266798;
 //$request['movie_name'] = "blah blah";
 
-//$request['type'] = "recommend";
-//$request['username'] = "test_recommend";
+$request['type'] = "recommend";
+$request['username'] = "test_recommend";
 
 //$request['type'] = "get_all_reviews_for_user";
 //$request['username'] = "test_recommend";
 
-$request['type'] = "upcoming";
+//$request['type'] = "upcoming";
+
+//$request['type'] = "higherlower";
+//$request['count'] = "6";
 
 $response = $client->send_request($request);
 //$response = $client->publish($request);

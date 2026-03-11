@@ -55,6 +55,22 @@ function doLogin($username, $password)
   );
 }
 
+function escapeString($str)
+{
+    $prev = array('\\', '\'');
+    $new = array('\\\\', '\\\'');
+    $new_str = str_replace($prev, $new, $str);
+    return $new_str;
+}
+
+function unescapeString($str)
+{
+    $prev = array('\\\\', '\\\'');
+    $new = array('\\', '\'');
+    $new_str = str_replace($prev, $new, $str);
+    return $new_str;
+}
+
 function doRegister($username,$email,$password)
 {
   global $db_conn;
@@ -199,61 +215,47 @@ create_genres:
     return $genres;
 }
 
-function cacheMovieInfo($movieId, $title, $overview, $poster_img_url, $genre_id, $release_data, $vote_average)
-{
-}
-
-function getMovieInfo($movieId)
+function getMovieFromCache($movieId)
 {
     global $db_conn;
-    if (!isset($movieId)) {
-        echo "You made a dumb mistake on line " . __LINE__ . "\n";
-        return;
-    }
+    $now = time();
     $query = "SELECT * FROM movies WHERE id='$movieId'";
     $result = $db_conn->query($query);
-    $now = time();
-    if ($result->num_rows > 0) {
-        $row = $result->fetch_assoc();
-        if ($row["createdAt"] + API_CACHE_DURATION > $now) {
-            echo "Movie id $movieId ($row[title]) found in cache\n";
-            return array(
-                "id" => $movieId,
-                "title" => $row['title'],
-                "overview" => $row['overview'],
-                "poster_img_url" => $row['poster_img_url'],
-                "genre_id" => $row["genre_id"],
-		"vote_average" => $row['vote_average']
-            );
-        }
-        $query = "DELETE FROM movies WHERE id='$movieId'";
-        $db_conn->query($query);
-    }
+    if ($result->num_rows == 0)
+        return false;
+    $row = $result->fetch_assoc();
+    if ($row["createdAt"] + API_CACHE_DURATION > $now)
+        return false;
+    return array(
+        "id" => $row["movieId"],
+        "title" => unescapeString($row["title"]),
+        "overview" => unescapeString($row["overview"]),
+        "poster_img_url" => unescapeString($row["poster_img_url"]),
+        "release_date" => $row["release_date"],
+        "genre_id" => $row["genre_id"],
+        "vote_average" => $row["vote_average"]
+    );
+}
 
-    $client = new rabbitMQClient("db_client.ini", "data_queue", "data");
-    $request = array();
-    $request['type'] = "movie";
-    $request['id'] = $movieId;
-    $movie = $client->send_request($request);
+function cacheMovie($movie)
+{
+    global $db_conn;
 
-    $title = htmlspecialchars($movie['title']);
-    $overview = htmlspecialchars($movie['overview']);
+    $id = $movie["id"];
+    $title = $movie['title'];
+    $overview = $movie['overview'];
     $poster_img_url = "https://image.tmdb.org/t/p/w500" . $movie['poster_path'];
-    $genres = $movie['genres'];
-    $genre_id = ($genres) ? $genres[0]["id"] : -1;
+    $poster_img_url = $poster_img_url;
+    $genre_id = -1;
+    if (isset($movie["genres"]))
+        $genre_id = $movie["genres"][0]["id"] ?? -1;
+    if (isset($movie["genre_ids"]))
+        $genre_id = $movie["genre_ids"][0] ?? -1;
     $vote_average=$movie['vote_average'];
     $release_date = $movie["release_date"];
 
-    echo "Movie id $movieId ($title) not found in cache or expired, adding now\n";
-
-    $query = "INSERT INTO movies (id, title, overview, genre_id, poster_img_url, release_date, vote_average, createdAt) 
-                VALUES ('$movieId', '$title', '$overview', $genre_id, '$poster_img_url', '$release_date', '$vote_average', $now)";
-    $result = $db_conn->query($query);
-
-    // verify cache was successful here
-
-    return array(
-        "id" => $movieId,
+    $ret = array(
+        "id" => $id,
         "title" => $title,
         "overview" => $overview,
         "poster_img_url" => $poster_img_url,
@@ -261,9 +263,50 @@ function getMovieInfo($movieId)
         "genre_id" => $genre_id,
         "vote_average" => $vote_average
     );
+
+    $title = escapeString($title);
+    $overview = escapeString($overview);
+    $poster_img_url = escapeString($poster_img_url);
+
+    $now = time();
+    $query = "SELECT * FROM movies WHERE id='$id'";
+    $result = $db_conn->query($query);
+    if ($result->num_rows == 0) {
+        echo "Movie id $id ($title) not found in cache adding now\n";
+        $query = "INSERT INTO movies (id, title, overview, genre_id, poster_img_url, release_date, vote_average, createdAt) 
+                    VALUES ('$id', '$title', '$overview', $genre_id, '$poster_img_url', '$release_date', '$vote_average', $now)";
+        $result = $db_conn->query($query);
+        return $ret;
+    }
+    $row = $result->fetch_assoc();
+    if ($row["createdAt"] + API_CACHE_DURATION > $now) {
+        echo "Movie id $id ($title) found in cache but was expired, updating now\n";
+        $query = "UPDATE movies SET createdAt=$now WHERE id='$id'";
+        $result = $db_conn->query($query);
+        return $ret;
+    }
+
+    return $ret;
 }
 
-function getPopularMovies($count)
+function getMovie($movieId)
+{
+    global $db_conn;
+
+    $movie = getMovieFromCache($movieId);
+    if ($movie)
+        return $movie;
+
+    $client = new rabbitMQClient("db_client.ini", "data_queue", "data");
+    $request = array();
+    $request['type'] = "movie";
+    $request['id'] = $movieId;
+    $movie = $client->send_request($request);
+
+    return cacheMovie($movie);
+}
+
+function getPopularMovies()
 {
     global $db_conn;
     $query = "SELECT * FROM popular_movies";
@@ -273,11 +316,11 @@ function getPopularMovies($count)
     if ($result->num_rows == 0)
         goto update_popular;
     $row = $result->fetch_assoc();
-    if ($row["createdAt"] + API_CACHE_DURATION < $now)
+    if ($row["createdAt"] + API_CACHE_DURATION > $now)
         goto delete_popular;
     echo "Retrieving popular movies from cache\n";
     while ($row) {
-        array_push($popular, getMovieInfo($row["id"]));
+        array_push($popular, getMovie($row["id"]));
         $row = $result->fetch_assoc();
     }
     return $popular;
@@ -285,23 +328,19 @@ function getPopularMovies($count)
 delete_popular:
     $query = "DELETE FROM popular_movies";
     $result = $db_conn->query($query);
-    // verify success here
 
 update_popular:
     echo "Popular movies either not cached or expired, retrieving now\n";
     $client = new rabbitMQClient("db_client.ini", "data_queue", "data");
     $request = array();
     $request['type'] = "popular";
-    $request['count'] = 10;
     $movies_data = $client->send_request($request);
     $movies = $movies_data["results"];
     foreach ($movies as $movie) {
+        array_push($popular, cacheMovie($movie));
         $query = "INSERT INTO popular_movies (id, createdAt) VALUES ('$movie[id]', $now)";
-        array_push($popular, getMovieInfo($movie['id']));
         $db_conn->query($query);
     }
-
-    $popular = $movies_data;
     return $popular;
 }
 
@@ -319,7 +358,7 @@ function getRecommendations($username)
     }
     $row = $result->fetch_assoc();
     $movie_id = $row["movie_id"];
-    $movie = getMovieInfo($movie_id);
+    $movie = getMovie($movie_id);
     $movie_title = $movie["title"];
     $genres = getGenres();
 
@@ -332,13 +371,11 @@ function getRecommendations($username)
     $movies = array();
 
     foreach ($raw_movies as $movie) {
-        array_push($movies, getMovieInfo($movie["id"]));
+        array_push($movies, cacheMovie($movie));
     }
 
-    // cache
-
     return array(
-        "found_movie" => true,
+        "found" => true,
         "movie_id" => $movie_id,
         "movie_title" => $movie_title,
         "results" => $movies
@@ -352,7 +389,7 @@ function getWatchlist($user)
       $result = $db_conn->query($query);
       $list = [];
       while ($row = $result->fetch_assoc()) { 
-          $list[] = getMovieInfo($row["movie_id"]); 
+          $list[] = getMovie($row["movie_id"]); 
       }
       return $list; // Added the return to fix the hang - ME
 }
@@ -364,10 +401,9 @@ function getUpcoming()
     $request = array();
     $request['type'] = "upcoming";
     $raw_upcoming = $client->send_request($request);
-    var_dump($raw_upcoming);
     $upcoming = array();
     foreach ($raw_upcoming["results"] as $movie) {
-        array_push($upcoming, getMovieInfo($movie["id"]));
+        array_push($upcoming, cacheMovie($movie));
     }
     return $upcoming;
 }
@@ -524,7 +560,10 @@ function reviewAll()
 function higherlower($count){
 	global $db_conn;
 	$now=time();
-	$query="SELECT id, title, vote_average, poster_img_url FROM movies ORDER BY rand() limit $count";
+    $date = new DateTime();
+    $formatted_date = $date->format("Y-m-d");
+    echo $formatted_date . "\n";
+	$query="SELECT id, title, vote_average, poster_img_url FROM movies WHERE release_date<$formatted_date ORDER BY rand() limit $count";
 	$result=$db_conn->query($query);
 	if($result->num_rows>=$count){
 		echo "get movies for higher lower\n";
@@ -545,13 +584,14 @@ function higherlower($count){
 	$moviesdata=$client->send_request($request);
 	$movieList=$moviesdata["results"];
 	foreach ($movieList as $movie){
-		$info=getMovieInfo($movie["id"]);
+        var_dump($movie);
+		$info=cacheMovie($movie);
 		$movies[]=array(
-		"id"	=>$info["id"],
-		"title"	=>$info["title"],
-		"vote_average"=>$info["vote_average"],
-		"poster_img_url"=>$info["poster_img_url"]
-	);
+            "id"	=>$info["id"],
+            "title"	=>$info["title"],
+            "vote_average"=>$info["vote_average"],
+            "poster_img_url"=>$info["poster_img_url"]
+        );
 	}
 	return array("results"=>$movies);
 }
@@ -566,7 +606,7 @@ function getAllReviewsForUser($username)
         $review = array(
             "score" => $row["score"],
             "review" => $row["review"],
-            "movie" => getMovieInfo($row["movie_id"])
+            "movie" => getMovie($row["movie_id"])
         );
         array_push($reviews, $review);
     }
@@ -592,9 +632,9 @@ function requestProcessor($request)
         case "validate_session":
           return doValidate($request['username']);
         case "movie":
-          return getMovieInfo($request['id']);
+          return getMovie($request['id']);
         case "popular":
-          return getPopularMovies($request['count']);
+          return getPopularMovies();
         case "recommend":
           return getRecommendations($request["username"]);
         case "watchlist":
