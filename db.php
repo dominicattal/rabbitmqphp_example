@@ -225,13 +225,21 @@ function getMovieFromCache($movieId)
         return false;
     $row = $result->fetch_assoc();
     if ($row["createdAt"] + API_CACHE_DURATION > $now)
-        return false;
+	return false;
+    $today = date("Y-m-d");
+    $date_release = $row["release_date" ?? ""];
+    $release_state = "";
+    if ($date_release > $today) {
+       $row["release"] = "Releases: " . $date_release;
+    }
+
     return array(
-        "id" => $row["movieId"],
+        "id" => $row["id"],
         "title" => unescapeString($row["title"]),
         "overview" => unescapeString($row["overview"]),
         "poster_img_url" => unescapeString($row["poster_img_url"]),
-        "release_date" => $row["release_date"],
+	"release_date" => $row["release_date"],
+	"release_state" => $release_state,
         "genre_id" => $row["genre_id"],
         "vote_average" => $row["vote_average"]
     );
@@ -253,13 +261,20 @@ function cacheMovie($movie)
         $genre_id = $movie["genre_ids"][0] ?? -1;
     $vote_average=$movie['vote_average'];
     $release_date = $movie["release_date"];
+    $today = date("Y-m-d");
+    $date_release = $movie['release_date'] ?? "TBD";
+    $release = "";
+    if ($date_release > $today) {
+       $release = "Releases: " . $date_release;
+    }
 
     $ret = array(
         "id" => $id,
         "title" => $title,
         "overview" => $overview,
         "poster_img_url" => $poster_img_url,
-        "release_date" => $release_date,
+	"release_date" => $release_date,
+	"release_state" => $release,
         "genre_id" => $genre_id,
         "vote_average" => $vote_average
     );
