@@ -10,8 +10,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         'type' => "add_watchlist",
         'username' => $_POST["username"],
         'movie_id' => $_POST['movie_id'],
-	'movie_name' => $_POST['movie_name'],
-	'release_date' => $_POST['release_date'] ?? 'TBD'
+        'movie_name' => $_POST['movie_name'],
+        'release_date' => $_POST['release_date'] ?? 'TBD'
     ];
 
     $response = $client->send_request($request);

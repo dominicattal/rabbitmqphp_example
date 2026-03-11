@@ -27,7 +27,13 @@ $request = array();
 //$request['type'] = "get_all_reviews_for_user";
 //$request['username'] = "test_recommend";
 
-$request['type'] = "upcoming";
+//$request['type'] = "upcoming";
+
+$request['type'] = "higherlower";
+$request['count'] = "6";
+
+//$request['type'] = "search";
+//$request['query'] = "Shelter";
 
 $response = $client->send_request($request);
 //$response = $client->publish($request);

@@ -6,14 +6,16 @@ For the website to successfully run locally, the db, broker, and data processor 
 
 ### Run commands
 
-`rcbroker.sh`         -> run commands for the rabbitmq server \
-`rcbroker_clean.sh`   -> run commands for cleaning up all the stuff in rcbroker.sh \
-`rcbroker_purge.sh`   -> run commands for purging all of the queues of messages \
-`rcdb.sh`             -> run commands for the database server \
-`rcdb_clean.sh`       -> run commands for cleaning up all the stuff in rcdb.sh \
-`rcdb_clear.sh`       -> run commands for clearing the cached api calls
+Run commands are in the `rc` directory
 
-execute these like `sudo ./rcbroker.sh`
+`broker.sh`         -> run commands for the rabbitmq server \
+`broker_clean.sh`   -> run commands for cleaning up all the stuff in rcbroker.sh \
+`broker_purge.sh`   -> run commands for purging all of the queues of messages \
+`db.sh`             -> run commands for the database server \
+`db_clean.sh`       -> run commands for cleaning up all the stuff in rcdb.sh \
+`db_purge.sh`       -> run commands for purging the cached api calls
+
+execute these like `sudo rc/broker.sh`
 
 ### Ini files
 
@@ -110,9 +112,9 @@ Documentation for types of queries you can make to DB VM
 
 [recommend]
 > [username] [string] user to recommend to
-< [found_movie] [bool] whether a movie was found to recommend based off of
-< [movie_id] [string] if `found_movie` is true, then it is the id of the movie used for recommendation
-< [movie_title] [string] if `found_movie` is true, then it is the title of the movie used for recommendation
+< [found] [bool] whether a movie was found to recommend based off of
+< [movie_id] [string] if `found` is true, then it is the id of the movie used for recommendation
+< [movie_title] [string] if `found` is true, then it is the title of the movie used for recommendation
 < [results] [array] the recommended movies, formatted the same way as in movie
 = gets some movies that the user might like. recommendations are based on reviews; if the user has one or more movies rated 7 or above, it will look for movies in the same genre. otherwise, it will just return popular movies
 ```
@@ -138,7 +140,6 @@ If the frontend wants to call an endpoint, do it from the db.
 = gets all of the info relted to a movie
 
 [popular]
-> [count] [int] the number of movies to return
 = returns popular movies, basically just the basicaly tmdb api call
 
 [genres]

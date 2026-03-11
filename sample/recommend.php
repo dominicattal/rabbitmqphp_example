@@ -2,7 +2,8 @@
 <body class="home-body">
     <?php include "navbar.php"; ?>
    <main class="content-wrapper">
-      <h1 class="section-title">YOUR WATCHLIST</h1>
+      <h1 class="section-title">RECOMMENDED</h1>
+
       <div class="movie-grid">
       </div>
 
@@ -11,8 +12,13 @@
 <script>
 function addMovies(movies)
 {
+    let found = movies.found;
+    if (found) {
+        let section_title = document.getElementsByClassName("section-title")[0];
+        section_title.textContent = `Since you liked '${movies.movie_title}...'`;
+    }
+    movies = movies.results;
     let movie_grid = document.getElementsByClassName("movie-grid")[0];
-    console.log(movies);
     if (movies.length == 0) {
         let p_tag = document.createElement("p");
         p_tag.setAttribute("style", "color: white; text-align: center; padding: 20px;");
@@ -42,11 +48,11 @@ function addMovies(movies)
         movie_details.appendChild(movie_title);
     }
 }
-function getWatchlist() 
+function getRecommended() 
 {
 	var request = new XMLHttpRequest();
     let username = sessionStorage.getItem("username");
-	request.open("POST","watchlist_handler.php",true);
+	request.open("POST","recommend_handler.php",true);
 	request.setRequestHeader("Content-Type","application/x-www-form-urlencoded");
 	request.onreadystatechange = function ()
     {
@@ -59,6 +65,6 @@ function getWatchlist()
 }
 
 
-getWatchlist();
+getRecommended();
 </script>
 </html>

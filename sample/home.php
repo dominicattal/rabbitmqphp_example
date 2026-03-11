@@ -1,20 +1,8 @@
-<script>
-//This if statement checks if a user is logged in
-//If not, dumps them at the log in screen
-  //At some point this might need to be changed to check for session info aswell - ME
-if(!sessionStorage.getItem("username"))
-{
-
-  window.location.href = "login.html";
-}
-</script>
-
 <?php
 require_once('../rabbitMQLib.inc');
 $client = new rabbitMQClient("web_client.ini", "db_web_queue", "db_web");
 $request = array();
 $request['type'] = "popular";
-$request['count'] = 10;
 $response = $client->send_request($request);
 $movies = $response;
 ?>
@@ -29,7 +17,7 @@ $movies = $response;
     <?php foreach ($movies as $movie): 
         $title = $movie['title'];
         $movieId = $movie['id']; 
-        $poster = "https://image.tmdb.org/t/p/w500" . $movie['poster_img_url'];
+        $poster = $movie['poster_img_url'];
     ?>
         <a href="details.php?id=<?php echo $movieId; ?>" class="movie-link">
             <div class="movie-card">

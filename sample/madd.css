@@ -396,7 +396,7 @@ textarea {
 .review-container {
     display: flex;
     gap: 40px;
-    width: 500px;
+    width: 100%;
     background: var(--secondary);
     border: 4px solid var(--primary);
     padding: 30px;

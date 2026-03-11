@@ -9,7 +9,6 @@ $response = $client->send_request($request);
 
 <?php include "header.php"; ?>
    <body class="home-body">
-      <?php include "navbar.php"; ?>
       <main class="content-wrapper">
          <h1 class="section-title">USER REVIEWS</h1>
          <div class="reviews-list">
