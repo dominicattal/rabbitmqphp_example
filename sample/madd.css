@@ -404,7 +404,7 @@ textarea {
 .searchbar-container form {
     display: flex;
     align-items: center;
-    padding: 10px;
+    padding: 5px;
 }
 
 .searchbar-input {
@@ -412,7 +412,7 @@ textarea {
     padding: 8px 12px;
     background: var(--secondary);
     font-weight: 900;
-    width: 220px;
+    width: 280px;
     outline: none;
     height: 45px;
 }
@@ -428,7 +428,7 @@ textarea {
     display: flex;
     justify-content: center;
     align-items: center;
-    padding: 10px;
+    padding:10px;
     margin: 0;
 }
 
