@@ -31,7 +31,6 @@ if (is_array($watchlist)) {
     <?php include "navbar.php"; ?>
    <main class="content-wrapper">
       <h1 class="section-title">YOUR WATCHLIST</h1>
-
       <div class="movie-grid">
       </div>
 

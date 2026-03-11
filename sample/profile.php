@@ -1,80 +1,64 @@
 <?php include "header.php"; ?>
 <body class="home-body">
-    <?php include "navbar.php"; ?>
-    <main class="content-wrapper">
-        <h2 class="section-title">PROFILE</h2> 
-        <div class="details-container">
-            <h5 id="profile-name"></h5>
-            <h5 id="profile-email"></h5>
-        </div>
-        <h2 class="section-title">REVIEWS</h2> 
-        <div class="movie-grid">
-            <div class="review-container">
-                <img class="review-movie-img" src="https://image.tmdb.org/t/p/w500https://image.tmdb.org/t/p/w500/oJ7g2CifqpStmoYQyaLQgEU32qO.jpg" width="120px" height="300px"></img>
-                <h3 class="review-movie-title">Title of Movie Here</h3>
-                <p class="review-score">Score of movie here</p>
-                <p class="review">Review of movie here</p>
-            </div>
-        </div>
-    </main>
+   <?php include "navbar.php"; ?>
+   <main class="content-wrapper">
+      <div class="profile-header" style="text-align: center; margin-bottom: 40px;">
+	 <h1 class="section-title">USER PROFILE</h1>
+	 <div class="movie-card" style="display: inline-block; padding: 20px; min-width: 300px;">
+            <h2 id="profile-name" style="color: var(--accent);"></h2>
+            <p id="profile-email" style="margin-top: 10px; font-weight: bold;"></p>
+         </div> 
+      </div>
+
+      <h2 class="section-title">YOUR REVIEWS</h2>
+      <div class="movie-grid" id="reviews-grid"></div>
+   </main>
 </body>
 
 <script>
-var username = sessionStorage.getItem("username");
-var email = sessionStorage.getItem("email");
+const username = sessionStorage.getItem("username");
+const email = sessionStorage.getItem("email");
+
 if (username) {
-    let profile_name = document.getElementById("profile-name");
-    profile_name.textContent = `Username: ${username}`;
-    let profile_email = document.getElementById("profile-email");
-    profile_email.textContent = `Email: ${email}`;
-} else {
-    window.location.href="login.html";
+   document.getElementById("profile-name").textContent = `@${username}`;
+   document.getElementById("profile-email").textContent = email;
+}
+else {
+   window.location.href="login.html";
 }
 
-function addReviews(movies)
-{
-    let movie_grid = document.getElementsByClassName("movie-grid")[0];
-    console.log(movies);
-    for (movie of movies) {
-        let review_container = document.createElement("div");
-        review_container.classList.add("review-container");
-        movie_grid.appendChild(review_container);
-        let review_movie_img = document.createElement("img");
-        review_movie_img.setAttribute("src", movie.movie.poster_img_url);
-        review_movie_img.setAttribute("width", "120px");
-        review_movie_img.setAttribute("height", "300px");
-        review_movie_img.classList.add("review-movie-img");
-        review_container.appendChild(review_movie_img);
-        let review_movie_title = document.createElement("h3");
-        review_movie_title.classList.add("review-movie-title");
-        review_movie_title.textContent = movie.movie.title;
-        review_container.appendChild(review_movie_title);
-        let review_score = document.createElement("p");
-        review_score.classList.add("review-score");
-        review_score.textContent = movie.score;
-        review_container.appendChild(review_score);
-        let review = document.createElement("p");
-        review.classList.add("review");
-        review.textContent = movie.review;
-        review_container.appendChild(review);
-    }
+function addReviews(reviews) {
+   let grid = document.getElementById("reviews-grid");
+   grid.innerHTML = "";
+   if (!Array.isArray(reviews) || reviews.length === 0) {
+      grid.innerHTML = "<p style='color: white; text-align: center; padding: 20px;'>No reviews yet.</p>";
+      return; 
+   }
+   reviews.forEach(item => {
+      let card = document.createElement("div");
+      card.className = "movie-card";
+      card.style.padding = "15px";
+      card.innerHTML = `
+         <img class="movie-poster" src="${item.movie.poster_img_url}" style="height: 250px;">
+         <div class="movie-details">
+	    <h3 class="movie-title">${item.movie.title}</h3>
+            <p style="color: var(--accent); font-weight: bold;">Score: ${item.score}/10</p>
+	    <p style="font-size: 0.9em; margin-top: 5px;">"${item.review}"</p>
+	 </div>`;
+      grid.appendChild(card);
+   });
 }
 
-function getReviews() 
-{
-	var request = new XMLHttpRequest();
-    let username = sessionStorage.getItem("username");
-	request.open("POST","get_reviews_handler.php",true);
-	request.setRequestHeader("Content-Type","application/x-www-form-urlencoded");
-	request.onreadystatechange = function ()
-    {
-		if ((this.readyState == 4)&&(this.status == 200))
-		{
-            addReviews(JSON.parse(this.responseText));
-		}		
-	}
-	request.send(`username=${username}`);
+function getReviews() {
+   var request = new XMLHttpRequest();
+   request.open("POST","get_reviews_handler.php", true);
+   request.setRequestHeader("Content-Type","application/x-www-form-urlencoded");
+   request.onreadystatechange = function () {
+       if (this.readyState == 4 && this.status == 200) {
+              addReviews(JSON.parse(this.responseText));   
+       }
+   }
+   request.send(`username=${username}`);
 }
-
 getReviews();
 </script>

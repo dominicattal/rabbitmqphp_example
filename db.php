@@ -223,7 +223,8 @@ function getMovieInfo($movieId)
                 "overview" => $row['overview'],
                 "poster_img_url" => $row['poster_img_url'],
                 "genre_id" => $row["genre_id"],
-		"vote_average" => $row['vote_average']
+		"vote_average" => $row['vote_average'],
+		"release_date" => $row['release_date']
             );
         }
         $query = "DELETE FROM movies WHERE id='$movieId'";
@@ -242,12 +243,12 @@ function getMovieInfo($movieId)
     $genres = $movie['genres'];
     $genre_id = ($genres) ? $genres[0]["id"] : -1;
     $vote_average=$movie['vote_average'];
-    $release_date = $movie["release_date"];
+    $release_date = $movie['release_date'] ?? 'TBD';
 
     echo "Movie id $movieId ($title) not found in cache or expired, adding now\n";
 
-    $query = "INSERT INTO movies (id, title, overview, genre_id, poster_img_url, release_date, vote_average, createdAt) 
-                VALUES ('$movieId', '$title', '$overview', $genre_id, '$poster_img_url', '$release_date', '$vote_average', $now)";
+    $query = "INSERT INTO movies (id, title, overview, genre_id, poster_img_url, vote_average, release_date, createdAt) 
+                VALUES ('$movieId', '$title', '$overview', $genre_id, '$poster_img_url', '$vote_average', '$release_date', $now)";
     $result = $db_conn->query($query);
 
     // verify cache was successful here
@@ -357,6 +358,7 @@ function getWatchlist($user)
       return $list; // Added the return to fix the hang - ME
 }
 
+<<<<<<< HEAD
 function getUpcoming()
 {
     global $db_conn;
@@ -373,13 +375,16 @@ function getUpcoming()
 }
 
 function addToWatchlist($user, $m_id, $m_name)
+=======
+function addToWatchlist($user, $m_id, $m_name, $r_date)
+>>>>>>> 0f83ca714f7c9786ca36f32409129ac9cdeb9d0d
 {
       global $db_conn;
       $check = "SELECT id FROM watchlist WHERE username='$user' AND movie_id='$m_id'";
       $result = $db_conn->query($check);
 
       if ($result->num_rows == 0) {
-        $query = "INSERT INTO watchlist (username, movie_id, movie_name) VALUES ('$user', '$m_id', '$m_name')";
+        $query = "INSERT INTO watchlist (username, movie_id, movie_name, release_date) VALUES ('$user', '$m_id', '$m_name', '$r_date')";
         $db_conn->query($query);
         return array("status" => "success", "message" => "Added successfully");
       }
@@ -619,7 +624,7 @@ function requestProcessor($request)
     case "upcoming":
       return getUpcoming();
     case "add_watchlist":
-      return addToWatchlist($request["username"], $request["movie_id"], $request["movie_name"]);
+      return addToWatchlist($request["username"], $request["movie_id"], $request["movie_name"], $request["release_date"] ?? 'TBD');
     case "review_movie":
       return updateReview($request['username'],$request['message'],$request['movieID'],$request['rating']);
     case "reviewAll":

@@ -13,6 +13,7 @@ $movie = $client->send_request($request);
 $title = $movie['title'];
 $overview = $movie['overview'];
 $poster = "https://image.tmdb.org/t/p/w500" . $movie['poster_img_url'];
+$release_date = $movie['release_date'] ?? 'TBD';
 ?>
 
 <script>
@@ -40,13 +41,13 @@ if(!sessionStorage.getItem("username"))
 
                     <button type="button" 
                         class="nav-btn" 
-                        onclick="addToWatchlist('<?php echo $movieId; ?>', '<?php echo addslashes($title); ?>')">
+			onclick="addToWatchlist('<?php echo $movieId; ?>', '<?php echo addslashes($title); ?>', '<?php echo $release_date; ?>')">
                         + ADD TO WATCHLIST
                     </button>
                     <p id="watchlist-msg" style="margin-top: 10px; font-weight: bold;"></p>
                    
                    <script>
-                   function addToWatchlist(id, name) {
+                   function addToWatchlist(id, name, date) {
                       const msg = document.getElementById('watchlist-msg');
                       msg.textContent = "Adding...";
                       let username = sessionStorage.getItem("username");
@@ -54,7 +55,7 @@ if(!sessionStorage.getItem("username"))
                       fetch('watchlist_add.php', {
                          method: 'POST',
                          headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-                         body: `username=${username}&movie_id=${id}&movie_name=${encodeURIComponent(name)}`
+                         body: `username=${username}&movie_id=${id}&movie_name=${encodeURIComponent(name)}&release_date=${date}`
                       })
                       .then(response => response.json())
                       .then(data => {
