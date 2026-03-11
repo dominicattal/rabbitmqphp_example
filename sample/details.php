@@ -112,7 +112,7 @@ Post request to reviews_handler sending currentpage (defunct), username, movieID
     <input type="hidden" name="movieID" id="movieID2" required />
   </div>
   <div>
-    <input type="submit" value="See all reviews here!" />
+    <a href="reviewsView.html"><button>See all reviews here!</button>
   </div>
 </form>
 <p id="reviewListOne"></p>
@@ -120,7 +120,6 @@ Post request to reviews_handler sending currentpage (defunct), username, movieID
 </main>
 </body>
 </html>
-
 
 <script>
 document.getElementById("username2").value = sessionStorage.getItem("username");
