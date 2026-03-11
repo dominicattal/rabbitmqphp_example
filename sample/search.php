@@ -38,7 +38,12 @@ $movies = $response['results'];
             <div class="movie-card">
                 <div class="poster-container">
                     <img src="<?php echo $poster; ?>" alt="<?php echo $title; ?> Poster" class="movie-poster">
-                </div>
+		</div>
+                <h3><?php echo $title; ?></h3>
+
+		<?php if (!empty($movie['release_state'])): ?>
+                   <p class="movie-date"><?php echo $movie['release_state']; ?></p>
+                <?php endif; ?>
             </div>
 	</a>
 	<?php endforeach; ?>

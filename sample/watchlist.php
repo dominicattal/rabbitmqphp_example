@@ -39,7 +39,13 @@ function addMovies(movies)
         let movie_title = document.createElement("h3");
         movie_title.classList.add("movie-title");
         movie_title.textContent = movie.title;
-        movie_details.appendChild(movie_title);
+	movie_details.appendChild(movie_title);
+	if (movie.release_state !== "" ) {
+	   let movie_date = document.createElement("p");
+	   movie_date.classList.add("movie-date");
+	   movie_date.textContent = movie.release_state;
+	   movie_details.appendChild(movie_date);
+        }
     }
 }
 function getWatchlist() 
