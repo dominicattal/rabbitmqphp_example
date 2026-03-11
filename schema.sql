@@ -40,6 +40,7 @@ CREATE TABLE IF NOT EXISTS movies (
     overview VARCHAR(2048) NOT NULL,
     poster_img_url VARCHAR(255) NOT NULL,
     vote_average FLOAT NOT NULL,
+    release_date VARCHAR(32) NOT NULL,
     createdAt BIGINT NOT NULL
 );
 

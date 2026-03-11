@@ -6,7 +6,8 @@
    <div class="nav-links">
       <a href="home.php" class="nav-btn">HOME</a>
       <a href="reviewsView.html" class="nav-btn">REVIEWS</a>
-  <a href="higherlower.php" class="nav-btn">HIGHER/LOWER</a>
+      <a href="upcoming.php" class="nav-btn">UPCOMING</a>
+      <a href="higherlower.php" class="nav-btn">HIGHER/LOWER</a>
       <div class="profile-dropdown">
           <button class="nav-btn">PROFILE ▼</button>
           <div class="dropdown-content">

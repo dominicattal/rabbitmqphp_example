@@ -24,8 +24,10 @@ $request = array();
 //$request['type'] = "recommend";
 //$request['username'] = "test_recommend";
 
-$request['type'] = "get_all_reviews_for_user";
-$request['username'] = "test_recommend";
+//$request['type'] = "get_all_reviews_for_user";
+//$request['username'] = "test_recommend";
+
+$request['type'] = "upcoming";
 
 $response = $client->send_request($request);
 //$response = $client->publish($request);
