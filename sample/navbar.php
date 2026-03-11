@@ -2,10 +2,19 @@
    <div class="logo-container">
        <a href="home.php" class="logo">MADD FOR MOVIES</a>
    </div>
+  
+   <div class="searchbar-container">
+      <form action="search.php" method="GET" style="display: flex; gap: 0; align-items: center;">
+         <input type="text" name="search" placeholder="Type movie name here" class="searchbar-input">
+         <button type="submit" class="searchbar-btn"></button>
+      </form>
+   </div>
 
    <div class="nav-links">
       <a href="home.php" class="nav-btn">HOME</a>
-  <a href="higherlower.php" class="nav-btn">HIGHER/LOWER</a>
+      <a href="upcoming.php" class="nav-btn">UPCOMING</a>
+      <a href="higherlower.php" class="nav-btn">HIGHER/LOWER</a>
+      <a href="recommend.php" class="nav-btn">RECOMMENDED</a>
       <div class="profile-dropdown">
           <button class="nav-btn">PROFILE ▼</button>
           <div class="dropdown-content">

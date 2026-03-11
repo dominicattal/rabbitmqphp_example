@@ -30,7 +30,8 @@ CREATE TABLE IF NOT EXISTS watchlist (
     id INT AUTO_INCREMENT PRIMARY KEY,
     username VARCHAR(255) NOT NULL,
     movie_id VARCHAR(255) NOT NULL,
-    movie_name VARCHAR(255) NOT NULL
+    movie_name VARCHAR(255) NOT NULL,
+    release_date VARCHAR(20) NOT NULL
 );
 
 CREATE TABLE IF NOT EXISTS movies (
@@ -40,7 +41,8 @@ CREATE TABLE IF NOT EXISTS movies (
     overview VARCHAR(2048) NOT NULL,
     poster_img_url VARCHAR(255) NOT NULL,
     vote_average FLOAT NOT NULL,
-    createdAt BIGINT NOT NULL
+    createdAt BIGINT NOT NULL,
+    release_date VARCHAR(20) NOT NULL
 );
 
 CREATE TABLE IF NOT EXISTS popular_movies (

@@ -33,15 +33,15 @@ function getMovie($id)
     return json_decode($encoded_json, true);
 }
 
-function getPopularMovies($count)
+function getPopularMovies()
 {
     $encoded_json = getRequest('https://api.themoviedb.org/3/movie/popular?language=en-US&page=1');
     return json_decode($encoded_json, true);
 }
 
-function getUpcomingMovies()
+function getUpcoming()
 {
-    $encoded_json = getRequest('https://api.themoviedb.org/3/movie/upcoming?language=en-US&page=1');
+    $encoded_json = getRequest('https://api.themoviedb.org/3/discover/movie?page=1&sort_by=popularity.desc&primary_release_date.gte=2026-03-10&primary_release_date.lte=2026-04-10&with_release_type=3&language=en-US&region=US');
     return json_decode($encoded_json, true);
 }
 
@@ -56,9 +56,16 @@ function getPopularInGenre($genre_id)
     $encoded_json = getRequest("https://api.themoviedb.org/3/discover/movie?language=en-US&with_genres=$genre_id");
     return json_decode($encoded_json, true);
 }
+
 function getHigherLower($count){
 	$encoded_json=getRequest("https://api.themoviedb.org/3/discover/movie");
 	return json_decode($encoded_json,true);
+}
+
+function getSearch($query) {
+   $encoded_query = urlencode($query);
+   $encoded_json = getRequest("https://api.themoviedb.org/3/search/movie?query=$encoded_query&language=en-US&page=1");
+   return json_decode($encoded_json, true);
 }
 
 function requestProcessor($request)
@@ -67,17 +74,19 @@ function requestProcessor($request)
     var_dump($request);
     switch ($request["type"]) {
         case "popular":
-            return getPopularMovies($request["count"]);
+            return getPopularMovies();
         case "movie":
 	        return getMovie($request["id"]);
-	case "upcoming":
-            return getUpcomingMovies();
+        case "upcoming":
+            return getUpcoming();
         case "genres":
             return getGenres();
         case "popular_in_genre":
             return getPopularInGenre($request["genre_id"]);
 	case "higherlower":
 		return getHigherLower($request["count"]);
+	case "search":
+	    return getSearch($request["query"]); 
     }
     return array("status" => "failed", "message" => "unrecognized type");
 }

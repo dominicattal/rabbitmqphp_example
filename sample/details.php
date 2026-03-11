@@ -13,6 +13,7 @@ $movie = $client->send_request($request);
 $title = $movie['title'];
 $overview = $movie['overview'];
 $poster = "https://image.tmdb.org/t/p/w500" . $movie['poster_img_url'];
+$release_date = $movie['release_date'] ?? 'TBD';
 ?>
 
 <script>
@@ -40,13 +41,13 @@ if(!sessionStorage.getItem("username"))
 
                     <button type="button" 
                         class="nav-btn" 
-                        onclick="addToWatchlist('<?php echo $movieId; ?>', '<?php echo addslashes($title); ?>')">
+			onclick="addToWatchlist('<?php echo $movieId; ?>', '<?php echo addslashes($title); ?>', '<?php echo $release_date; ?>')">
                         + ADD TO WATCHLIST
                     </button>
                     <p id="watchlist-msg" style="margin-top: 10px; font-weight: bold;"></p>
                    
                    <script>
-                   function addToWatchlist(id, name) {
+                   function addToWatchlist(id, name, date) {
                       const msg = document.getElementById('watchlist-msg');
                       msg.textContent = "Adding...";
                       let username = sessionStorage.getItem("username");
@@ -54,7 +55,7 @@ if(!sessionStorage.getItem("username"))
                       fetch('watchlist_add.php', {
                          method: 'POST',
                          headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-                         body: `username=${username}&movie_id=${id}&movie_name=${encodeURIComponent(name)}`
+                         body: `username=${username}&movie_id=${id}&movie_name=${encodeURIComponent(name)}&release_date=${date}`
                       })
                       .then(response => response.json())
                       .then(data => {
@@ -70,7 +71,9 @@ if(!sessionStorage.getItem("username"))
                 </div>
             </div>
 
-<!--The stuff to make a review possible -ME -->
+
+<!--The stuff to make a review possible -ME
+Post request to reviews_handler sending currentpage (defunct), username, movieID, and user's review-->
 <form action="reviews_handler.php" method="post" id="review_handler">
 <div>
   <input type="hidden" name="currentPage" id="currentPage" value="">
@@ -110,26 +113,19 @@ if(!sessionStorage.getItem("username"))
     <input type="hidden" name="movieID" id="movieID2" required />
   </div>
   <div>
-    <input type="submit" value="See all reviews here!" />
+    <a href="reviewsView.html"><button>See all reviews here!</button></a>
   </div>
 </form>
 <p id="reviewListOne"></p>
 </div>
-
-<!-- Rather than just showing all reviews, ya gotta press a button for it! -ME
-Button being replace with a form so I can send data - ME
-<form action="reviewsView_handler.php" method="get">
-    <button type="submit">Show Reviews</button>
-</form>-->
-	
-
-    </main>
+</main>
 </body>
 </html>
 
+
 <script>
-document.getElementById("username2").value = sessionStorage.getItem("username"); //DO NOT REMOVE THIS OR STUFF BREAKS! -ME
+document.getElementById("username2").value = sessionStorage.getItem("username");
 document.getElementById("username3").value = sessionStorage.getItem("username");
-document.getElementById("movieID").value = <?php echo $movieId; ?> //Same warning to this, this code pre-fills the username + movieId in the table above to be the correct user + movie
+document.getElementById("movieID").value = <?php echo $movieId; ?>
 document.getElementById("movieID2").value = <?php echo $movieId; ?>
 </script>
