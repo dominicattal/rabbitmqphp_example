@@ -282,11 +282,10 @@ textarea {
     position: sticky;
     top: 0;
     z-index: 1000;
-    display: flex;
+    display:flex; 
     justify-content: space-between;
-    
     align-items: center; 
-    padding: 10px 50px;
+    padding: 10px 10px;
     background: var(--secondary);
     border-bottom: 4px solid var(--primary);
     width: 100%;
@@ -294,7 +293,6 @@ textarea {
 
 .nav-links {
     display: flex;
-    
     align-items: center; 
     gap: 15px;
 }
@@ -308,11 +306,11 @@ textarea {
     background: var(--secondary);
     cursor: pointer;
     font-family: 'Courier New', monospace;
-    
+    font-size:10px;
     margin: 0; 
     display: inline-flex;
     align-items: center;
-    height: 40px; 
+    height: 30px; 
 }
 
 .nav-btn:hover {
@@ -406,6 +404,7 @@ textarea {
 .searchbar-container form {
     display: flex;
     align-items: center;
+    padding: 10px;
 }
 
 .searchbar-input {
@@ -413,7 +412,7 @@ textarea {
     padding: 8px 12px;
     background: var(--secondary);
     font-weight: 900;
-    width: 250px;
+    width: 220px;
     outline: none;
     height: 45px;
 }
@@ -429,7 +428,7 @@ textarea {
     display: flex;
     justify-content: center;
     align-items: center;
-    padding: 0;
+    padding: 10px;
     margin: 0;
 }
 
