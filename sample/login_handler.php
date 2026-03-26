@@ -15,10 +15,13 @@ require_once('../rabbitMQLib.inc');
 
 $client = new rabbitMQClient("../web_client.ini", "db_web_queue", "db_web");
 
+//$encryptedPassword = password_hash($password,PASSWORD_DEFAULT);
+
+
 $request = array();
 $request['type'] = "login";
 $request['username'] = $username;
-$request['password'] = $password;
+//$request['password'] = $encryptedPassword;
 
 $response = $client->send_request($request);
 
@@ -27,8 +30,31 @@ if (!isset($response["status"])) {
     goto fail;
 }
 
-if ($response["status"] === "success") {
-    $location = "home.php";
+if (isset($response["status"]) && $response["status"] === "success") {
+    $verify = password_verify($password,$response["password"]);
+    
+
+    if($verify)  
+    {
+      //Now need to validate User!
+      $request = array();
+      $request['type'] = "validate_session";
+      $request['username'] = $username;
+      
+      $response = $client->send_request($request);
+      
+      if($response["status"] === "success")
+        $location = "home.php";
+      else
+      {
+      	
+	goto fail;
+      }
+       
+    }
+    else
+     goto fail;
+    
 } else {
     $web_response = $response["message"];
     goto fail;

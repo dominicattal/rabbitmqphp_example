@@ -28,11 +28,13 @@ require_once('../rabbitMQLib.inc');
 
 $client = new rabbitMQClient("../web_client.ini","db_web_queue","db_web");
 
+$encryptedPassword = password_hash($password,PASSWORD_DEFAULT);
+
 $request = array();
 $request['type'] = "register";
 $request['username'] = $username;
 $request['email'] = $email;
-$request['password'] = $password;
+$request['password'] = $encryptedPassword;
 $response = $client->send_request($request);
 if (!isset($response["status"])) {
     $web_response = "Internal Error";

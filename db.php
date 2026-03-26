@@ -8,10 +8,26 @@ $db_conn = new mysqli($config["MYSQL_HOST"],$config["MYSQL_USER"],$config["MYSQL
 
 define("API_CACHE_DURATION", 60*60*24);
 
-function doLogin($username, $password)
+function doLogin($username)
 {
   global $db_conn;
-  $query = "SELECT username, password FROM users WHERE username='$username'";
+  $query = "SELECT password FROM users WHERE username ='$username'";
+  $result = $db_conn->query($query);
+  
+ if ($result->num_rows == 0) {
+    return array(
+      "status" => "failed",
+      "message" => "User not found"
+    );
+  }
+  $row = $result->fetch_assoc();
+  return array(
+   "status" => "success",
+   "message" => "Check if password is the same as the encrypted one!",
+   "password" => $row["password"]
+  );
+
+  /*$query = "SELECT username, password FROM users WHERE username='$username'";
   $result = $db_conn->query($query);
   if ($result->num_rows == 0) {
     return array(
@@ -52,7 +68,7 @@ function doLogin($username, $password)
     "status" => "success",
     "key" => $arr["key"],
     "message" => "Login Successful"
-  );
+  );*/
 }
 
 function escapeString($str)
@@ -113,6 +129,9 @@ function doValidate($username)
     $result = $db_conn->query($query);
     $key = "";
     $timeToAdd=300;
+    
+    var_dump($result);
+    var_dump($username);
 	
    if ($result->num_rows == 0)
    {
@@ -636,7 +655,7 @@ function requestProcessor($request)
       switch ($request['type'])
       {
         case "login":
-          return doLogin($request['username'],$request['password']);
+          return doLogin($request['username']);
         case "register":
           return doRegister($request['username'],$request['email'],$request['password']);
         case "get_email":
@@ -669,6 +688,9 @@ function requestProcessor($request)
           return higherlower($request['count']);
         case "search":
           return getSearch($request);
+          
+         default:
+          return "Error: Sent an invalid request type!";
       }
       return array("returnCode" => '0', 'message'=>"Server received request and processed");
   } catch (Exception $e) {
