@@ -1,6 +1,5 @@
 {
     "require": {
-        "phpmailer/phpmailer": "^7.0",
-        "elasticemail/elasticemail-php": "^4.0"
+        "phpmailer/phpmailer": "^7.0"
     }
 }
