@@ -1,3 +1,4 @@
 .api.ini
 vendor
 out.txt
+deploy/.deploy_uri

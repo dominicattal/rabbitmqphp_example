@@ -2,9 +2,35 @@
 <?php
 include "rabbitMQLib.inc";
 
-function handlePush($zip_path)
+function pushBundle($target, $basename)
 {
-    return array("status" => "success");
+    return array(
+        "status" => "success",
+        "version" => 0
+    );
+}
+
+function rollbackBundle($target, $bundle_name, $version)
+{
+    return array("status" => "not implemented yet");
+}
+
+function listBundles($type)
+{
+    // list all of the bundles available for a type like web, db, or data
+    return array("status" => "not implemented yet");
+}
+
+function listBundleVersions($bundle_name)
+{
+    // should return all versions of a bundle
+    return array("status" => "not implemented yet");
+}
+
+function listCurrentBundles($target)
+{
+    // should return all the currently installed bundles on a target
+    return array("status" => "not implemented yet");
 }
 
 function requestProcessor($request)
@@ -12,7 +38,15 @@ function requestProcessor($request)
     var_dump($request);
     switch ($request["type"]) {
         case "push":
-            return handlePush($request["zip_path"]);
+            return pushBundle($request["target"], $request["basename"]);
+        case "rollback":
+            return rollbackBundle($request["target"], $request["bundle_name"], $request["version"]);
+        case "list_bundles":
+            return listBundles($request["type"]);
+        case "list_bundle_versions":
+            return listBundles($request["bundle_name"]);
+        case "list_current_bundles":
+            return listCurrentBundles($request["target"]);
     }
     return array("failed" => "Unrecognized type");
 }

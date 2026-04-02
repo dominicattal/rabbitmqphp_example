@@ -2,10 +2,19 @@
 
 ## Deploy
 
-1. To setup deploy vm, run `deploy/update.sh [user@host]` \
+### Overview
+
+Deploy system works by pushing a *bundle* with *type* either web, db, or data to a *target* either dev, qa, or prod. This bundles can be subsequently rolled back by supplying the *bundle_name* and *version*. The available bundles, the versions for each bundle, and the current versions on each target should all be queryable.
+
+### Setup
+
+Setup deploy vm:
+1. Run `deploy/update.sh [user@host]` \
 2. On deploy vm, run `apt.sh` to ensure necessary packages are installed
 3. On deploy vm, run `broker.sh` to create rabbitmq stuff
-4. On deploy vm, run `deploy.php` to listen for requests
+4. On deploy vm, run `deploy.php` to listen for requests. This should be handled by systemd.
+
+To create a bundle, use `deploy/bundlify.sh`. This will verify the bundle looks correct.
 
 ### Push
 
@@ -20,19 +29,17 @@ bundle
    |- ...
 
 `bundle` is a compressed directory that contains `info.ini` and `files` \
-`info.ini` contains the bundle info that the deploy machine reads.
-`files` is another compressed directory that contains `run.sh` and all of the other files for the bundle \
+`info.ini` contains the bundle info that the deploy machine reads. It should have the following fields:
+```
+BUNDLE_NAME="test_bundle"
+BUNDLE_HR_NAME="Test Bundle"
+BUNDLE_DESC="This Bundle is a Test"
+BUNDLE_TYPE="web"|"db"|"data"
+```
+`files` is a directory that contains `run.sh` and all of the other files for the bundle \
 `run.sh` is called after the target vm unzips files. this should copy all of the files from this directory into their correct place in the project.
 
 The deploy vm will make a copy of files and store it to be accessed by the database.
-
-### Rollback (TBD)
-
-Run `deploy/rollback.php [dev/qa/prod] [bundle_name] [version]` to rollback a bundle to a specific version.
-
-### List (TBD)
-
-Run `deploy/list.php [dev/qa/prod]` to list the bundle information for each vm for each cluster.
 
 ### Running locally
 
