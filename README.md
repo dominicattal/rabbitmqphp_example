@@ -1,12 +1,46 @@
-## Documenting stuff here
+# Documentation
+
+## Deploy
+
+1. To setup deploy vm, run `deploy/update.sh [user@host]` \
+2. On deploy vm, run `apt.sh` to ensure necessary packages are installed
+3. On deploy vm, run `broker.sh` to create rabbitmq stuff
+4. On deploy vm, run `deploy.php` to listen for requests
+
+### Push
+
+Run `deploy/push.php [dev/qa/prod] [bundle]` to deploy a bundle to dev, qa, or prod. The structure of bundle should look like this:
+
+bundle
+|- info.ini
+|- files
+   |- run.sh
+   |- ...
+   |- ...
+   |- ...
+
+`bundle` is a compressed directory that contains `info.ini` and `files` \
+`info.ini` contains the bundle info that the deploy machine reads.
+`files` is another compressed directory that contains `run.sh` and all of the other files for the bundle \
+`run.sh` is called after the target vm unzips files. this should copy all of the files from this directory into their correct place in the project.
+
+The deploy vm will make a copy of files and store it to be accessed by the database.
+
+### Rollback (TBD)
+
+Run `deploy/rollback.php [dev/qa/prod] [bundle_name] [version]` to rollback a bundle to a specific version.
+
+### List (TBD)
+
+Run `deploy/list.php [dev/qa/prod]` to list the bundle information for each vm for each cluster.
 
 ### Running locally
 
 For the website to successfully run locally, the db, broker, and data processor must all be setup. Everything in the ini files should point to localhost for `MQ_HOST`. `db.php` and `data.php` should both be running.
 
-### Run commands
+### Scripts
 
-Run commands are in the `rc` directory
+Scripts are in the `scripts` directory
 
 `broker.sh`         -> run commands for the rabbitmq server \
 `broker_clean.sh`   -> run commands for cleaning up all the stuff in rcbroker.sh \
@@ -15,7 +49,7 @@ Run commands are in the `rc` directory
 `db_clean.sh`       -> run commands for cleaning up all the stuff in rcdb.sh \
 `db_purge.sh`       -> run commands for purging the cached api calls
 
-execute these like `sudo rc/broker.sh`
+execute these like `sudo scripts/broker.sh`
 
 ### Ini files
 
