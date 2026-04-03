@@ -78,7 +78,7 @@ else
     exit 1
 fi
 
-if [ "$type" == "deploy" ]; then
+if [ "type" == "all" ] || [ "$type" == "deploy" ]; then
     if [ -z ${DEPLOY_USER} ] || [ -z ${DEPLOY_HOST} ]; then
         echo "Deploy host or user not in cluster.ini"
     else
