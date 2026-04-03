@@ -25,11 +25,13 @@ if [ $# -eq 0 ]; then
     echo "Update core files onto each machine"
     echo "run deploy/ssh_copy.sh to update ssh keys"
     echo "Usage: deploy/update.sh [deploy/web/db/data/all] [dev/qa/prod/all]"
+    echo "Files can be specified after type and target. Otherwise, it will copy the ones specified above"
     exit 1
 fi
 
 type=$1
 target=$2
+cli_files=${@:3}
 
 if [ "$type" != "deploy" ] && [ "$type" != "web" ] && [ "$type" != "db" ] && [ "$type" != "data" ] && [ "$type" != "all" ]; then
     echo "type is incorrect, should be [deploy/web/db/data/all] "
@@ -41,6 +43,23 @@ if [ "$type" != "deploy" ]; then
         echo "target is incorrect, should be [dev/qa/prod/all]"
         exit 1
     fi
+fi
+
+if [ ! -z "${cli_files}" ]; then
+    echo "Copying files $cli_files"
+    deploy_files="$cli_files"
+    web_files="$cli_files"
+    dev_web_files="$cli_files"
+    dev_qa_files="$cli_files"
+    dev_data_files="$cli_files"
+    db_files="$cli_files"
+    qa_web_files="$cli_files"
+    qa_qa_files="$cli_files"
+    qa_data_files="$cli_files"
+    data_files="$cli_files"
+    prod_web_files="$cli_files"
+    prod_qa_files="$cli_files"
+    prod_data_files="$cli_files"
 fi
 
 tail -n +2 "deploy/clusters.ini" > /tmp/clusters.sh
