@@ -13,10 +13,12 @@ rabbitmqadmin --username=broker_admin --password=broker_admin --vhost=it490 decl
 
 rabbitmqadmin --username=broker_admin --password=broker_admin --vhost=it490 declare queue name="main_queue"
 rabbitmqadmin --username=broker_admin --password=broker_admin --vhost=it490 declare binding source="deploy" destination="main_queue" routing_key="main"
+rabbitmqadmin --username=broker_admin --password=broker_admin --vhost=it490 declare queue name="deploy_listen_queue"
+rabbitmqadmin --username=broker_admin --password=broker_admin --vhost=it490 declare binding source="deploy" destination="deploy_listen_queue" routing_key="deploy_listen"
 rabbitmqadmin --username=broker_admin --password=broker_admin --vhost=it490 declare queue name="deploy_queue"
 rabbitmqadmin --username=broker_admin --password=broker_admin --vhost=it490 declare binding source="deploy" destination="deploy_queue" routing_key="deploy"
-rabbitmqadmin --username=broker_admin --password=broker_admin --vhost=it490 declare queue name="dev_web_queue"
-rabbitmqadmin --username=broker_admin --password=broker_admin --vhost=it490 declare binding source="deploy" destination="dev_web_queue" routing_key="dev_web"
+rabbitmqadmin --username=broker_admin --password=broker_admin --vhost=it490 declare queue name="dev_web_listen_queue"
+rabbitmqadmin --username=broker_admin --password=broker_admin --vhost=it490 declare binding source="deploy" destination="dev_web_listen_queue" routing_key="dev_web_listen"
 
 #rabbitmqadmin --username=broker_admin --password=broker_admin --vhost=it490 declare queue name="main_deploy_queue"
 #rabbitmqadmin --username=broker_admin --password=broker_admin --vhost=it490 declare queue name="deploy_main_queue"

@@ -4,9 +4,15 @@ include "rabbitMQLib.inc";
 
 function pushBundle($target, $basename)
 {
+    $client = new rabbitMQClient("deploy_client.ini", "dev_web_listen_queue", "dev_web_listen");
+    $request = array();
+    $request['type'] = "push";
+    $response = $client->send_request($request);
+    unset($client);
     return array(
         "status" => "success",
-        "version" => 0
+        "version" => 0,
+        "response" => $response
     );
 }
 

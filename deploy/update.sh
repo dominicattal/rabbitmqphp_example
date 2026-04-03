@@ -3,7 +3,7 @@
 # this script copies file to specified machines. not to be confused wiht deployment system, this is just for setting stuff up easily
 
 # -------- FILES TO COPY --------------
-deploy_files="deploy/apt.sh deploy/broker.sh deploy/clusters.ini deploy/deploy_server.ini deploy/deploy.php ./rabbitMQLib.inc"
+deploy_files="deploy/apt.sh deploy/broker.sh deploy/clusters.ini deploy/deploy_client.ini deploy/deploy_server.ini deploy/deploy.php ./rabbitMQLib.inc"
 
 web_files="deploy/web.php deploy/apt.sh ./rabbitMQLib.inc"
 dev_web_files="$web_files deploy/dev_web_server.ini"
@@ -29,20 +29,22 @@ if [ $# -eq 0 ]; then
     exit 1
 fi
 
-type=$1
-target=$2
-cli_files=${@:3}
 
+type=$1
 if [ "$type" != "deploy" ] && [ "$type" != "web" ] && [ "$type" != "db" ] && [ "$type" != "data" ] && [ "$type" != "all" ]; then
     echo "type is incorrect, should be [deploy/web/db/data/all] "
     exit 1
 fi
 
 if [ "$type" != "deploy" ]; then
+    target=$2
     if [ "$target" != "dev" ] && [ "$target" != "qa" ] && [ "$target" != "prod" ] && [ "$target" != "all" ]; then
         echo "target is incorrect, should be [dev/qa/prod/all]"
         exit 1
     fi
+    cli_files=${@:3}
+else
+    cli_files=${@:2}
 fi
 
 if [ ! -z "${cli_files}" ]; then
@@ -73,7 +75,7 @@ if [ "$type" == "all" ] || [ "$type" == "deploy" ]; then
         echo "Copying to DEPLOY_HOST $ssh_string"
         for file in $deploy_files; do
             if [ -f "$file" ]; then
-                scp "$file" "scp://$ssh_string/~/it490"
+                scp "$file" "scp://$ssh_string/~/it490//"
             else
                 echo "$file does not exist, skipping"
             fi
@@ -89,7 +91,7 @@ if [ "$type" == "all" ] || [ "$type" == "web" ]; then
             echo "Copying to DEV_WEB_HOST $ssh_string"
             for file in $dev_web_files; do
                 if [ -f "$file" ]; then
-                    scp "$file" "scp://$ssh_string/~/it490"
+                    scp "$file" "scp://$ssh_string/~/it490/"
                 else
                     echo "$file does not exist, skipping"
                 fi
@@ -104,7 +106,7 @@ if [ "$type" == "all" ] || [ "$type" == "web" ]; then
             echo "Copying to QA_WEB_HOST $ssh_string"
             for file in $qa_web_files; do
                 if [ -f "$file" ]; then
-                    scp "$file" "scp://$ssh_string/~/it490"
+                    scp "$file" "scp://$ssh_string/~/it490/"
                 else
                     echo "$file does not exist, skipping"
                 fi
@@ -119,7 +121,7 @@ if [ "$type" == "all" ] || [ "$type" == "web" ]; then
             echo "Copying to PROD_WEB_HOST $ssh_string"
             for file in $prod_web_files; do
                 if [ -f "$file" ]; then
-                    scp "$file" "scp://$ssh_string/~/it490"
+                    scp "$file" "scp://$ssh_string/~/it490/"
                 else
                     echo "$file does not exist, skipping"
                 fi
@@ -136,7 +138,7 @@ if [ "$type" == "all" ] || [ "$type" == "db" ]; then
             echo "Copying to DEV_DB_HOST $ssh_string"
             for file in $dev_db_files; do
                 if [ -f "$file" ]; then
-                    scp "$file" "scp://$ssh_string/~/it490"
+                    scp "$file" "scp://$ssh_string/~/it490/"
                 else
                     echo "$file does not exist, skipping"
                 fi
@@ -151,7 +153,7 @@ if [ "$type" == "all" ] || [ "$type" == "db" ]; then
             echo "Copying to QA_DB_HOST $ssh_string"
             for file in $qa_db_files; do
                 if [ -f "$file" ]; then
-                    scp "$file" "scp://$ssh_string/~/it490"
+                    scp "$file" "scp://$ssh_string/~/it490/"
                 else
                     echo "$file does not exist, skipping"
                 fi
@@ -166,7 +168,7 @@ if [ "$type" == "all" ] || [ "$type" == "db" ]; then
             echo "Copying to PROD_DB_HOST $ssh_string"
             for file in $prod_db_files; do
                 if [ -f "$file" ]; then
-                    scp "$file" "scp://$ssh_string/~/it490"
+                    scp "$file" "scp://$ssh_string/~/it490/"
                 else
                     echo "$file does not exist, skipping"
                 fi
@@ -183,7 +185,7 @@ if [ "$type" == "all" ] || [ "$type" == "data" ]; then
             echo "Copying to DEV_DATA_HOST $ssh_string"
             for file in $dev_data_files; do
                 if [ -f "$file" ]; then
-                    scp "$file" "scp://$ssh_string/~/it490"
+                    scp "$file" "scp://$ssh_string/~/it490/"
                 else
                     echo "$file does not exist, skipping"
                 fi
@@ -198,7 +200,7 @@ if [ "$type" == "all" ] || [ "$type" == "data" ]; then
             echo "Copying to QA_DATA_HOST $ssh_string"
             for file in $qa_data_files; do
                 if [ -f "$file" ]; then
-                    scp "$file" "scp://$ssh_string/~/it490"
+                    scp "$file" "scp://$ssh_string/~/it490/"
                 else
                     echo "$file does not exist, skipping"
                 fi
@@ -213,7 +215,7 @@ if [ "$type" == "all" ] || [ "$type" == "data" ]; then
             echo "Copying to PROD_DATA_HOST $ssh_string"
             for file in $prod_data_files; do
                 if [ -f "$file" ]; then
-                    scp "$file" "scp://$ssh_string/~/it490"
+                    scp "$file" "scp://$ssh_string/~/it490/"
                 else
                     echo "$file does not exist, skipping"
                 fi

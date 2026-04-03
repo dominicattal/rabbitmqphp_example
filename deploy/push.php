@@ -15,7 +15,7 @@ if ($target != "dev" && $target != "qa" && $target != "prod") {
 
 $path = realpath($argv[2]);
 $basename = basename($path);
-$ini = parse_ini_file("deploy_client.ini", false);
+$ini = parse_ini_file("bundle_client.ini", false);
 $conn = ssh2_connect($ini["DEPLOY_HOST"], 22);
 if (!$conn) {
     echo "Could not connect\n";
@@ -32,7 +32,7 @@ if (!$res) {
     exit(1);
 }
 
-$client = new rabbitMQClient("deploy_client.ini", "deploy_queue", "deploy");
+$client = new rabbitMQClient("bundle_client.ini", "deploy_listen_queue", "deploy_listen");
 $request = array();
 $request['type'] = "push";
 $request['target'] = $target;

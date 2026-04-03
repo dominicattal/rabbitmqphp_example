@@ -6,7 +6,7 @@ function pushBundle($basename)
 {
     return array(
         "status" => "success",
-        "version" => 0
+        "hello" => "world"
     );
 }
 
