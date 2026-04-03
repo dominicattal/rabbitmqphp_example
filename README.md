@@ -33,8 +33,10 @@ sudo apt enable ssh
 sudo apt restart ssh
 ```
 2. Ensure ssh key exists on this machine.
-3. Run `deploy/ssh_copy.sh`. This will automatically copy your ssh key to all of the machines
-4. Run `deploy/update.sh`. This will automatically copy necessary files to each machine defined. If it is not defined yet, it will be skipped.
+3. Run `deploy/ssh_copy.sh`. This will automatically copy your ssh key to all of the machines. It will also create a directory it490, which is where all files will be copied to. This is done so that deleting everything is easy.
+4. Run `deploy/update.sh all all`. This will automatically copy necessary files to each machine defined. If it is not defined yet, it will be skipped.
+    - You can specify targets and type like `deploy/update.sh [deploy/web/db/data/all] [dev/qa/prod/all]`
+    - You can specify which files get sent by modifying update.sh, just be sure to restore it to default before committing
 
 5. Setup deploy vm:
     1. Run `deploy/update.sh [user@host]` \
@@ -75,14 +77,18 @@ For the website to successfully run locally, the db, broker, and data processor 
 
 ### Scripts
 
-Scripts are in the `scripts` directory
+Scripts are in the `scripts` directory. Deployment scripts are in `deploy` directory
 
-`broker.sh`         -> run commands for the rabbitmq server \
-`broker_clean.sh`   -> run commands for cleaning up all the stuff in rcbroker.sh \
-`broker_purge.sh`   -> run commands for purging all of the queues of messages \
-`db.sh`             -> run commands for the database server \
-`db_clean.sh`       -> run commands for cleaning up all the stuff in rcdb.sh \
-`db_purge.sh`       -> run commands for purging the cached api calls
+`scripts/broker.sh`         -> run commands for the rabbitmq server \
+`scripts/broker_clean.sh`   -> run commands for cleaning up all the stuff in rcbroker.sh \
+`scripts/broker_purge.sh`   -> run commands for purging all of the queues of messages \
+`scripts/db.sh`             -> run commands for the database server \
+`scripts/db_clean.sh`       -> run commands for cleaning up all the stuff in rcdb.sh \
+`scripts/db_purge.sh`       -> run commands for purging the cached api calls
+`deploy/ssh_copy.sh`        -> copy ssh keys to target machines specified in `deploy/clusters.ini`. Also creates it490 directory, which is where stuff goes.
+`deploy/update.sh`          -> directly update files on target machines. not to be confused with deploy system
+`deploy/clear.sh`           -> remove the it490 directory that has all of the stuff.
+`deploy/bundlify.sh`        -> turns a directory into a bundle. must look like the directory above
 
 execute these like `sudo scripts/broker.sh`
 
@@ -94,6 +100,11 @@ execute these like `sudo scripts/broker.sh`
 `web_client.ini`      -> ini file for creating rabbitmq web client for communicating with broker \
 `data_client.ini`     -> ini file for creating rabbitmq data server for communitcating with data \
 `.api.ini`            -> ini file with our api keys
+
+`deploy_client.ini`   -> for deploying bundles \
+`deploy_server.ini`   -> runs on deploy vm \
+`clusters.ini`        -> has all of the machine info. for use on main vm and deploy vm. \
+`dev_web_server.ini`
 
 The MQ_HOST field in the ini files should all point to the VM hosting the rabbitmq broker
 
