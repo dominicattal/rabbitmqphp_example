@@ -8,11 +8,39 @@ Deploy system works by pushing a *bundle* with *type* either web, db, or data to
 
 ### Setup
 
-Setup deploy vm:
-1. Run `deploy/update.sh [user@host]` \
-2. On deploy vm, run `apt.sh` to ensure necessary packages are installed
-3. On deploy vm, run `broker.sh` to create rabbitmq stuff
-4. On deploy vm, run `deploy.php` to listen for requests. This should be handled by systemd.
+There are 10 vms, which are: 
+```
+deploy
+dev_web
+dev_db
+dev_data
+qa_web
+qa_db
+qa_data
+prod_web
+prod_db
+prod_data
+```
+These are all defined in `deploy/clusters.ini`. You should set the user and host for each. These variables are used in scripts on this machine and also in the deploy vm to copy files.
+
+Here are instructions on initial setup for each machine
+
+1. First, you have to install ssh on each machine. Here's the commands for convenience
+```
+sudo apt update
+sudo apt install ssh
+sudo apt enable ssh
+sudo apt restart ssh
+```
+2. Ensure ssh key exists on this machine.
+3. Run `deploy/ssh_copy.sh`. This will automatically copy your ssh key to all of the machines
+4. Run `deploy/update.sh`. This will automatically copy necessary files to each machine defined. If it is not defined yet, it will be skipped.
+
+5. Setup deploy vm:
+    1. Run `deploy/update.sh [user@host]` \
+    2. On deploy vm, run `apt.sh` to ensure necessary packages are installed
+    3. On deploy vm, run `broker.sh` to create rabbitmq stuff
+    4. On deploy vm, run `deploy.php` to listen for requests. This should be handled by systemd.
 
 To create a bundle, use `deploy/bundlify.sh`. This will verify the bundle looks correct.
 

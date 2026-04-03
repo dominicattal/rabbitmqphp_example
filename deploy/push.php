@@ -32,7 +32,7 @@ if (!$res) {
     exit(1);
 }
 
-$client = new rabbitMQClient("deploy_client.ini", "main_deploy_queue", "main_deploy");
+$client = new rabbitMQClient("deploy_client.ini", "deploy_queue", "deploy");
 $request = array();
 $request['type'] = "push";
 $request['target'] = $target;

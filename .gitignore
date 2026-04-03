@@ -2,3 +2,4 @@
 vendor
 out.txt
 deploy/.deploy_uri
+*.tar
