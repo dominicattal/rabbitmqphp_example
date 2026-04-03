@@ -1,3 +1,3 @@
 #!/bin/bash
 
-apt install php rabbitmq-server php-amqp php-ssh2
+apt install php rabbitmq-server php-amqp

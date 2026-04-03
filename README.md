@@ -8,6 +8,8 @@ Deploy system works by pushing a *bundle* with *type* either web, db, or data to
 
 ### Setup
 
+Important but idk where to put this yet. Everything works in /tmp directories, so look there for the bundles and extractes stuff.
+
 There are 10 vms, which are: 
 ```
 deploy
@@ -33,19 +35,21 @@ sudo apt enable ssh
 sudo apt restart ssh
 ```
 2. Ensure ssh key exists on this machine.
-3. Run `deploy/ssh_copy.sh`. This will automatically copy your ssh key to all of the machines. It will also create a directory it490, which is where all files will be copied to. This is done so that deleting everything is easy.
-4. Run `deploy/update.sh all all`. This will automatically copy necessary files to each machine defined. If it is not defined yet, it will be skipped.
+3. Run `deploy/ssh_copy.sh`. This will automatically copy your ssh key to all of the machines. It will also create a directory it490 in each machine, which is where all files will be copied to. This is done so that deleting everything is easy.
+4. Run `deploy/update.sh all all`. This will automatically copy necessary files to each machine defined in `clusters.ini`. If it is not defined yet, it will be skipped.
     - You can specify targets and type like `deploy/update.sh [deploy/web/db/data/all] [dev/qa/prod/all]`
-    - You can specify which files get sent by modifying update.sh, just be sure to restore it to default before committing
-
+    - You can specify which files get sent by specifying them after the target and type in the command line, so like
+        `deploy/update.sh web dev deploy/dev_web_server.ini`
 5. Setup deploy vm:
-    1. Run `deploy/update.sh [user@host]` \
-    2. Run `apt.sh` to ensure necessary packages are installed
-    3. Run `broker.sh` to create rabbitmq stuff
-    4. Run `deploy.php` to listen for requests. This should be handled by systemd.
-    5. Run `ssh_copy.sh` to create ssh key and allow deploy to secure copy to each machine
-
-To create a bundle, use `deploy/bundlify.sh`. This will verify the bundle looks correct.
+    1. `cd it490`
+    2. On deploy vm, run `sudo apt.sh` to ensure necessary packages are installed
+    3. On deploy vm, run `sudo broker.sh` to create rabbitmq stuff
+        - if you want to delete the queues, you can do `sudo rabbitmqctl delete_vhost it490`
+    4. Run `ssh_copy.sh all all` to create ssh key and copy them to other machines.
+    5. Run `deploy.php` to listen for requests. This should be handled by systemd.
+6. Setup {target} {type} vm
+    1. `cd it490`
+    2. Run `handler.php {target}_{type}_server.ini` to listen for requests.
 
 ### Push
 

@@ -40,7 +40,7 @@ function pushBundle($archive_path)
     }
     return array(
         "status" => "success",
-        "response" => "hello from web"
+        "response" => "hello world!"
     );
 }
 
@@ -85,6 +85,14 @@ function requestProcessor($request)
     return array("failed" => "Unrecognized type");
 }
 
-$server = new rabbitMQServer("dev_web_server.ini");
+if (count($argv) == 1) {
+    echo "Must supply ini file name\n";
+    exit(1);
+}
+if (!file_exists($argv[1])) {
+    echo "File $argv[1] doesn't exist\n";
+    exit(1);
+}
+$server = new rabbitMQServer($argv[1]);
 $server->process_requests('requestProcessor');
 ?>

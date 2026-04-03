@@ -5,20 +5,23 @@
 # -------- FILES TO COPY --------------
 deploy_files="deploy/ssh_copy.sh deploy/apt.sh deploy/broker.sh deploy/clusters.ini deploy/deploy_client.ini deploy/deploy_server.ini deploy/deploy.php ./rabbitMQLib.inc"
 
-web_files="deploy/web.php deploy/apt.sh ./rabbitMQLib.inc"
+cluster_files="deploy/handler.php deploy/apt.sh ./rabbitMQLib.inc"
+
+web_files="$cluster_files"
+db_files="$cluster_files"
+data_files="$cluster_files"
+
 dev_web_files="$web_files deploy/dev_web_server.ini"
-dev_qa_files=""
-dev_data_files=""
+dev_db_files="$db_files deploy/dev_db_server.ini"
+dev_data_files="$data_files deploy/dev_data_server.ini"
 
-db_files=""
-qa_web_files=""
-qa_qa_files=""
-qa_data_files=""
+qa_web_files="$web_files deploy/qa_web_server.ini"
+qa_db_files="$db_files deploy/qa_db_server.ini"
+qa_data_files="$data_files deploy/qa_data_server.ini"
 
-data_files=""
-prod_web_files=""
-prod_qa_files=""
-prod_data_files=""
+data_web_files="$web_files deploy/data_web_server.ini"
+data_db_files="$db_files deploy/data_db_server.ini"
+data_data_files="$data_files deploy/data_data_server.ini"
 # ---------------------------------------
 
 if [ $# -eq 0 ]; then
@@ -52,15 +55,15 @@ if [ ! -z "${cli_files}" ]; then
     deploy_files="$cli_files"
     web_files="$cli_files"
     dev_web_files="$cli_files"
-    dev_qa_files="$cli_files"
+    dev_db_files="$cli_files"
     dev_data_files="$cli_files"
     db_files="$cli_files"
     qa_web_files="$cli_files"
-    qa_qa_files="$cli_files"
+    qa_db_files="$cli_files"
     qa_data_files="$cli_files"
     data_files="$cli_files"
     prod_web_files="$cli_files"
-    prod_qa_files="$cli_files"
+    prod_db_files="$cli_files"
     prod_data_files="$cli_files"
 fi
 
@@ -75,7 +78,7 @@ else
     exit 1
 fi
 
-if [ "$type" == "all" ] || [ "$type" == "deploy" ]; then
+if [ "$type" == "deploy" ]; then
     if [ -z ${DEPLOY_USER} ] || [ -z ${DEPLOY_HOST} ]; then
         echo "Deploy host or user not in cluster.ini"
     else
