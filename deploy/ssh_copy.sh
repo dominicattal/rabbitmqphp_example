@@ -3,8 +3,23 @@
 # copies your ssh keys to each machine to allow scp
 # also creates directory where stuff gets sent to
 
-tail -n +2 "deploy/clusters.ini" > /tmp/clusters.sh
-source /tmp/clusters.sh
+key_files=$(find ~/.ssh -type f -name "*.pub")
+if [ -z "${key_files}" ]; then
+    echo "Key not found, making one now"
+    ssh-keygen -b 4096 -t rsa
+    ssh-add
+fi
+
+if [ -f "deploy/clusters.ini" ]; then
+    tail -n +2 "deploy/clusters.ini" > /tmp/clusters.sh
+    source /tmp/clusters.sh
+elif [ -f "clusters.ini" ]; then
+    tail -n +2 "clusters.ini" > /tmp/clusters.sh
+    source /tmp/clusters.sh
+else
+    echo "Could not find clusters.ini"
+    exit 1
+fi
 
 if [ -n "${DEPLOY_HOST}" ] && [ -n "${DEPLOY_USER}" ]; then
     echo "-------- SSH COPY TO DEPLOY_HOST ---------"

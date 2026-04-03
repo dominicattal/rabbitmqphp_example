@@ -2,11 +2,45 @@
 <?php
 include "rabbitMQLib.inc";
 
-function pushBundle($basename)
+function pushBundle($archive_path)
 {
+    $result_code = 0;
+    $output = array();
+    $dirname = dirname($archive_path);
+    echo $dirname . "\n";
+    exec("tar -C '$dirname' -xvf '$archive_path'", $output, $result_code);
+    if ($result_code != 0) {
+        echo "Could not extract bundle\n";
+        return array(
+            "status" => "failed",
+            "response" => "Could not extract bundle"
+        );
+    }
+    $info_ini = parse_ini_file("$dirname/info.ini", false);
+    $run_script_path = "$dirname/files/run.sh";
+    if (!file_exists($run_script_path)) {
+        return array(
+            "status" => "failed",
+            "response" => "Files is missing run.sh"
+        );
+    }
+    exec("chmod +x '$run_script_path'", $output, $result_code);
+    if ($result_code != 0) {
+        return array(
+            "status" => "failed",
+            "response" => $output
+        );
+    }
+    exec($run_script_path, $output, $result_code);
+    if ($result_code != 0) {
+        return array(
+            "status" => "failed",
+            "response" => $output
+        );
+    }
     return array(
         "status" => "success",
-        "hello" => "world"
+        "response" => "hello from web"
     );
 }
 
@@ -38,7 +72,7 @@ function requestProcessor($request)
     var_dump($request);
     switch ($request["type"]) {
         case "push":
-            return pushBundle($request["basename"]);
+            return pushBundle($request["archive_path"]);
         case "rollback":
             return rollbackBundle($request["bundle_name"], $request["version"]);
         case "list_bundles":

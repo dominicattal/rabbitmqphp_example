@@ -3,7 +3,7 @@
 # this script copies file to specified machines. not to be confused wiht deployment system, this is just for setting stuff up easily
 
 # -------- FILES TO COPY --------------
-deploy_files="deploy/apt.sh deploy/broker.sh deploy/clusters.ini deploy/deploy_client.ini deploy/deploy_server.ini deploy/deploy.php ./rabbitMQLib.inc"
+deploy_files="deploy/ssh_copy.sh deploy/apt.sh deploy/broker.sh deploy/clusters.ini deploy/deploy_client.ini deploy/deploy_server.ini deploy/deploy.php ./rabbitMQLib.inc"
 
 web_files="deploy/web.php deploy/apt.sh ./rabbitMQLib.inc"
 dev_web_files="$web_files deploy/dev_web_server.ini"
@@ -64,8 +64,16 @@ if [ ! -z "${cli_files}" ]; then
     prod_data_files="$cli_files"
 fi
 
-tail -n +2 "deploy/clusters.ini" > /tmp/clusters.sh
-source /tmp/clusters.sh
+if [ -f "deploy/clusters.ini" ]; then
+    tail -n +2 "deploy/clusters.ini" > /tmp/clusters.sh
+    source /tmp/clusters.sh
+elif [ -f "clusters.ini" ]; then
+    tail -n +2 "clusters.ini" > /tmp/clusters.sh
+    source /tmp/clusters.sh
+else
+    echo "Could not find clusters.ini"
+    exit 1
+fi
 
 if [ "$type" == "all" ] || [ "$type" == "deploy" ]; then
     if [ -z ${DEPLOY_USER} ] || [ -z ${DEPLOY_HOST} ]; then

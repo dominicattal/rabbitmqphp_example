@@ -13,22 +13,27 @@ if ($target != "dev" && $target != "qa" && $target != "prod") {
     exit(1);
 }
 
-$path = realpath($argv[2]);
-$basename = basename($path);
+$path = $argv[2];
+$output = array();
+$result_code = 0;
+exec("deploy/bundlify.sh $path", $output, $result_code);
+foreach ($output as $line) {
+    echo $line . "\n";
+}
+if ($result_code != 0) {
+    echo "Could not compress bundle\n";
+    exit(1);
+}
+$archive_path=$output[0];
+echo "Compressed bundle to $archive_path\n";
 $ini = parse_ini_file("bundle_client.ini", false);
-$conn = ssh2_connect($ini["DEPLOY_HOST"], 22);
-if (!$conn) {
-    echo "Could not connect\n";
-    exit(1);
-}
-$res = ssh2_auth_password($conn, $ini["DEPLOY_USER"], $ini["DEPLOY_PASS"]);
-if (!$res) {
-    echo "User/Password did not work\n";
-    exit(1);
-}
-$res = ssh2_scp_send($conn, $path, "/home/$ini[DEPLOY_USER]/$basename", 0777);
-if (!$res) {
-    echo "Could not send scp\n";
+
+$basename = basename($archive_path);
+$remote_path = "/tmp/$basename";
+exec("scp '$archive_path' scp://$ini[DEPLOY_USER]@$ini[DEPLOY_HOST]/$remote_path", $output, $result_code);
+if ($result_code != 0){
+    echo "Scp failed:\n";
+    var_dump($output);
     exit(1);
 }
 
@@ -36,7 +41,7 @@ $client = new rabbitMQClient("bundle_client.ini", "deploy_listen_queue", "deploy
 $request = array();
 $request['type'] = "push";
 $request['target'] = $target;
-$request['basename'] = $basename;
+$request['archive_path'] = $remote_path;
 $response = $client->send_request($request);
 var_dump($response);
 ?>

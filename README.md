@@ -40,9 +40,10 @@ sudo apt restart ssh
 
 5. Setup deploy vm:
     1. Run `deploy/update.sh [user@host]` \
-    2. On deploy vm, run `apt.sh` to ensure necessary packages are installed
-    3. On deploy vm, run `broker.sh` to create rabbitmq stuff
-    4. On deploy vm, run `deploy.php` to listen for requests. This should be handled by systemd.
+    2. Run `apt.sh` to ensure necessary packages are installed
+    3. Run `broker.sh` to create rabbitmq stuff
+    4. Run `deploy.php` to listen for requests. This should be handled by systemd.
+    5. Run `ssh_copy.sh` to create ssh key and allow deploy to secure copy to each machine
 
 To create a bundle, use `deploy/bundlify.sh`. This will verify the bundle looks correct.
 

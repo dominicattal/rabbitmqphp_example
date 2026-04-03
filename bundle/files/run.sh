@@ -1,3 +1,4 @@
 #!/bin/bash
 
-echo "Bundle works"
+echo "Hello World"          # <--- this gets sent to $output array
+`echo "Goodbye World" >&2`  # <--- this prints to stderr

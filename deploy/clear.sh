@@ -9,8 +9,16 @@ if [ $# -eq 0 ]; then
     exit 1
 fi
 
-type=$1
-target=$2
+if [ -f "deploy/clusters.ini" ]; then
+    tail -n +2 "deploy/clusters.ini" > /tmp/clusters.sh
+    source /tmp/clusters.sh
+elif [ -f "clusters.ini" ]; then
+    tail -n +2 "clusters.ini" > /tmp/clusters.sh
+    source /tmp/clusters.sh
+else
+    echo "Could not find clusters.ini"
+    exit 1
+fi
 
 if [ "$type" != "deploy" ] && [ "$type" != "web" ] && [ "$type" != "db" ] && [ "$type" != "data" ] && [ "$type" != "all" ]; then
     echo "type is incorrect, should be [deploy/web/db/data/all] "
