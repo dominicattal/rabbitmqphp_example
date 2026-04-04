@@ -34,9 +34,6 @@ if [ "$target" != "deploy" ]; then
     fi
 fi
 
-tail -n +2 "deploy/clusters.ini" > /tmp/clusters.sh
-source /tmp/clusters.sh
-
 if [ "$target" == "all" ] || [ "$target" == "deploy" ]; then
     if [ -z ${DEPLOY_USER} ] || [ -z ${DEPLOY_HOST} ]; then
         echo "Deploy host or user not in cluster.ini"

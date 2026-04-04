@@ -1,6 +1,6 @@
 .api.ini
 vendor
 out.txt
-deploy/.deploy_uri
 *.tar
 deploy/clusters.ini
+main_client.ini

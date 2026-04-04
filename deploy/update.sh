@@ -3,7 +3,7 @@
 # this script copies file to specified machines. not to be confused wiht deployment system, this is just for setting stuff up easily
 
 # -------- FILES TO COPY --------------
-deploy_files="deploy/ssh_copy.sh deploy/apt.sh deploy/broker.sh deploy/clusters.ini deploy/deploy_client.ini deploy/deploy_server.ini deploy/deploy.php ./rabbitMQLib.inc"
+deploy_files="deploy/ssh_copy.sh deploy/apt.sh deploy/broker.sh deploy/clusters.ini deploy/deploy.php ./rabbitMQLib.inc"
 
 cluster_files="deploy/handler.php deploy/apt.sh ./rabbitMQLib.inc"
 
@@ -11,17 +11,17 @@ web_files="$cluster_files"
 db_files="$cluster_files"
 data_files="$cluster_files"
 
-dev_web_files="$web_files deploy/serverinis/dev_web_server.ini"
-dev_db_files="$db_files deploy/serverinis/dev_db_server.ini"
-dev_data_files="$data_files deploy/serverinis/dev_data_server.ini"
+dev_web_files="$web_files"
+dev_db_files="$db_files"
+dev_data_files="$data_files"
 
-qa_web_files="$web_files deploy/serverinis/qa_web_server.ini"
-qa_db_files="$db_files deploy/serverinis/qa_db_server.ini"
-qa_data_files="$data_files deploy/serverinis/qa_data_server.ini"
+qa_web_files="$web_files"
+qa_db_files="$db_files"
+qa_data_files="$data_files"
 
-data_web_files="$web_files deploy/serverinis/data_web_server.ini"
-data_db_files="$db_files deploy/serverinis/data_db_server.ini"
-data_data_files="$data_files deploy/serverinis/data_data_server.ini"
+data_web_files="$web_files"
+data_db_files="$db_files"
+data_data_files="$data_files"
 # ---------------------------------------
 
 if [ $# -eq 0 ]; then
