@@ -5,7 +5,7 @@ if [ -z "deploy/clusters.ini" ]; then
     exit 1
 fi
 
-deploy_field=$(grep "DEPLOY_HOST *= *[0-9.]*" deploy/clusters_sample.ini)
+deploy_field=$(grep "DEPLOY_HOST *= *[0-9.]*" deploy/clusters.ini)
 if [ -z ${deploy_field} ]; then
     echo "Missing DEPLOY_HOST field in deploy/clusters.ini"
     exit 1
