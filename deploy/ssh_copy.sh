@@ -1,7 +1,6 @@
 #!/bin/bash
 
 # copies your ssh keys to each machine to allow scp
-# also creates directory where stuff gets sent to
 
 key_files=$(find ~/.ssh -type f -name "*.pub")
 if [ -z "${key_files}" ]; then
@@ -42,9 +41,6 @@ if [ $type == "all" ] || [ $type == "deploy" ]; then
         echo $ssh_string
             echo $ssh_string
         ssh-copy-id $ssh_string
-        if [ $? -eq 0 ]; then
-            ssh $ssh_string "mkdir -p ~/it490"
-        fi
     else
         echo "DEPLOY_HOST or DEPLOY_USER not in clusters.ini"
     fi
@@ -57,9 +53,6 @@ if [ $type == "all" ] || [ $type == "web" ]; then
             ssh_string="$DEV_WEB_USER@$DEV_WEB_HOST"
             echo $ssh_string
             ssh-copy-id $ssh_string
-            if [ $? -eq 0 ]; then
-                ssh $ssh_string "mkdir -p ~/it490"
-            fi
         else
             echo "DEV_WEB_HOST or DEV_WEB_USER not in clusters.ini"
         fi
@@ -70,9 +63,6 @@ if [ $type == "all" ] || [ $type == "web" ]; then
             ssh_string="$QA_WEB_USER@$QA_WEB_HOST"
             echo $ssh_string
             ssh-copy-id $ssh_string
-            if [ $? -eq 0 ]; then
-                ssh $ssh_string "mkdir -p ~/it490"
-            fi
         else
             echo "QA_WEB_HOST or QA_WEB_USER not in clusters.ini"
         fi
@@ -83,9 +73,6 @@ if [ $type == "all" ] || [ $type == "web" ]; then
             ssh_string="$PROD_WEB_USER@$PROD_WEB_HOST"
             echo $ssh_string
             ssh-copy-id $ssh_string
-            if [ $? -eq 0 ]; then
-                ssh $ssh_string "mkdir -p ~/it490"
-            fi
         else
             echo "PROD_WEB_HOST or PROD_WEB_USER not in clusters.ini"
         fi
@@ -99,9 +86,6 @@ if [ $type == "all" ] || [ $type == "db" ]; then
             ssh_string="$DEV_DB_USER@$DEV_DB_HOST"
             echo $ssh_string
             ssh-copy-id $ssh_string
-            if [ $? -eq 0 ]; then
-                ssh $ssh_string "mkdir -p ~/it490"
-            fi
         else
             echo "DEV_DB_HOST or DEV_DB_USER not in clusters.ini"
         fi
@@ -112,9 +96,6 @@ if [ $type == "all" ] || [ $type == "db" ]; then
             ssh_string="$QA_DB_USER@$QA_DB_HOST"
             echo $ssh_string
             ssh-copy-id $ssh_string
-            if [ $? -eq 0 ]; then
-                ssh $ssh_string "mkdir -p ~/it490"
-            fi
         else
             echo "QA_DB_HOST or QA_DB_USER not in clusters.ini"
         fi
@@ -124,9 +105,6 @@ if [ $type == "all" ] || [ $type == "db" ]; then
             echo "-------- SSH COPY TO PROD_DB_HOST --------"
             ssh_string="$PROD_DB_USER@$PROD_DB_HOST"
             ssh-copy-id $ssh_string
-            if [ $? -eq 0 ]; then
-                ssh $ssh_string "mkdir -p ~/it490"
-            fi
         else
             echo "PROD_DB_HOST or PROD_DB_USER not in clusters.ini"
         fi
@@ -141,9 +119,6 @@ if [ $type == "all" ] || [ $type == "data" ]; then
             ssh_string="$DEV_DATA_USER@$DEV_DATA_HOST"
             echo $ssh_string
             ssh-copy-id $ssh_string
-            if [ $? -eq 0 ]; then
-                ssh $ssh_string "mkdir -p ~/it490"
-            fi
         else
             echo "DEV_DATA_HOST or DEV_DATA_USER not in clusters.ini"
         fi
@@ -154,9 +129,6 @@ if [ $type == "all" ] || [ $type == "data" ]; then
             ssh_string="$QA_DATA_USER@$QA_DATA_HOST"
             echo $ssh_string
             ssh-copy-id $ssh_string
-            if [ $? -eq 0 ]; then
-                ssh $ssh_string "mkdir -p ~/it490"
-            fi
         else
             echo "QA_DATA_HOST or QA_DATA_USER not in clusters.ini"
         fi
@@ -167,9 +139,6 @@ if [ $type == "all" ] || [ $type == "data" ]; then
             ssh_string="$PROD_DATA_USER@$PROD_DATA_HOST"
             echo $ssh_string
             ssh-copy-id $ssh_string
-            if [ $? -eq 0 ]; then
-                ssh $ssh_string "mkdir -p ~/it490"
-            fi
         else
             echo "PROD_DATA_HOST or PROD_DATA_USER not in clusters.ini"
         fi

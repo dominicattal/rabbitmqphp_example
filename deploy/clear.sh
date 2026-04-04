@@ -20,12 +20,14 @@ else
     exit 1
 fi
 
+type=$1
 if [ "$type" != "deploy" ] && [ "$type" != "web" ] && [ "$type" != "db" ] && [ "$type" != "data" ] && [ "$type" != "all" ]; then
     echo "type is incorrect, should be [deploy/web/db/data/all] "
     exit 1
 fi
 
 if [ "$type" != "deploy" ]; then
+    target=$2
     if [ "$target" != "dev" ] && [ "$target" != "qa" ] && [ "$target" != "prod" ] && [ "$target" != "all" ]; then
         echo "target is incorrect, should be [dev/qa/prod/all]"
         exit 1

@@ -4,7 +4,7 @@
 
 ### Overview
 
-Deploy system works by pushing a *bundle* with *type* either web, db, or data to a *target* either dev, qa, or prod. This bundles can be subsequently rolled back by supplying the *bundle_name* and *version*. The available bundles, the versions for each bundle, and the current versions on each target should all be queryable.
+Deploy system works by pushing a *bundle* with *type* either web, db, or data to a *target* either dev, qa, or prod. These bundles can be subsequently rolled back by supplying the *bundle_name* and *version*. The available bundles, the versions for each bundle, and the current versions on each target should all be queryable.
 
 ### Setup
 
@@ -23,7 +23,7 @@ prod_web
 prod_db
 prod_data
 ```
-These are all defined in `deploy/clusters.ini`. You should set the user and host for each. These variables are used in scripts on this machine and also in the deploy vm to copy files.
+These are all defined in `deploy/clusters.ini`. Since we're all working on different machines, i made it an untracked file that you create by copying `deploy/clusters_sample.ini` as `deploy/clusters.ini` and filling the fields. You can update all of the cluster ini files (`dev_web_server.ini`, `dev_db_server.ini`, etc) by running `deploy/replace.sh`. You should set the user and host for each. These variables are used in scripts on this machine and also in the deploy vm to copy files.
 
 Here are instructions on initial setup for each machine
 
@@ -31,12 +31,12 @@ Here are instructions on initial setup for each machine
 ```
 sudo apt update
 sudo apt install ssh
-sudo apt enable ssh
-sudo apt restart ssh
+sudo systemctl enable ssh
+sudo systemctl restart ssh
 ```
 2. Ensure ssh key exists on this machine.
-3. Run `deploy/ssh_copy.sh`. This will automatically copy your ssh key to all of the machines. It will also create a directory it490 in each machine, which is where all files will be copied to. This is done so that deleting everything is easy.
-4. Run `deploy/update.sh all all`. This will automatically copy necessary files to each machine defined in `clusters.ini`. If it is not defined yet, it will be skipped.
+3. Run `deploy/ssh_copy.sh`. This will automatically copy your ssh key to all of the machines. This is done so that deleting everything is easy.
+4. Run `deploy/update.sh all all`. This will automatically create the it490 directory and copy necessary files to each machine defined in `clusters.ini`. If it is not defined yet, it will be skipped.
     - You can specify targets and type like `deploy/update.sh [deploy/web/db/data/all] [dev/qa/prod/all]`
     - You can specify which files get sent by specifying them after the target and type in the command line, so like
         `deploy/update.sh web dev deploy/dev_web_server.ini`
@@ -90,10 +90,11 @@ Scripts are in the `scripts` directory. Deployment scripts are in `deploy` direc
 `scripts/db.sh`             -> run commands for the database server \
 `scripts/db_clean.sh`       -> run commands for cleaning up all the stuff in rcdb.sh \
 `scripts/db_purge.sh`       -> run commands for purging the cached api calls
-`deploy/ssh_copy.sh`        -> copy ssh keys to target machines specified in `deploy/clusters.ini`. Also creates it490 directory, which is where stuff goes.
+`deploy/ssh_copy.sh`        -> copy ssh keys to target machines specified in `deploy/clusters.ini`.
 `deploy/update.sh`          -> directly update files on target machines. not to be confused with deploy system
 `deploy/clear.sh`           -> remove the it490 directory that has all of the stuff.
 `deploy/bundlify.sh`        -> turns a directory into a bundle. must look like the directory above
+`deploy/replace.sh`         -> replaces all of the MQ_HOST fields in the server inis with the DEPLOY_HOST value in `deploy/clusters.ini`
 
 execute these like `sudo scripts/broker.sh`
 
