@@ -58,7 +58,7 @@ Run `deploy/push.php [dev/qa/prod] [bundle]` to deploy a bundle to dev, qa, or p
 bundle
 |- info.ini
 |- files
-   |- run.sh
+   |- handler.sh
    |- ...
    |- ...
    |- ...
@@ -71,8 +71,8 @@ BUNDLE_HR_NAME="Test Bundle"
 BUNDLE_DESC="This Bundle is a Test"
 BUNDLE_TYPE="web"|"db"|"data"
 ```
-`files` is a directory that contains `run.sh` and all of the other files for the bundle \
-`run.sh` is called after the target vm unzips files. this should copy all of the files from this directory into their correct place in the project.
+`files` is a directory that contains `handler.sh` and all of the other files for the bundle \
+`handler.sh` is called after the target vm unzips files. this should copy all of the files from this directory into their correct place in the project.
 
 The deploy vm will make a copy of files and store it to be accessed by the database.
 

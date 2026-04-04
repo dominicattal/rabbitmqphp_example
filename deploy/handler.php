@@ -17,7 +17,7 @@ function pushBundle($archive_path)
         );
     }
     $info_ini = parse_ini_file("$dirname/info.ini", false);
-    $run_script_path = "$dirname/files/run.sh";
+    $run_script_path = "$dirname/files/installer.sh";
     if (!file_exists($run_script_path)) {
         return array(
             "status" => "failed",
