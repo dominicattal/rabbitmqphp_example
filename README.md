@@ -1,17 +1,14 @@
 # Documentation
 
-## Deploy
-
 ### Overview
 
-Deploy system works by pushing a *bundle* with *type* either web, db, or data to a *target* either dev, qa, or prod. These bundles can be subsequently rolled back by supplying the *bundle_name* and *version*. The available bundles, the versions for each bundle, and the current versions on each target should all be queryable.
-
-### Setup
-
-Important but idk where to put this yet. Everything works in /tmp directories, so look there for the bundles and extractes stuff.
-
-There are 10 vms, which are: 
+Deploy system works by pushing a `bundle` with `type` to a `target`. \
+`target` is either `dev`, `qa`, `prod`, `deploy`, or `main`. \
+`type` is either `web`, `db`, or `data`. \
+The `dev`, `qa`, and `prod` targets combine with each type to create 9 `clusters`. Each cluster is a pair like `dev_web` or `qa_data`. \
+Each cluster, along with the `deploy` and `main` targets, will have its own vm for 11 total vms. These vms are:
 ```
+main
 deploy
 dev_web
 dev_db
@@ -23,6 +20,47 @@ prod_web
 prod_db
 prod_data
 ```
+A collection of types for a target (ex. `dev_web`, `dev_db`, `dev_data`) will henceforth be called a `cluster group`.
+The deployment system works by pushing `bundles` from the main vm to the deploy vm. The deploy vm reads the bundle info along with a target specified by the main vm to forward the bundle to a cluster.
+
+## File Structure
+```
+root
+|-- all/                    # files for all targets
+    |-- rabbitMQLib.inc         # rabbitMQ functions
+    |-- apt.sh                  # script for setting up packages
+|-- clusters/               # files for all clusters
+    |-- handler.php             # listens to deploy target
+|-- cluster_inis/           # ini files for clusters
+    |-- clusters.ini            # ini file with each cluster host and the deploy host
+|-- web/                    # files for web type
+    |-- composer.json           # php package management    
+    |-- public/                 # files to be served to end users (ex. `login.php`)
+    |-- private/                # scripts that should not be exposed to end user (ex. `login_handler.php`)
+|-- db/                     # files for db type
+    |-- db_mysql.ini            # ini file for setting up mysql database
+    |-- db_client.ini           # ini file for communicating to cluster rabbitmq
+    |-- db_server.ini           # ini file for listening on the cluster rabbitmq
+    |-- schema.sql              # schema used in the database
+    |-- db.php                  # listener
+    |-- db.sh                   # script to setup mysql database
+    |-- cluster_broker.sh       # script to setup rabbitmq broker for this cluster group
+|-- data/                   # files for data type
+    |-- data_server.ini         # ini file for listening on the cluster rabbitmq
+    |-- data.php                # listener
+|-- deploy/                 # files for deploy target
+    |-- deploy_broker.sh        # script to setup rabbitmq broker for deploy target
+|-- scripts/                # scripts that are used in main and deploy targets
+    |-- 
+|-- bundles/                # directory for the bundles that will be pushed
+|-- README.md               # this file
+```
+
+## Setup
+
+Important but idk where to put this yet. Everything works in /tmp directories, so look there for the bundles and extractes stuff.
+
+There are 10 vms, not including the main vm, which are: 
 These are all defined in `deploy/clusters.ini`. Since we're all working on different machines, i made it an untracked file that you create by copying `deploy/clusters_sample.ini` as `deploy/clusters.ini` and filling the fields. You can update all of the cluster ini files (`dev_web_server.ini`, `dev_db_server.ini`, etc) by running `deploy/replace.sh`. You should set the user and host for each. These variables are used in scripts on this machine and also in the deploy vm to copy files.
 
 Here are instructions on initial setup for each machine
