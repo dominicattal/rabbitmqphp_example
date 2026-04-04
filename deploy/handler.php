@@ -21,7 +21,7 @@ function pushBundle($archive_path)
     if (!file_exists($run_script_path)) {
         return array(
             "status" => "failed",
-            "response" => "Files is missing run.sh"
+            "response" => "Files is missing installer.sh"
         );
     }
     exec("chmod +x '$run_script_path'", $output, $result_code);
