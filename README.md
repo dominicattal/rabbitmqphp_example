@@ -54,7 +54,7 @@ sudo systemctl restart ssh
 ### Push
 
 Run `deploy/push.php [dev/qa/prod] [bundle]` to deploy a bundle to dev, qa, or prod. The structure of bundle should look like this:
-
+```
 bundle
 |- info.ini
 |- files
@@ -62,7 +62,7 @@ bundle
    |- ...
    |- ...
    |- ...
-
+```
 `bundle` is a compressed directory that contains `info.ini` and `files` \
 `info.ini` contains the bundle info that the deploy machine reads. It should have the following fields:
 ```
