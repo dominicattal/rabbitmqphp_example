@@ -106,7 +106,8 @@ execute these like `sudo scripts/broker.sh`
 `data_client.ini`     -> ini file for creating rabbitmq data server for communitcating with data \
 `.api.ini`            -> ini file with our api keys
 
-`deploy_client.ini`   -> for deploying bundles \
+`bundle_client.ini`   -> for deploying bundles \
+`deploy_client.ini`   -> runs on deploy vm \
 `deploy_server.ini`   -> runs on deploy vm \
 `clusters.ini`        -> has all of the machine info. for use on main vm and deploy vm. \
 `dev_web_server.ini`
