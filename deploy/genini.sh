@@ -37,6 +37,8 @@ if [ "$target" == "all" ] || [ "$target" == "main" ]; then
     echo "Creating main_client.ini"
     path="./main_client.ini"
     sed -e "s/hostname/$DEPLOY_HOST/" -e "s/target/main/g" -e "s/type_//g" -e "s/LISTEN/REPLY/" -e "s/_listen//" -e "s/_server/_client/" deploy/template_server.ini > $path
+    sed -i "2i DEPLOY_USER=$DEPLOY_USER" $path
+    sed -i "2i DEPLOY_HOST=$DEPLOY_HOST" $path
 fi
 if [ "$target" == "all" ] || [ "$target" == "deploy" ]; then
     if [ -z ${DEPLOY_USER} ] || [ -z ${DEPLOY_HOST} ]; then
@@ -50,7 +52,6 @@ if [ "$target" == "all" ] || [ "$target" == "deploy" ]; then
         scp "$path" "scp://$ssh_string/~/it490/"
         path="/tmp/deploy_client.ini"
         sed -e "s/hostname/localhost/" -e "s/target/deploy/g" -e "s/type_//g" -e "s/LISTEN/REPLY/" -e "s/_listen//" -e "s/_server/_client/" deploy/template_server.ini > $path
-        ssh $ssh_string "mkdir -p ~/it490"
         scp "$path" "scp://$ssh_string/~/it490/"
     fi
 fi
@@ -65,9 +66,8 @@ if [ "$type" == "all" ] || [ "$type" == "web" ]; then
             sed -e "s/hostname/$DEPLOY_HOST/" -e "s/target/dev/g" -e "s/type/web/g" deploy/template_server.ini > $path
             ssh $ssh_string "mkdir -p ~/it490"
             scp "$path" "scp://$ssh_string/~/it490/"
-            path="/tmp/cluster_client.ini"
-            sed -e "s/hostname/$DEPLOY_HOST/" -e "s/target/dev/g" -e "s/type/web/g" deploy/template_client.ini > $path
-            ssh $ssh_string "mkdir -p ~/it490"
+            path="/tmp/web_client.ini"
+            sed -e "s/hostname/$DEV_DB_HOST/" deploy/template_web_client.ini > $path
             scp "$path" "scp://$ssh_string/~/it490/"
         fi
     fi
@@ -81,9 +81,8 @@ if [ "$type" == "all" ] || [ "$type" == "web" ]; then
             sed -e "s/hostname/$DEPLOY_HOST/" -e "s/target/dev/g" -e "s/type/web/g" deploy/template_server.ini > $path
             ssh $ssh_string "mkdir -p ~/it490"
             scp "$path" "scp://$ssh_string/~/it490/"
-            path="/tmp/cluster_client.ini"
-            sed -e "s/hostname/$DEPLOY_HOST/" -e "s/target/dev/g" -e "s/type/web/g" deploy/template_client.ini > $path
-            ssh $ssh_string "mkdir -p ~/it490"
+            path="/tmp/web_client.ini"
+            sed -e "s/hostname/$QA_DB_HOST/" deploy/template_web_client.ini > $path
             scp "$path" "scp://$ssh_string/~/it490/"
         fi
     fi
@@ -97,9 +96,8 @@ if [ "$type" == "all" ] || [ "$type" == "web" ]; then
             sed -e "s/hostname/$DEPLOY_HOST/" -e "s/target/dev/g" -e "s/type/web/g" deploy/template_server.ini > $path
             ssh $ssh_string "mkdir -p ~/it490"
             scp "$path" "scp://$ssh_string/~/it490/"
-            path="/tmp/cluster_client.ini"
-            sed -e "s/hostname/$DEPLOY_HOST/" -e "s/target/dev/g" -e "s/type/web/g" deploy/template_client.ini > $path
-            ssh $ssh_string "mkdir -p ~/it490"
+            path="/tmp/web_client.ini"
+            sed -e "s/hostname/$PROD_DB_HOST/" deploy/template_web_client.ini > $path
             scp "$path" "scp://$ssh_string/~/it490/"
         fi
     fi
@@ -115,10 +113,13 @@ if [ "$type" == "all" ] || [ "$type" == "db" ]; then
             sed -e "s/hostname/$DEPLOY_HOST/" -e "s/target/dev/g" -e "s/type/web/g" deploy/template_server.ini > $path
             ssh $ssh_string "mkdir -p ~/it490"
             scp "$path" "scp://$ssh_string/~/it490/"
-            path="/tmp/cluster_client.ini"
-            sed -e "s/hostname/$DEPLOY_HOST/" -e "s/target/dev/g" -e "s/type/web/g" deploy/template_client.ini > $path
-            ssh $ssh_string "mkdir -p ~/it490"
+            path="/tmp/db_client.ini"
+            sed -e "s/hostname/$DEV_DB_HOST/" deploy/template_db_client.ini > $path
             scp "$path" "scp://$ssh_string/~/it490/"
+            path="/tmp/db_server.ini"
+            sed -e "s/hostname/$DEV_DB_HOST/" deploy/template_db_server.ini > $path
+            scp "$path" "scp://$ssh_string/~/it490/"
+            scp "db_mysql.ini" "scp://$ssh_string/~/it490/"
         fi
     fi
     if [ "$target" == "all" ] || [ "$target" == "qa" ]; then
@@ -131,10 +132,13 @@ if [ "$type" == "all" ] || [ "$type" == "db" ]; then
             sed -e "s/hostname/$DEPLOY_HOST/" -e "s/target/dev/g" -e "s/type/web/g" deploy/template_server.ini > $path
             ssh $ssh_string "mkdir -p ~/it490"
             scp "$path" "scp://$ssh_string/~/it490/"
-            path="/tmp/cluster_client.ini"
-            sed -e "s/hostname/$DEPLOY_HOST/" -e "s/target/dev/g" -e "s/type/web/g" deploy/template_client.ini > $path
-            ssh $ssh_string "mkdir -p ~/it490"
+            path="/tmp/db_client.ini"
+            sed -e "s/hostname/$QA_DB_HOST/" deploy/template_db_client.ini > $path
             scp "$path" "scp://$ssh_string/~/it490/"
+            path="/tmp/db_server.ini"
+            sed -e "s/hostname/$QA_DB_HOST/" deploy/template_db_server.ini > $path
+            scp "$path" "scp://$ssh_string/~/it490/"
+            scp "db_mysql.ini" "scp://$ssh_string/~/it490/"
         fi
     fi
     if [ "$target" == "all" ] || [ "$target" == "prod" ]; then
@@ -147,10 +151,13 @@ if [ "$type" == "all" ] || [ "$type" == "db" ]; then
             sed -e "s/hostname/$DEPLOY_HOST/" -e "s/target/dev/g" -e "s/type/web/g" deploy/template_server.ini > $path
             ssh $ssh_string "mkdir -p ~/it490"
             scp "$path" "scp://$ssh_string/~/it490/"
-            path="/tmp/cluster_client.ini"
-            sed -e "s/hostname/$DEPLOY_HOST/" -e "s/target/dev/g" -e "s/type/web/g" deploy/template_client.ini > $path
-            ssh $ssh_string "mkdir -p ~/it490"
+            path="/tmp/db_client.ini"
+            sed -e "s/hostname/$PROD_DB_HOST/" deploy/template_db_client.ini > $path
             scp "$path" "scp://$ssh_string/~/it490/"
+            path="/tmp/db_server.ini"
+            sed -e "s/hostname/$PROD_DB_HOST/" deploy/template_db_server.ini > $path
+            scp "$path" "scp://$ssh_string/~/it490/"
+            scp "db_mysql.ini" "scp://$ssh_string/~/it490/"
         fi
     fi
 fi
@@ -165,9 +172,8 @@ if [ "$type" == "all" ] || [ "$type" == "data" ]; then
             sed -e "s/hostname/$DEPLOY_HOST/" -e "s/target/dev/g" -e "s/type/web/g" deploy/template_server.ini > $path
             ssh $ssh_string "mkdir -p ~/it490"
             scp "$path" "scp://$ssh_string/~/it490/"
-            path="/tmp/cluster_client.ini"
-            sed -e "s/hostname/$DEPLOY_HOST/" -e "s/target/dev/g" -e "s/type/web/g" deploy/template_client.ini > $path
-            ssh $ssh_string "mkdir -p ~/it490"
+            path="/tmp/data_server.ini"
+            sed -e "s/hostname/$DEV_DB_HOST/" deploy/template_data_server.ini > $path
             scp "$path" "scp://$ssh_string/~/it490/"
         fi
     fi
@@ -181,9 +187,8 @@ if [ "$type" == "all" ] || [ "$type" == "data" ]; then
             sed -e "s/hostname/$DEPLOY_HOST/" -e "s/target/dev/g" -e "s/type/web/g" deploy/template_server.ini > $path
             ssh $ssh_string "mkdir -p ~/it490"
             scp "$path" "scp://$ssh_string/~/it490/"
-            path="/tmp/cluster_client.ini"
-            sed -e "s/hostname/$DEPLOY_HOST/" -e "s/target/dev/g" -e "s/type/web/g" deploy/template_client.ini > $path
-            ssh $ssh_string "mkdir -p ~/it490"
+            path="/tmp/data_server.ini"
+            sed -e "s/hostname/$QA_DB_HOST/" deploy/template_data_server.ini > $path
             scp "$path" "scp://$ssh_string/~/it490/"
         fi
     fi
@@ -197,9 +202,8 @@ if [ "$type" == "all" ] || [ "$type" == "data" ]; then
             sed -e "s/hostname/$DEPLOY_HOST/" -e "s/target/dev/g" -e "s/type/web/g" deploy/template_server.ini > $path
             ssh $ssh_string "mkdir -p ~/it490"
             scp "$path" "scp://$ssh_string/~/it490/"
-            path="/tmp/cluster_client.ini"
-            sed -e "s/hostname/$DEPLOY_HOST/" -e "s/target/dev/g" -e "s/type/web/g" deploy/template_client.ini > $path
-            ssh $ssh_string "mkdir -p ~/it490"
+            path="/tmp/data_server.ini"
+            sed -e "s/hostname/$PROD_DB_HOST/" deploy/template_data_server.ini > $path
             scp "$path" "scp://$ssh_string/~/it490/"
         fi
     fi
