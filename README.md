@@ -75,7 +75,58 @@ BUNDLE_TYPE="web"|"db"|"data"
 `installer.sh` is called after the target vm unzips files. this should copy all of the files from this directory into their correct place in the project.
 
 The deploy vm will make a copy of files and store it to be accessed by the database.
+### Bundles
+These files will be bundled together
+```
+dataBun
+|- data.php
+dbBun
+|- db.php
+|- schema.sql
+|- db.sh
+|- db_clean.sh
+|- db_purge.sh
+brokerBun
+|- broker.sh
+|- broker_clean.sh
+|- broker_purge.sh
+webBun
+|- web.php
+|- sample
+   |-navbar.php
+   |-search.php
+   |-validation_handler.php
+   |-header.php
+   |.goutputstream-GY4MM3
+loginBun
+|- login.html
+|- login_handler.php
+registerBun
+|- registration.html
+|- registration_handler.php
+extrasBun
+|- home.php
+|- higherlower.php
+|- upcoming.php
+emailBun
+|- email.php
+|- email_rec.php
+webDesignBun
+|- background.jpg
+|- madd.css
+reviewBun
+|- details.php
+|- get_reviews_handler.php
+|- reviews.html
+|- reviewsView.html
+|- reviewsView_handler.php
+|- reviews_handler.php
+watchlistBun
+|- watchlist.php
+|- watchlist_add.php
+|- watchlist_handler.php
 
+```
 ### Running locally
 
 For the website to successfully run locally, the db, broker, and data processor must all be setup. Everything in the ini files should point to localhost for `MQ_HOST`. `db.php` and `data.php` should both be running.
