@@ -26,7 +26,7 @@ if ($result_code != 0) {
 }
 $archive_path=$output[0];
 echo "Compressed bundle to $archive_path\n";
-$ini = parse_ini_file("bundle_client.ini", false);
+$ini = parse_ini_file("main_client.ini", false);
 
 $basename = basename($archive_path);
 $remote_path = "/tmp/$basename";
@@ -37,7 +37,7 @@ if ($result_code != 0){
     exit(1);
 }
 
-$client = new rabbitMQClient("bundle_client.ini", "deploy_listen_queue", "deploy_listen");
+$client = new rabbitMQClient("main_client.ini", "deploy_listen_queue", "deploy_listen");
 $request = array();
 $request['type'] = "push";
 $request['target'] = $target;

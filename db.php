@@ -219,7 +219,7 @@ destroy_genres:
     $result = $db_conn->query($query);
 
 create_genres:
-    $client = new rabbitMQClient("db_client.ini", "data_queue", "data");
+    $client = new rabbitMQClient("db_client.ini", "data_listen_queue", "data_listen");
     $request = array();
     $request['type'] = "genres";
     $raw_genres = $client->send_request($request)["genres"];
@@ -331,7 +331,7 @@ function getMovie($movieId)
     if ($movie)
         return $movie;
 
-    $client = new rabbitMQClient("db_client.ini", "data_queue", "data");
+    $client = new rabbitMQClient("db_client.ini", "data_listen_queue", "data_listen");
     $request = array();
     $request['type'] = "movie";
     $request['id'] = $movieId;
@@ -365,7 +365,7 @@ delete_popular:
 
 update_popular:
     echo "Popular movies either not cached or expired, retrieving now\n";
-    $client = new rabbitMQClient("db_client.ini", "data_queue", "data");
+    $client = new rabbitMQClient("db_client.ini", "data_listen_queue", "data_listen");
     $request = array();
     $request['type'] = "popular";
     $movies_data = $client->send_request($request);
@@ -396,7 +396,7 @@ function getRecommendations($username)
     $movie_title = $movie["title"];
     $genres = getGenres();
 
-    $client = new rabbitMQClient("db_client.ini", "data_queue", "data");
+    $client = new rabbitMQClient("db_client.ini", "data_listen_queue", "data_listen");
     $request = array();
     $request['type'] = "popular_in_genre";
     $request['genre_id'] = $movie["genre_id"];
@@ -431,7 +431,7 @@ function getWatchlist($user)
 function getUpcoming()
 {
     global $db_conn;
-    $client = new rabbitMQClient("db_client.ini", "data_queue", "data");
+    $client = new rabbitMQClient("db_client.ini", "data_listen_queue", "data_listen");
     $request = array();
     $request['type'] = "upcoming";
     $raw_upcoming = $client->send_request($request);
@@ -602,7 +602,7 @@ function higherlower($count){
 		return array("results"=>$movies);
 	}
 	echo "new movies\n";
-	$client=new rabbitMQClient("db_client.ini", "data_queue","data");
+	$client=new rabbitMQClient("db_client.ini", "data_listen_queue","data_listen");
 	$request=array();
 	$request['type']="higherlower";
 	$request['count']= $count;
@@ -634,7 +634,7 @@ function getAllReviewsForUser($username)
 
 function getSearch($request) {
    global $db_conn;
-   $client = new rabbitMQClient("db_client.ini", "data_queue", "data");
+   $client = new rabbitMQClient("db_client.ini", "data_listen_queue", "data_listen");
    $raw_search = $client->send_request($request);
    var_dump($raw_search);
    $search = array();

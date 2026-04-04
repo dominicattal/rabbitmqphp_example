@@ -3,13 +3,13 @@
 # this script copies file to specified machines. not to be confused wiht deployment system, this is just for setting stuff up easily
 
 # -------- FILES TO COPY --------------
-deploy_files="deploy/ssh_copy.sh deploy/apt.sh deploy/broker.sh deploy/clusters.ini deploy/deploy.php ./rabbitMQLib.inc"
+deploy_files="deploy/ssh_copy.sh deploy/apt_deploy.sh deploy/broker_deploy.sh deploy/clusters.ini deploy/deploy.php ./rabbitMQLib.inc"
 
-cluster_files="deploy/handler.php deploy/apt.sh ./rabbitMQLib.inc"
+cluster_files="deploy/handler.php ./rabbitMQLib.inc"
 
-web_files="$cluster_files"
-db_files="$cluster_files"
-data_files="$cluster_files"
+web_files="$cluster_files deploy/apt_web.sh .api.ini"
+db_files="$cluster_files deploy/apt_db.sh deploy/broker_cluster.sh"
+data_files="$cluster_files deploy/apt_data.sh .api.ini"
 
 dev_web_files="$web_files"
 dev_db_files="$db_files"
@@ -27,8 +27,8 @@ data_data_files="$data_files"
 if [ $# -eq 0 ]; then
     echo "Update core files onto each machine"
     echo "run deploy/ssh_copy.sh to update ssh keys"
-    echo "Usage: deploy/clear.sh [target] [type] {files}"
-    echo "       deploy/clear.sh [deploy/dev/qa/prod/all] [web/db/data/all] [file1] [file2] ..."
+    echo "Usage: deploy/update.sh [target] [type] {files}"
+    echo "       deploy/update.sh [deploy/dev/qa/prod/all] [web/db/data/all] [file1] [file2] ..."
     echo "Files can be specified after target and type. Otherwise, it will copy the ones specified above"
     exit 1
 fi
