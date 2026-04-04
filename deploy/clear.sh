@@ -5,7 +5,7 @@
 if [ $# -eq 0 ]; then
     echo "Remove it490 directory of machines"
     echo "run deploy/ssh_copy.sh to update ssh keys"
-    echo "Usage: deploy/clear.sh [deploy/web/db/data/all] [dev/qa/prod/all]"
+    echo "Usage: deploy/clear.sh [deploy/dev/qa/prod/all] [web/db/data/all]"
     exit 1
 fi
 
@@ -20,16 +20,16 @@ else
     exit 1
 fi
 
-type=$1
-if [ "$type" != "deploy" ] && [ "$type" != "web" ] && [ "$type" != "db" ] && [ "$type" != "data" ] && [ "$type" != "all" ]; then
-    echo "type is incorrect, should be [deploy/web/db/data/all] "
-    exit 1
+target=$1
+if [ "$target" != "deploy" ] && [ "$target" != "dev" ] && [ "$target" != "qa" ] && [ "$target" != "prod" ] && [ "$target" != "all" ]; then
+        echo "target is incorrect, should be [deploy/dev/qa/prod/all]"
+        exit 1
 fi
 
-if [ "$type" != "deploy" ]; then
-    target=$2
-    if [ "$target" != "dev" ] && [ "$target" != "qa" ] && [ "$target" != "prod" ] && [ "$target" != "all" ]; then
-        echo "target is incorrect, should be [dev/qa/prod/all]"
+if [ "$target" != "deploy" ]; then
+    type=$2
+    if [ "$type" != "web" ] && [ "$type" != "db" ] && [ "$type" != "data" ] && [ "$type" != "all" ]; then
+        echo "type is incorrect, should be [web/db/data/all] "
         exit 1
     fi
 fi
@@ -37,7 +37,7 @@ fi
 tail -n +2 "deploy/clusters.ini" > /tmp/clusters.sh
 source /tmp/clusters.sh
 
-if [ "$type" == "all" ] || [ "$type" == "deploy" ]; then
+if [ "$target" == "all" ] || [ "$target" == "deploy" ]; then
     if [ -z ${DEPLOY_USER} ] || [ -z ${DEPLOY_HOST} ]; then
         echo "Deploy host or user not in cluster.ini"
     else

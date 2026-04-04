@@ -2,6 +2,14 @@
 
 # copies your ssh keys to each machine to allow scp
 
+if [ $# -eq 0 ]; then
+    echo "Copies your ssh keys to each machine specified in deploy/clusters.ini"
+    echo "run deploy/ssh_copy.sh to update ssh keys"
+    echo "Usage: deploy/ssh_copy.sh [target] [type]"
+    echo "       deploy/ssh_copy.sh [deploy/dev/qa/prod/all] [web/db/data/all]"
+    exit 1
+fi
+
 key_files=$(find ~/.ssh -type f -name "*.pub")
 if [ -z "${key_files}" ]; then
     echo "Key not found, making one now"
@@ -20,21 +28,21 @@ else
     exit 1
 fi
 
-type=$1
-if [ "$type" != "deploy" ] && [ "$type" != "web" ] && [ "$type" != "db" ] && [ "$type" != "data" ] && [ "$type" != "all" ]; then
-    echo "type is incorrect, should be deploy/ssh_copy.sh [deploy/web/db/data/all] [dev/qa/prod/all]"
-    exit 1
+target=$1
+if [ "$target" != "deploy" ] && [ "$target" != "dev" ] && [ "$target" != "qa" ] && [ "$target" != "prod" ] && [ "$target" != "all" ]; then
+        echo "target is incorrect, should be [deploy/dev/qa/prod/all]"
+        exit 1
 fi
 
-if [ "$type" != "deploy" ]; then
-    target=$2
-    if [ "$target" != "dev" ] && [ "$target" != "qa" ] && [ "$target" != "prod" ] && [ "$target" != "all" ]; then
-        echo "target is incorrect, should be deploy/ssh_copy.sh [deploy/web/db/data/all] [dev/qa/prod/all]"
+if [ "$target" != "deploy" ]; then
+    type=$2
+    if [ "$type" != "web" ] && [ "$type" != "db" ] && [ "$type" != "data" ] && [ "$type" != "all" ]; then
+        echo "type is incorrect, should be [web/db/data/all] "
         exit 1
     fi
 fi
 
-if [ $type == "all" ] || [ $type == "deploy" ]; then
+if [ "$target" == "all" ] || [ "$target" == "deploy" ]; then
     if [ -n "${DEPLOY_HOST}" ] && [ -n "${DEPLOY_USER}" ]; then
         echo "-------- SSH COPY TO DEPLOY_HOST ---------"
         ssh_string="$DEPLOY_USER@$DEPLOY_HOST"

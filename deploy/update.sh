@@ -27,25 +27,25 @@ data_data_files="$data_files deploy/serverinis/data_data_server.ini"
 if [ $# -eq 0 ]; then
     echo "Update core files onto each machine"
     echo "run deploy/ssh_copy.sh to update ssh keys"
-    echo "Usage: deploy/update.sh [deploy/web/db/data/all] [dev/qa/prod/all]"
-    echo "Files can be specified after type and target. Otherwise, it will copy the ones specified above"
+    echo "Usage: deploy/clear.sh [target] [type] {files}"
+    echo "       deploy/clear.sh [deploy/dev/qa/prod/all] [web/db/data/all] [file1] [file2] ..."
+    echo "Files can be specified after target and type. Otherwise, it will copy the ones specified above"
     exit 1
 fi
 
-
-type=$1
-if [ "$type" != "deploy" ] && [ "$type" != "web" ] && [ "$type" != "db" ] && [ "$type" != "data" ] && [ "$type" != "all" ]; then
-    echo "type is incorrect, should be [deploy/web/db/data/all] "
-    exit 1
+target=$1
+if [ "$target" != "deploy" ] && [ "$target" != "dev" ] && [ "$target" != "qa" ] && [ "$target" != "prod" ] && [ "$target" != "all" ]; then
+        echo "target is incorrect, should be [deploy/dev/qa/prod/all]"
+        exit 1
 fi
 
-if [ "$type" != "deploy" ]; then
-    target=$2
-    if [ "$target" != "dev" ] && [ "$target" != "qa" ] && [ "$target" != "prod" ] && [ "$target" != "all" ]; then
-        echo "target is incorrect, should be [dev/qa/prod/all]"
+if [ "$target" != "deploy" ]; then
+    type=$2
+    cli_files=${@:3}
+    if [ "$type" != "web" ] && [ "$type" != "db" ] && [ "$type" != "data" ] && [ "$type" != "all" ]; then
+        echo "type is incorrect, should be [web/db/data/all] "
         exit 1
     fi
-    cli_files=${@:3}
 else
     cli_files=${@:2}
 fi
@@ -78,7 +78,7 @@ else
     exit 1
 fi
 
-if [ "$type" == "all" ] || [ "$type" == "deploy" ]; then
+if [ "$target" == "all" ] || [ "$target" == "deploy" ]; then
     if [ -z ${DEPLOY_USER} ] || [ -z ${DEPLOY_HOST} ]; then
         echo "Deploy host or user not in cluster.ini"
     else

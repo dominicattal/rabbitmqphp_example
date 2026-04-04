@@ -37,9 +37,9 @@ sudo systemctl restart ssh
 2. Ensure ssh key exists on this machine.
 3. Run `deploy/ssh_copy.sh`. This will automatically copy your ssh key to all of the machines. This is done so that deleting everything is easy.
 4. Run `deploy/update.sh all all`. This will automatically create the it490 directory and copy necessary files to each machine defined in `clusters.ini`. If it is not defined yet, it will be skipped.
-    - You can specify targets and type like `deploy/update.sh [deploy/web/db/data/all] [dev/qa/prod/all]`
+    - You can specify targets and type like `deploy/update.sh [deploy/dev/qa/prod/all] [web/db/data/all]`
     - You can specify which files get sent by specifying them after the target and type in the command line, so like
-        `deploy/update.sh web dev deploy/dev_web_server.ini`
+        `deploy/update.sh dev web deploy/dev_web_server.ini`
 5. Setup deploy vm:
     1. `cd it490`
     2. On deploy vm, run `sudo apt.sh` to ensure necessary packages are installed
