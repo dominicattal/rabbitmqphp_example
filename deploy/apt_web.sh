@@ -12,4 +12,3 @@ cp "$project_dir/apache.conf" /etc/apache2/sites-available/apache.conf
 a2ensite apache.conf
 systemctl reload apache2
 systemctl status apache2
-
