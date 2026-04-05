@@ -2,6 +2,9 @@
 <?php
 require_once('rabbitMQLib.inc');
 
+//This is a flag to indicate which DB is currently in use - ME
+$current_db = 1;
+
 $config = parse_ini_file('db_mysql.ini');
 
 $db_conn = new mysqli($config["MYSQL_HOST"],$config["MYSQL_USER"],$config["MYSQL_PASS"],$config["MYSQL_DB"]);
@@ -646,38 +649,72 @@ function getSearch($request) {
 
 function requestProcessor($request)
 {
-  global $db_conn;     
+  global $db_conn;  
+  global $current_db;
+   
   echo "received request".PHP_EOL;
   var_dump($request);
   if(!isset($request['type']))
     return "ERROR: unsupported message type";
 
-  $output;
-  $output = shell_exec("scripts/aliveTest.sh");
-  $output = trim($output);
-  //var_dump($output);
+
+if($current_db == 1)
+{
+  echo "Using DB 1!\n";
+  //We are using DB 1
+  //Ping DB 1 and check if it is alive
+  //If it is alive, continue using it and send a copy of its DB to DB 2
+  //If it is dead, swap to using DB 2 then continue - assume DB 2 is alive
+
+  //Current testing purposes, DB 1 is localhost
+  //DB 2 is ME's DB at IP 100.111.93.122
+
+  //Due to current being localhost, no need to ping itself, but make a script here to ping the real DB 1 later
+  //Ping self
   
- //Insert more lines here to toggle a bool to send the DB to the other server whenever it comes online!
-
-
-if($output == "online!")
-{
-  echo "Online!\n";
-  $config = parse_ini_file('db_mysql.ini');
-  $db_conn = new mysqli($config["MYSQL_HOST"],$config["MYSQL_USER"],$config["MYSQL_PASS"],$config["MYSQL_DB"]);
-  shell_exec("scripts/zip.sh");
-}
-else if($output == "offline!")
-{
-  echo "Offline!\nSwapping the DB Servers!";
-
-  $config = parse_ini_file('db_mysql2.ini');
-  $db_conn = new mysqli($config["MYSQL_HOST"],$config["MYSQL_USER"],$config["MYSQL_PASS"],$config["MYSQL_DB"]);
-  //Insert a command here to set a flag to this page that when the server comes online to request the new DB from the other DB server! - ME
-
+  //Check if DB1 is online
+  $output;
+  $output = shell_exec("scripts/pingDB1.sh");
+  $output = trim($output);
+  
+  if($output == "online!")
+  {
+     //Send a copy of the DB to DB2
+     //$db_conn = new mysqli($config["MYSQL_HOST"],$config["MYSQL_USER"],$config["MYSQL_PASS"],$config["MYSQL_DB"]);
+     shell_exec("scripts/zip.sh");
+  }
+  else
+  {
+     //DB 1 is offline, swap to 2
+     $current_db = 2;
+     $config = parse_ini_file('db_mysql2.ini');
+     $db_conn = new mysqli($config["MYSQL_HOST"],$config["MYSQL_USER"],$config["MYSQL_PASS"],$config["MYSQL_DB"]);
+  }
+  
 }
 else
-   echo "Unknown state of DB! Probably miswrote the IP or the script name!\n";
+{
+   echo "Using DB 2!\n";
+   //We are using DB 2 invert above comments
+   $output;
+   $output = shell_exec("scripts/aliveTest.sh");
+   $output = trim($output);
+
+   if($output == "online!")
+   {
+     //DB 2 is online, send a copy to DB 1
+     //This script just sends it to DB 2, currently DB 1 is localhost
+     shell_exec("scripts/zip.sh");
+   }
+   else
+   {
+     //DB 2 is offline, swap to DB 1
+     $current_db = 1;
+     $config = parse_ini_file('db_mysql1.ini');
+     $db_conn = new mysqli($config["MYSQL_HOST"],$config["MYSQL_USER"],$config["MYSQL_PASS"],$config["MYSQL_DB"]);
+   }
+}
+
   
 
   try {
