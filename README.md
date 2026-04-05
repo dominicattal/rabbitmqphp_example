@@ -1,17 +1,14 @@
 # Documentation
 
-## Deploy
+## Overview
 
-### Overview
-
-Deploy system works by pushing a *bundle* with *type* either web, db, or data to a *target* either dev, qa, or prod. These bundles can be subsequently rolled back by supplying the *bundle_name* and *version*. The available bundles, the versions for each bundle, and the current versions on each target should all be queryable.
-
-### Setup
-
-Important but idk where to put this yet. Everything works in /tmp directories, so look there for the bundles and extractes stuff.
-
-There are 10 vms, which are: 
+Deploy system works by pushing a `bundle` with `type` to a `target`. \
+`target` is either `dev`, `qa`, `prod`, `deploy`, or `main`. \
+`type` is either `web`, `db`, or `data`. \
+The `dev`, `qa`, and `prod` targets combine with each type to create 9 `clusters`. Each cluster is a pair like `dev_web` or `qa_data`. \
+Each cluster, along with the `deploy` and `main` targets, will have its own vm for 11 total vms. These vms are:
 ```
+main
 deploy
 dev_web
 dev_db
@@ -23,7 +20,14 @@ prod_web
 prod_db
 prod_data
 ```
-These are all defined in `deploy/clusters.ini`. Since we're all working on different machines, i made it an untracked file that you create by copying `deploy/clusters_sample.ini` as `deploy/clusters.ini` and filling the fields. You can update all of the cluster ini files (`dev_web_server.ini`, `dev_db_server.ini`, etc) by running `deploy/replace.sh`. You should set the user and host for each. These variables are used in scripts on this machine and also in the deploy vm to copy files.
+A collection of types for a target (ex. `dev_web`, `dev_db`, `dev_data`) will henceforth be called a `cluster group`.
+The deployment system works by pushing `bundles` from the main vm to the deploy vm. The deploy vm reads the bundle info along with a target specified by the main vm to forward the bundle to a cluster.
+
+## Setup
+
+Important but idk where to put this yet. Everything works in /tmp directories, so look there for the bundles and extractes stuff.
+
+Each vm is defined in `deploy/clusters.ini`. Since we're all working on different machines, I made an untracked file that you create by copying `deploy/clusters_sample.ini` as `deploy/clusters.ini` and filling in the fields. Every other ini file in the project is generated dynamically from `deploy/clusters.ini`, which you do by running `deploy/genini.sh all all`.
 
 Here are instructions on initial setup for each machine
 
@@ -42,14 +46,15 @@ sudo systemctl restart ssh
         `deploy/update.sh dev web deploy/dev_web_server.ini`
 5. Setup deploy vm:
     1. `cd it490`
-    2. On deploy vm, run `sudo apt.sh` to ensure necessary packages are installed
-    3. On deploy vm, run `sudo broker.sh` to create rabbitmq stuff
+    2. On deploy vm, run `sudo apt_deploy.sh` to ensure necessary packages are installed
+    3. On deploy vm, run `sudo broker_deploy.sh` to create rabbitmq stuff
         - if you want to delete the queues, you can do `sudo rabbitmqctl delete_vhost it490`
     4. Run `ssh_copy.sh all all` to create ssh key and copy them to other machines.
     5. Run `deploy.php` to listen for requests. This should be handled by systemd.
 6. Setup {target} {type} vm
     1. `cd it490`
-    2. Run `handler.php {target}_{type}_server.ini` to listen for requests.
+    2. There should be a script that looks like `apt_{type}.sh`. Run it.
+    3. Run `handler.php cluster_server.ini` to listen for requests. This should be handled by systemd.
 
 ### Push
 
@@ -84,51 +89,33 @@ For the website to successfully run locally, the db, broker, and data processor 
 
 Scripts are in the `scripts` directory. Deployment scripts are in `deploy` directory
 
-`scripts/broker.sh`         -> run commands for the rabbitmq server \
 `scripts/broker_clean.sh`   -> run commands for cleaning up all the stuff in rcbroker.sh \
 `scripts/broker_purge.sh`   -> run commands for purging all of the queues of messages \
 `scripts/db.sh`             -> run commands for the database server \
 `scripts/db_clean.sh`       -> run commands for cleaning up all the stuff in rcdb.sh \
-`scripts/db_purge.sh`       -> run commands for purging the cached api calls
+`scripts/db_purge.sh`       -> run commands for purging the cached api calls \
+`deploy/apt_deploy.sh`      -> packages to install on deploy vm \
+`deploy/apt_web.sh`         -> packages to install on web vm \
+`deploy/apt_db.sh`          -> packages to install on db vm \
+`deploy/apt_data.sh`        -> packages to install on data vm \
+`deploy/broker_deploy.sh`   -> creates rabbitmq server on deploy vm \
+`deploy/broker_cluster.sh`  -> creates rabbitmq server on db vm. works for all targets. \
 `deploy/ssh_copy.sh`        -> copy ssh keys to target machines specified in `deploy/clusters.ini`.
 `deploy/update.sh`          -> directly update files on target machines. not to be confused with deploy system
 `deploy/clear.sh`           -> remove the it490 directory that has all of the stuff.
 `deploy/bundlify.sh`        -> turns a directory into a bundle. must look like the directory above
-`deploy/replace.sh`         -> replaces all of the MQ_HOST fields in the server inis with the DEPLOY_HOST value in `deploy/clusters.ini`
+`deploy/genini.sh`          -> automatically generates all of the ini files and sends them to the specified machines.
 
 execute these like `sudo scripts/broker.sh`
 
 ### Ini files
 
-`db_mysql.ini`        -> ini file for mysql in database, used in db.php \
-`db_server.ini`       -> ini file for creating rabbitmq database server for communicating with database \
-`db_client.ini`       -> ini file for creating rabbitmq database client for communicating with data \
-`web_client.ini`      -> ini file for creating rabbitmq web client for communicating with broker \
-`data_client.ini`     -> ini file for creating rabbitmq data server for communitcating with data \
-`.api.ini`            -> ini file with our api keys
-
-`bundle_client.ini`   -> for deploying bundles \
-`deploy_client.ini`   -> runs on deploy vm \
-`deploy_server.ini`   -> runs on deploy vm \
-`clusters.ini`        -> has all of the machine info. for use on main vm and deploy vm. \
-`dev_web_server.ini`
-
-The MQ_HOST field in the ini files should all point to the VM hosting the rabbitmq broker
-
-The `.api.ini` must be created (since it is not tracked by git) and have the `TMDB_KEY`, `MADD_EMAIL`, and `MADD_PASS` fields.
-
-### Webpage
-
-For ease of development, I use the following command to start a php server instead of copying to the apache directory every time
-
-    `php -S 127.0.0.1:8000 -t sample`
-
-The script `copy_webpage.sh` will automatically move all the relevant files to the apache directory. \
-This script hasn't been updated in a while so it probably wont work.
+`deploy/clusters.ini`   -> host and user of each vm. copied from `deploy/clusters_sample.ini`
+`.api.ini`              -> api keys. must be created and have the `TMDB_KEY`, `MADD_EMAIL`, and `MADD_PASS` fields.
 
 ### Rabbitmq
 
-We have 4 queues, `web_queue`, `db_web_queue`, `db_data_queue`, and `data_queue`. The routing keys to routing messages to each queue are `web`, `db_web`, `db_data`, and `data`.The routing keys are for the exchange to know which queue to publish to. Our exchange is direct, so the whole routing key will be matched to one whole binding. A binding is the relationship between a queue and its exchange. For example, the queue `web_queue` uses the binding `web` so that messages published to the exchanged with the routing key `web` are routed to that queue. `db_web_queue` and `db_data_queue` were previously just one queue, but it was necessary to split them into two queues because for some reason, having a server and client referencing the same queue at the same time breaks things. I believe the issue might have been fixed when I disconnected the connection in rabbitMQClient, so perhaps db_web_queue and db_data_queue can be consolidated.
+We have 4 queues, `web_queue`, `db_queue`, `db_listen_queue`, and `data_listen_queue`. The routing keys to routing messages to each queue are `web`, `db`, `db_listen`, and `data_listen`. The routing keys are for the exchange to know which queue to publish to. Our exchange is direct, so the whole routing key will be matched to one whole binding. A binding is the relationship between a queue and its exchange. For example, the queue `web_queue` uses the binding `web` so that messages published to the exchanged with the routing key `web` are routed to that queue. `db_listen_queue` and `db_queue` were previously just one queue, but it was necessary to split them into two queues because for some reason, having a server and client referencing the same queue at the same time breaks things.
 
 ### API
 
