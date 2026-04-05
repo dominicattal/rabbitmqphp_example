@@ -651,6 +651,35 @@ function requestProcessor($request)
   var_dump($request);
   if(!isset($request['type']))
     return "ERROR: unsupported message type";
+
+  $output;
+  $output = shell_exec("scripts/aliveTest.sh");
+  $output = trim($output);
+  //var_dump($output);
+  
+ //Insert more lines here to toggle a bool to send the DB to the other server whenever it comes online!
+
+//This first statement checks if the localhost is working. Is redundant but is for testing purposes.
+if($output == "online!")
+{
+  echo "Online!\n";
+  $config = parse_ini_file('db_mysql.ini');
+  $db_conn = new mysqli($config["MYSQL_HOST"],$config["MYSQL_USER"],$config["MYSQL_PASS"],$config["MYSQL_DB"]);
+  
+}
+else if($output == "offline!")
+{
+  echo "Offline!\nSwapping the DB Servers!";
+
+  $config = parse_ini_file('db_mysql2.ini');
+  $db_conn = new mysqli($config["MYSQL_HOST"],$config["MYSQL_USER"],$config["MYSQL_PASS"],$config["MYSQL_DB"]);
+ 
+
+}
+else
+   echo "Unknown state of DB! Probably miswrote the IP or the script name!\n";
+  
+
   try {
       switch ($request['type'])
       {
