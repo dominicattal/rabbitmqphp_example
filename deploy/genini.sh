@@ -110,7 +110,7 @@ if [ "$type" == "all" ] || [ "$type" == "db" ]; then
             echo "Copying inis for DEV_DB_HOST"
             ssh_string="$DEV_DB_USER@$DEV_DB_HOST"
             path="/tmp/cluster_server.ini"
-            sed -e "s/hostname/$DEPLOY_HOST/" -e "s/target/dev/g" -e "s/type/web/g" deploy/template_server.ini > $path
+            sed -e "s/hostname/$DEPLOY_HOST/" -e "s/target/dev/g" -e "s/type/db/g" deploy/template_server.ini > $path
             ssh $ssh_string "mkdir -p ~/it490"
             scp "$path" "scp://$ssh_string/~/it490/"
             path="/tmp/db_client.ini"
@@ -129,7 +129,7 @@ if [ "$type" == "all" ] || [ "$type" == "db" ]; then
             echo "Copying inis for QA_DB_HOST"
             ssh_string="$QA_DB_USER@$QA_DB_HOST"
             path="/tmp/cluster_server.ini"
-            sed -e "s/hostname/$DEPLOY_HOST/" -e "s/target/dev/g" -e "s/type/web/g" deploy/template_server.ini > $path
+            sed -e "s/hostname/$DEPLOY_HOST/" -e "s/target/dev/g" -e "s/type/db/g" deploy/template_server.ini > $path
             ssh $ssh_string "mkdir -p ~/it490"
             scp "$path" "scp://$ssh_string/~/it490/"
             path="/tmp/db_client.ini"
@@ -148,7 +148,7 @@ if [ "$type" == "all" ] || [ "$type" == "db" ]; then
             echo "Copying inis for PROD_DB_HOST"
             ssh_string="$PROD_DB_USER@$PROD_DB_HOST"
             path="/tmp/cluster_server.ini"
-            sed -e "s/hostname/$DEPLOY_HOST/" -e "s/target/dev/g" -e "s/type/web/g" deploy/template_server.ini > $path
+            sed -e "s/hostname/$DEPLOY_HOST/" -e "s/target/dev/g" -e "s/type/db/g" deploy/template_server.ini > $path
             ssh $ssh_string "mkdir -p ~/it490"
             scp "$path" "scp://$ssh_string/~/it490/"
             path="/tmp/db_client.ini"
@@ -169,7 +169,7 @@ if [ "$type" == "all" ] || [ "$type" == "data" ]; then
             echo "Copying inis for DEV_DATA_HOST"
             ssh_string="$DEV_DATA_USER@$DEV_DATA_HOST"
             path="/tmp/cluster_server.ini"
-            sed -e "s/hostname/$DEPLOY_HOST/" -e "s/target/dev/g" -e "s/type/web/g" deploy/template_server.ini > $path
+            sed -e "s/hostname/$DEPLOY_HOST/" -e "s/target/dev/g" -e "s/type/data/g" deploy/template_server.ini > $path
             ssh $ssh_string "mkdir -p ~/it490"
             scp "$path" "scp://$ssh_string/~/it490/"
             path="/tmp/data_server.ini"
@@ -184,7 +184,7 @@ if [ "$type" == "all" ] || [ "$type" == "data" ]; then
             echo "Copying inis for QA_DATA_HOST"
             ssh_string="$QA_DATA_USER@$QA_DATA_HOST"
             path="/tmp/cluster_server.ini"
-            sed -e "s/hostname/$DEPLOY_HOST/" -e "s/target/dev/g" -e "s/type/web/g" deploy/template_server.ini > $path
+            sed -e "s/hostname/$DEPLOY_HOST/" -e "s/target/dev/g" -e "s/type/data/g" deploy/template_server.ini > $path
             ssh $ssh_string "mkdir -p ~/it490"
             scp "$path" "scp://$ssh_string/~/it490/"
             path="/tmp/data_server.ini"
@@ -199,7 +199,7 @@ if [ "$type" == "all" ] || [ "$type" == "data" ]; then
             echo "Copying inis for PROD_DATA_HOST"
             ssh_string="$PROD_DATA_USER@$PROD_DATA_HOST"
             path="/tmp/cluster_server.ini"
-            sed -e "s/hostname/$DEPLOY_HOST/" -e "s/target/dev/g" -e "s/type/web/g" deploy/template_server.ini > $path
+            sed -e "s/hostname/$DEPLOY_HOST/" -e "s/target/dev/g" -e "s/type/data/g" deploy/template_server.ini > $path
             ssh $ssh_string "mkdir -p ~/it490"
             scp "$path" "scp://$ssh_string/~/it490/"
             path="/tmp/data_server.ini"
