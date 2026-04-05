@@ -659,13 +659,13 @@ function requestProcessor($request)
   
  //Insert more lines here to toggle a bool to send the DB to the other server whenever it comes online!
 
-//This first statement checks if the localhost is working. Is redundant but is for testing purposes.
+
 if($output == "online!")
 {
   echo "Online!\n";
   $config = parse_ini_file('db_mysql.ini');
   $db_conn = new mysqli($config["MYSQL_HOST"],$config["MYSQL_USER"],$config["MYSQL_PASS"],$config["MYSQL_DB"]);
-  
+  shell_exec("scripts/zip.sh");
 }
 else if($output == "offline!")
 {
@@ -673,7 +673,7 @@ else if($output == "offline!")
 
   $config = parse_ini_file('db_mysql2.ini');
   $db_conn = new mysqli($config["MYSQL_HOST"],$config["MYSQL_USER"],$config["MYSQL_PASS"],$config["MYSQL_DB"]);
- 
+  //Insert a command here to set a flag to this page that when the server comes online to request the new DB from the other DB server! - ME
 
 }
 else
