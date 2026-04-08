@@ -4,10 +4,10 @@ After=network.target
 
 [Service]
 Type=simple
-ExecStart=/usr/bin/php /home/YOUR_USER/it490/db.php db_server.ini
-WorkingDirectory=/home/YOUR_USER/it490
+ExecStart=/usr/bin/php /var/www/madd/db.php db_server.ini
+WorkingDirectory=/var/www/madd
 Restart=on-failure
-RestartSec=60
+RestartSec=5
 User=madd_system
 Group=madd_system
 

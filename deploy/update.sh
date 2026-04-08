@@ -3,13 +3,13 @@
 # this script copies file to specified machines. not to be confused wiht deployment system, this is just for setting stuff up easily
 
 # -------- FILES TO COPY --------------
-deploy_files="deploy/ssh_copy.sh deploy/apt_deploy.sh deploy/broker_deploy.sh deploy/clusters.ini deploy/deploy.php ./rabbitMQLib.inc"
+deploy_files="deploy/ssh_copy.sh deploy/apt_deploy.sh deploy/broker_deploy.sh deploy/clusters.ini deploy/deploy.php ./rabbitMQLib.inc deploy/systemd.sh config/madd_handler.service config/madd_deploy.service"
 
 cluster_files="deploy/handler.php ./rabbitMQLib.inc"
 
-web_files="$cluster_files deploy/apt_web.sh .api.ini"
-db_files="$cluster_files deploy/apt_db.sh deploy/broker_cluster.sh"
-data_files="$cluster_files deploy/apt_data.sh .api.ini"
+web_files="$cluster_files deploy/apt_web.sh deploy/systemd.sh config/madd_handler.service config/madd_handler.service config/apache.conf .api.ini"
+db_files="$cluster_files deploy/apt_db.sh deploy/broker_cluster.sh deploy/systemd.sh config/madd_handler.service config/madd_db.service"
+data_files="$cluster_files deploy/apt_data.sh deploy/systemd.sh config/madd_handler.service config/madd_data.service .api.ini"
 
 dev_web_files="$web_files"
 dev_db_files="$db_files"
