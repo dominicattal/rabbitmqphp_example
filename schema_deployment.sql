@@ -5,3 +5,5 @@ CREATE TABLE IF NOT EXISTS bundleList (
     status varchar(255) NOT NULL,
     file_path varchar(255) NOT NULL
 );
+
+-- The DB's name on deployment is 'bundles'
