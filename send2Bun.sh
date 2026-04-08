@@ -1,0 +1,50 @@
+#!/bin/bash
+#Put in a file as the argument and that should grab all the related files to the bundle. it will then tell you which bundle to push to deploy
+filename=$1;
+if [[ $filename = "data.php" ]]; then
+	cp data.php dataBun
+	echo "dataBun";
+fi
+if [[ $filename = "db.php" || $filename = "schema.sql" || $filename = "db.sh" || $filename = "db_clean.sh" || $filename = "db_purge.sh" ]]; then
+	cp {db.php,schema.sql,db.sh,db_clean.sh,db_purge.sh} dbBun
+	echo "dbBun";
+fi
+if [[ $filename = "broker.sh" || $filename = "broker_clean.sh" || $filename = "broker_purge.sh" ]]; then
+	cp {broker.sh, broker_clean.sh, broker_purge.sh} brokerBun
+	echo "brokerBun";
+fi
+if [[ $filename = "web.php" || $filename = "navbar.php" || $filename = "search.php" || $filename = "validation_handler.php" || $filename = "header.php" ]]; then
+	cp web.php webBun
+	cp sample/{navbar.php,search.php,validation_handler.php,header.php} webBun
+	echo "webBun";
+fi
+if [[ $filename = "login.html" || $filename = "login_handler.php" ]]; then
+	cp sample/{login.html,login_handler.php} loginBun
+	echo "loginBun";
+fi
+if [[ $filename = "registration.html" || $filename = "registration_handler.php" ]]; then
+	cp sample/{registration.html,registration_handler.php} registerBun
+	echo "registerBun";
+fi
+if [[ $filename = "home.php" || $filename = "higherlower.php" || $filename = "upcoming.php" ]]; then
+	cp sample/{home.php, higherlower.php, upcoming.php} extrasBun
+	echo "extrasBun";
+fi
+if [[ $filename = "email.php" || $filename = "email_rec.php" ]]; then
+	cp {email.php, email_rec.php} emailBun
+	echo "emailBun";
+fi
+if [[ $filename = "background.jpg" || $filename = "madd.css" ]]; then
+	cp sample/{background.jpg,madd.css} webDesignBun
+	echo "webDesignBun";
+fi
+if [[ $filename = "details.php" || $filename = "get_reviews_handler.php" || $filename = "reviews.html" || $filename = "reviewsView.html" || $filename = "reviewsView_handler.php" || $filename = "reviews_handler.php" ]]; then
+	cp sample/{details.php, get_reviews_handler.php,reviews.html,reviewsView.html,reviewsView_handler.php} reviewBun
+	echo "reviewBun";
+fi
+if [[ $filename = "watchlist.php" || $filename = "watchlist_add.php" || $filename = "watchlist_handler.php" ]]; then
+	cp sample/{watchlist.php,watchlist_add.php,watchlist_handler.php} watchlistBun
+	echo "watchlistBun";
+fi
+
+
