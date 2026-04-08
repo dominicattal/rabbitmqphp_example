@@ -8,7 +8,7 @@ deploy_files="deploy/ssh_copy.sh deploy/apt_deploy.sh deploy/broker_deploy.sh de
 cluster_files="deploy/handler.php ./rabbitMQLib.inc"
 
 web_files="$cluster_files deploy/apt_web.sh .api.ini"
-db_files="$cluster_files deploy/apt_db.sh deploy/broker_cluster.sh"
+db_files="$cluster_files deploy/apt_db.sh deploy/broker_cluster.sh scripts/db_deployment.sh"
 data_files="$cluster_files deploy/apt_data.sh .api.ini"
 
 dev_web_files="$web_files"
