@@ -158,7 +158,7 @@ function test($target, $archive_path)
    
    echo "Finished with pushing the bundle, moving it to ~/bundles, and storing it in the DB";
    
-   return array("status" => "not implemented yet");
+   return array("status" => "Bundle Recieved and stored!");
 }
 
 function requestProcessor($request)
