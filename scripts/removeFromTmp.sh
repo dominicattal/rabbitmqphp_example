@@ -12,5 +12,4 @@ mkdir ~/bundles
 cp /tmp/$name ~/bundles/$newName
 rm /tmp/$name
 
-#Now need to unzip the bundle then store its data in the DB
-#Need to unzip it, give it a name as a concat of its version + type
+echo "${newName}"

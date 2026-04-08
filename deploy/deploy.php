@@ -2,6 +2,14 @@
 <?php
 include "rabbitMQLib.inc";
 
+//Hard coding for testing! Move to an ini file at some point! - ME
+$servername = "127.0.0.1";
+$username = "db_user";
+$password = "db_pass";
+$dbname = "bundles";
+$db_conn = new mysqli($servername, $username, $password, $dbname);
+
+
 $clusters = parse_ini_file("clusters.ini", false);
 
 $queue_map = array();
@@ -104,21 +112,14 @@ function listCurrentBundles($target)
 }
 
 function test($target, $archive_path)
-{
-   //Finish this command
-   //Get the bundle name
-   //Find that bundle in tmp/
-   //Move the bundle to bundle/
-   //Delete from tmp/
-   //Make a DB entry for the bundle
-   
-   echo "Doing test!\n";
-   echo "archive path is: $archive_path\n";
+{ 
+   //echo "Doing test!\n";
+   //echo "archive path is: $archive_path\n";
    
    $output = array();
    $result_code = 0;
    $dirname = dirname($archive_path);
-   echo "Dirname is: $dirname\n";
+   //echo "Dirname is: $dirname\n";
    
    exec("tar -C '$dirname' -xvf '$archive_path'",$output,$result_code);
    if ($result_code != 0) 
@@ -130,26 +131,35 @@ function test($target, $archive_path)
         );
    }
     
-   var_dump($output);
+   //var_dump($output);
     
-   //Extract the info.ini info: the Version + Type
    $info_ini = parse_ini_file("$dirname/info.ini", false);
    $type = $info_ini["BUNDLE_TYPE"];
    $version = $info_ini["BUNDLE_VERSION"];
    
-   echo "Type of INI is: $type\n";
-   echo "Version of INI is: $version\n";
+   //echo "Type of INI is: $type\n";
+   //echo "Version of INI is: $version\n";
    
     
    $tarName = basename($archive_path);
-   echo "Tar file name: $tarName\n";
+   //echo "Tar file name: $tarName\n";
    
-   $output2 = array();
-   $cmd = __DIR__ . "/removeFromTmp.sh " . $tarName . " " .$type . " " . $version; 
-   exec($cmd. " 2>&1"   , $output2, $return_code);  
+   $output2 = array(); 
+   exec(__DIR__ . "/removeFromTmp.sh " . $tarName . " " .$type . " " . $version. " 2>&1"   , $output2, $return_code);  
 
-   echo "Post test!\n";
+   //echo "Post test!\n";
    var_dump($output2);
+   $newName = end($output2);
+   $newName2 = "~/bundles/".$newName;
+   
+   //Now need to send the newly made db_1_bundle.tar to the DB server for storage?
+   $state = "untested";
+   global $db_conn;
+   $query = "INSERT INTO bundleList (name, version, status, file_path) VALUES ('$newName','$version','$state','$newName2');";
+   
+   $result = $db_conn->query($query);
+   
+   echo "Finished with pushing the bundle, moving it to ~/bundles, and storing it in the DB";
    
    return array("status" => "not implemented yet");
 }
