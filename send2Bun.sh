@@ -1,6 +1,7 @@
 #!/bin/bash
 #Put in a file as the argument and that should grab all the related files to the bundle. it will then tell you which bundle to push to deploy
-filename=$2;
+filename=$1;
+echo $filename;
 if [[ $filename = "data.php" ]]; then
 	cp data.php dataBun/files
 	echo "dataBun";
@@ -10,7 +11,7 @@ if [[ $filename = "db.php" || $filename = "schema.sql" || $filename = "db.sh" ||
 	echo "dbBun";
 fi
 if [[ $filename = "broker.sh" || $filename = "broker_clean.sh" || $filename = "broker_purge.sh" ]]; then
-	cp {broker.sh, broker_clean.sh, broker_purge.sh} brokerBun/files
+	cp {broker.sh,broker_clean.sh,broker_purge.sh} brokerBun/files
 	echo "brokerBun";
 fi
 if [[ $filename = "web.php" || $filename = "navbar.php" || $filename = "search.php" || $filename = "validation_handler.php" || $filename = "header.php" ]]; then
@@ -27,11 +28,11 @@ if [[ $filename = "registration.html" || $filename = "registration_handler.php" 
 	echo "registerBun";
 fi
 if [[ $filename = "home.php" || $filename = "higherlower.php" || $filename = "upcoming.php" ]]; then
-	cp sample/{home.php, higherlower.php, upcoming.php} extrasBun/files
+	cp sample/{home.php,higherlower.php,upcoming.php} extrasBun/files
 	echo "extrasBun";
 fi
 if [[ $filename = "email.php" || $filename = "email_rec.php" ]]; then
-	cp {email.php, email_rec.php} emailBun/files
+	cp {email.php,email_rec.php} emailBun/files
 	echo "emailBun";
 fi
 if [[ $filename = "background.jpg" || $filename = "madd.css" ]]; then
@@ -39,7 +40,7 @@ if [[ $filename = "background.jpg" || $filename = "madd.css" ]]; then
 	echo "webDesignBun";
 fi
 if [[ $filename = "details.php" || $filename = "get_reviews_handler.php" || $filename = "reviews.html" || $filename = "reviewsView.html" || $filename = "reviewsView_handler.php" || $filename = "reviews_handler.php" ]]; then
-	cp sample/{details.php, get_reviews_handler.php,reviews.html,reviewsView.html,reviewsView_handler.php} reviewBun/files
+	cp sample/{details.php,get_reviews_handler.php,reviews.html,reviewsView.html,reviewsView_handler.php,reviews_handler.php} reviewBun/files
 	echo "reviewBun";
 fi
 if [[ $filename = "watchlist.php" || $filename = "watchlist_add.php" || $filename = "watchlist_handler.php" ]]; then
