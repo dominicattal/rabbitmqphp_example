@@ -3,11 +3,8 @@
 include "rabbitMQLib.inc";
 
 //Hard coding for testing! Move to an ini file at some point! - ME
-$servername = "127.0.0.1";
-$username = "db_user";
-$password = "db_pass";
-$dbname = "bundles";
-$db_conn = new mysqli($servername, $username, $password, $dbname);
+$config = parse_ini_file('deploy_db.ini');
+$db_conn = new mysqli($config["MYSQL_HOST"],$config["MYSQL_USER"],$config["MYSQL_PASS"],$config["MYSQL_DB"]);
 
 
 $clusters = parse_ini_file("clusters.ini", false);
