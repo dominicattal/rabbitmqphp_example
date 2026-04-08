@@ -1,0 +1,15 @@
+[Unit]
+Description=MADD handler service
+After=network.target
+
+[Service]
+Type=simple
+ExecStart=/usr/bin/php /home/YOUR_USER/it490/handler.php cluster_server.ini
+WorkingDirectory=/home/YOUR_USER/it490
+Restart=on-failure
+RestartSec=60
+User=madd_system
+Group=madd_system
+
+[Install]
+WantedBy=multi-user.target
