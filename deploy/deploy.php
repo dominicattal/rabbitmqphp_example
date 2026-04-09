@@ -31,6 +31,7 @@ $queue_map["data"]["data"]["routing_key"] = "data_data_listen";
 
 function pushBundle($target, $archive_path)
 {
+    global $db_conn;
     var_dump($target);
     var_dump($archive_path);
     global $queue_map, $clusters;
@@ -47,20 +48,74 @@ function pushBundle($target, $archive_path)
     }
     $info_ini = parse_ini_file("$dirname/info.ini", false);
     $type = $info_ini["BUNDLE_TYPE"];
+    //$version = $info_ini["BUNDLE_VERSION"];
 
     $pfx = strtoupper("${target}_${type}");
     $hostname = $clusters["${pfx}_HOST"];
     $username = $clusters["${pfx}_USER"];
     $remote_path = $archive_path;
-	
-    exec("scp '$archive_path' scp://$username@$hostname/$remote_path", $output, $result_code);
-    if ($result_code != 0) {
-        echo "SCP Failed\n";
-        var_dump($output);
-        return array(
-            "status" => "failed",
-            "response" => $output
-        );
+
+   $tarName = basename($archive_path,".tar");
+   //echo "Tar file name: $tarName\n";
+   
+   $query = "SELECT * FROM bundleList where type = '$type' ORDER BY version DESC LIMIT 1";
+   $result = $db_conn->query($query);
+   
+   //Type = type
+    if ($result->num_rows == 0)
+    {
+	   $output2 = array(); 
+	   exec(__DIR__ . "/removeFromTmp.sh " . $tarName . " " .$type . " " . " 2>&1"   , $output2, $return_code);  
+
+	   //echo "Post test!\n";
+	   var_dump($output2);
+	   $newName = end($output2);
+	   $newName2 = "~/bundles/".$newName;
+	   $version = 1;
+	   //Now need to send the newly made db_1_bundle.tar to the DB server for storage?
+	   $state = "new";
+	   $query = "INSERT INTO bundleList (name, version, type, status, file_path) VALUES ('$newName','$type','$state','$newName2');";
+	   
+	   $result = $db_conn->query($query);
+	   
+
+	   
+	   echo "Finished with pushing the bundle, moving it to ~/bundles, and storing it in the DB";
+	   
+	    exec("scp '$archive_path' scp://$username@$hostname/$remote_path", $output, $result_code);
+	    if ($result_code != 0) {
+		echo "SCP Failed\n";
+		var_dump($output);
+		return array(
+		    "status" => "failed",
+		    "response" => $output
+		);
+	    }
+    } else 
+    {
+	    //increment version
+	    echo "Bundle exist! Updating the version for the new one!";
+	    $output2=array();
+	       exec(__DIR__ . "/removeFromTmp.sh " . $tarName . " " .$type . " " . " 2>&1"   , $output2, $return_code);  
+	    
+           $q_data = $result->fetch_assoc();   
+           $bundle_id = $q_data['id']; 
+           $version_num = $q_data['version'];
+           $version_num+=1;
+           var_dump($version_num);
+
+           //$query = "DELETE FROM bundleList where ID = '$bundle_id';";
+           //$result = $db_conn->query($query);
+           
+           $state = "new";
+           $newName = end($output2);
+           $newName2 = "~/bundles/".$newName;
+   	   
+   	   
+           $query = "INSERT INTO bundleList (name, version, type, status, file_path) VALUES ('$newName','$version_num','$type','$state','$newName2');";
+           
+           $result = $db_conn->query($query);
+           
     }
 
     $queue_name = $queue_map[$target][$type]["queue_name"];
@@ -104,7 +159,8 @@ function rollbackBundle($target, $bundle_name)
         );
     }
     $row = $result->fetch_assoc();
-    return pushBundle($target, $row["file_path"]);
+    //Change so send exist and just pushes the bundle requested
+    return send($target, $row["file_path"]);
 }
 
 function listBundles($type)

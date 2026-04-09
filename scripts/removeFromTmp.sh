@@ -3,7 +3,6 @@
 
 name=$1
 type=$2;
-version=$3;
 #newName=${type}_${version}_${name}
 
 echo "$name"
