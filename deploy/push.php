@@ -39,7 +39,11 @@ if ($result_code != 0){
 
 $client = new rabbitMQClient("main_client.ini", "deploy_listen_queue", "deploy_listen");
 $request = array();
-$request['type'] = "test";
+$request['type'] = "update_status";
+$request['version_bundle'] = 1;
+$request['name_bundle'] = "db_1_bundle.tar";
+$request['new_status'] = "Testing_Status";
+
 $request['target'] = $target;
 $request['archive_path'] = $remote_path;
 $response = $client->send_request($request);

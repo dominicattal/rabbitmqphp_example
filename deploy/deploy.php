@@ -2,7 +2,7 @@
 <?php
 include "rabbitMQLib.inc";
 
-//Hard coding for testing! Move to an ini file at some point! - ME
+
 $config = parse_ini_file('deploy_db.ini');
 $db_conn = new mysqli($config["MYSQL_HOST"],$config["MYSQL_USER"],$config["MYSQL_PASS"],$config["MYSQL_DB"]);
 
@@ -93,7 +93,31 @@ function rollbackBundle($target, $bundle_name, $version)
 function listBundles($type)
 {
     // list all of the bundles available for a type like web, db, or data
-    return array("status" => "not implemented yet");
+    //Make function that updates a bundle's mark - Do after this
+    
+    global $db_conn;
+    $query = "SELECT * FROM bundleList;";
+    
+    $result = $db_conn->query($query);
+    
+    if ($result->num_rows == 0)
+    {
+       echo "No results from DB for bundles!";
+       $response = "No results from DB for bundles!";
+      
+       return array(
+       "status" => "success",
+       "response" =>$response
+       );
+    }
+        $response=array();
+        while ($row = $result->fetch_assoc()) 
+        {
+            
+            $response[] = $row;
+        }
+        var_dump($response);
+        return $response;
 }
 
 function listBundleVersions($bundle_name)
@@ -152,7 +176,7 @@ function test($target, $archive_path)
    //Now need to send the newly made db_1_bundle.tar to the DB server for storage?
    $state = "untested";
    global $db_conn;
-   $query = "INSERT INTO bundleList (name, version, status, file_path) VALUES ('$newName','$version','$state','$newName2');";
+   $query = "INSERT INTO bundleList (name, version, type, status, file_path) VALUES ('$newName','$version','$type','$state','$newName2');";
    
    $result = $db_conn->query($query);
    
@@ -161,8 +185,30 @@ function test($target, $archive_path)
    return array("status" => "Bundle Recieved and stored!");
 }
 
+function update_status($name_bundle, $version_bundle,$new_status)
+{
+   global $db_conn;
+   $query = "SELECT * FROM bundleList where version = '$version_bundle' AND name = '$name_bundle';";
+   $result = $db_conn->query($query);
+    
+   if ($result->num_rows == 0)
+    {
+       echo "No results from DB for bundles!\nCannot update what does not exist!";
+       $response = "No results from DB for bundles!\nCannot update what does not exist!";
+      
+       return array(
+       "status" => "failed",
+       "response" =>$response
+       );
+    }
+   
+   $query = "UPDATE bundleList set status = '$new_status' where version = $version_bundle AND name = '$name_bundle';";
+   return array("status" => "Bundle status updated!");
+}
+
 function requestProcessor($request)
 {
+//New, Good, Bad $tarName = basename($archive_path);
     var_dump($request);
     switch ($request["type"]) {
         case "push":
@@ -177,6 +223,8 @@ function requestProcessor($request)
             return listCurrentBundles($request["target"]);
         case "test":
             return test($request["target"], $request["archive_path"]);
+        case "update_status":
+            return update_status($request["name_bundle"],$request["version_bundle"],$request["new_status"]);
     }
     return array("failed" => "Unrecognized type");
 }
