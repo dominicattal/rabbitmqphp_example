@@ -2,6 +2,7 @@ CREATE TABLE IF NOT EXISTS bundleList (
     id INT AUTO_INCREMENT PRIMARY KEY,
     name varchar(255) NOT NULL,
     version INT NOT NULL,
+    type varchar(255) NOT NULL,
     status varchar(255) NOT NULL,
     file_path varchar(255) NOT NULL
 );

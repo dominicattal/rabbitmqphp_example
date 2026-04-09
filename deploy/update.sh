@@ -2,13 +2,13 @@
 
 # this script copies file to specified machines. not to be confused wiht deployment system, this is just for setting stuff up easily
 
-# -------- FILES TO COPY --------------=
-deploy_files="deploy/ssh_copy.sh deploy/apt_deploy.sh deploy/broker_deploy.sh deploy/clusters.ini deploy/deploy.php ./rabbitMQLib.inc scripts/removeFromTmp.sh schema_deployment.sql deploy/deploy_db.ini" 
+deploy_files="deploy/ssh_copy.sh deploy/apt_deploy.sh deploy/broker_deploy.sh deploy/clusters.ini deploy/deploy.php ./rabbitMQLib.inc deploy/systemd.sh config/madd_handler.service config/madd_deploy.service scripts/removeFromTmp.sh schema_deployment.sql deploy/deploy_db.ini"
+
 cluster_files="deploy/handler.php ./rabbitMQLib.inc"
 
-web_files="$cluster_files deploy/apt_web.sh .api.ini"
-db_files="$cluster_files deploy/apt_db.sh deploy/broker_cluster.sh scripts/db_deployment.sh"
-data_files="$cluster_files deploy/apt_data.sh .api.ini"
+web_files="$cluster_files deploy/apt_web.sh deploy/systemd.sh config/madd_handler.service config/madd_handler.service config/apache.conf .api.ini sample/*.php sample/*.html sample/madd.css sample/background.jpg"
+db_files="$cluster_files deploy/apt_db.sh deploy/broker_cluster.sh deploy/systemd.sh config/madd_handler.service config/madd_db.service scripts/db_deployment.sh"
+data_files="$cluster_files deploy/apt_data.sh deploy/systemd.sh config/madd_handler.service config/madd_data.service .api.ini"
 
 dev_web_files="$web_files"
 dev_db_files="$db_files"
