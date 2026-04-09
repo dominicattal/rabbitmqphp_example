@@ -156,7 +156,7 @@ Scripts are in the `scripts` directory. Deployment scripts are in `deploy` direc
 `deploy/bundlify.sh`        -> turns a directory into a bundle. must look like the directory above. \
 `deploy/genini.sh`          -> automatically generates all of the ini files and sends them to the specified machines. \
 `deploy/genufw.sh`          -> automatically generates all of the ufw scripts for configuring firewall
-
+`send2Bun.sh` 		    -> add filename you want to send to deploy as the command line argument, and the respective bundle should be echoed so you can push it. \
 execute these like `sudo scripts/broker.sh`
 
 ### Ini files
