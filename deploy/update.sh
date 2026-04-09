@@ -7,7 +7,7 @@ deploy_files="deploy/ssh_copy.sh deploy/apt_deploy.sh deploy/broker_deploy.sh de
 
 cluster_files="deploy/handler.php ./rabbitMQLib.inc"
 
-web_files="$cluster_files deploy/apt_web.sh deploy/systemd.sh config/madd_handler.service config/madd_handler.service config/apache.conf .api.ini"
+web_files="$cluster_files deploy/apt_web.sh deploy/systemd.sh config/madd_handler.service config/madd_handler.service config/apache.conf .api.ini sample/*.php sample/*.html sample/madd.css sample/background.jpg"
 db_files="$cluster_files deploy/apt_db.sh deploy/broker_cluster.sh deploy/systemd.sh config/madd_handler.service config/madd_db.service"
 data_files="$cluster_files deploy/apt_data.sh deploy/systemd.sh config/madd_handler.service config/madd_data.service .api.ini"
 
