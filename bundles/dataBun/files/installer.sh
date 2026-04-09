@@ -1,4 +1,3 @@
 #!/bin/bash
-echo "Hello World"          # <--- this gets sent to $output array
-`echo "Goodbye World" >&2`  # <--- this prints to stderr
-./data.php
+
+cp /tmp/files/data.php /var/www/madd/

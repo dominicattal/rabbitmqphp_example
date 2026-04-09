@@ -8,7 +8,7 @@ function pushBundle($archive_path)
     $output = array();
     $dirname = dirname($archive_path);
     echo $dirname . "\n";
-    exec("tar -C '$dirname' -xvf '$archive_path'", $output, $result_code);
+    exec("tar -C '$dirname' --overwrite -xvf '$archive_path'", $output, $result_code);
     if ($result_code != 0) {
         echo "Could not extract bundle\n";
         return array(

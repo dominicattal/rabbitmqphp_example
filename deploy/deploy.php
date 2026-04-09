@@ -37,7 +37,7 @@ function pushBundle($target, $archive_path)
     $result_code = 0;
     $output = array();
     $dirname = dirname($archive_path);$output = array();
-    exec("tar -C '$dirname' -vf '$archive_path' -x info.ini", $output, $result_code);
+    exec("tar -C '$dirname' --overwrite -vf '$archive_path' -x info.ini", $output, $result_code);
     if ($result_code != 0) {
         echo "Could not extract bundle\n";
         return array(
@@ -56,9 +56,10 @@ function pushBundle($target, $archive_path)
     exec("scp '$archive_path' scp://$username@$hostname/$remote_path", $output, $result_code);
     if ($result_code != 0) {
         echo "SCP Failed\n";
+        var_dump($output);
         return array(
             "status" => "failed",
-            "response" => "Scp failed"
+            "response" => $output
         );
     }
 

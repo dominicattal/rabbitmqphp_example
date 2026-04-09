@@ -4,7 +4,7 @@ apt install php rabbitmq-server php-amqp apache2 libapache2-mod-php php-mysql ph
 
 project_dir=$(pwd)
 mkdir -p "$project_dir/sample"
-mv *.php *.html *.css *.jpg "$project_dir/sample/"
+#mv *.php *.html *.css *.jpg "$project_dir/sample/"
 ln -snf "$project_dir" /var/www/madd
 chmod +x /home/$SUDO_USER
 chmod -R 755 "$project_dir"

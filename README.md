@@ -90,7 +90,9 @@ BUNDLE_TYPE="web"|"db"|"data"
 `installer.sh` is called after the target vm unzips files. this should copy all of the files from this directory into their correct place in the project.
 
 The deploy vm will make a copy of files and store it to be accessed by the database.
+
 ### Bundles
+
 These files will be bundled together
 ```
 dataBun
@@ -125,7 +127,6 @@ extrasBun
 |- upcoming.php
 emailBun
 |- email.php
-|- email_rec.php
 webDesignBun
 |- background.jpg
 |- madd.css
@@ -140,6 +141,7 @@ watchlistBun
 |- watchlist.php
 |- watchlist_add.php
 |- watchlist_handler.php
+```
 
 ### Rollback
 
@@ -200,7 +202,6 @@ watchlistBun
 |- watchlist_add.php
 |- watchlist_handler.php
 
-=======
 ```
 ### Running locally
 

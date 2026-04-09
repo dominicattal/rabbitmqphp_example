@@ -3,48 +3,48 @@
 filename=$1;
 echo $filename;
 if [[ $filename = "data.php" ]]; then
-	cp data.php dataBun/files
+	cp data.php bundles/dataBun/files
 	echo "dataBun";
 fi
 if [[ $filename = "db.php" || $filename = "schema.sql" || $filename = "db.sh" || $filename = "db_clean.sh" || $filename = "db_purge.sh" ]]; then
-	cp {db.php,schema.sql,db.sh,db_clean.sh,db_purge.sh} dbBun/files
+	cp {db.php,schema.sql,db.sh,db_clean.sh,db_purge.sh} bundles/dbBun/files
 	echo "dbBun";
 fi
 if [[ $filename = "broker.sh" || $filename = "broker_clean.sh" || $filename = "broker_purge.sh" ]]; then
-	cp {broker.sh,broker_clean.sh,broker_purge.sh} brokerBun/files
+	cp {broker.sh,broker_clean.sh,broker_purge.sh} bundles/brokerBun/files
 	echo "brokerBun";
 fi
 if [[ $filename = "web.php" || $filename = "navbar.php" || $filename = "search.php" || $filename = "validation_handler.php" || $filename = "header.php" ]]; then
-	cp web.php webBun/files
-	cp sample/{navbar.php,search.php,validation_handler.php,header.php} webBun/files
+	cp web.php bundles/webBun/files
+	cp sample/{navbar.php,search.php,validation_handler.php,header.php} bundles/webBun/files
 	echo "webBun";
 fi
 if [[ $filename = "login.html" || $filename = "login_handler.php" ]]; then
-	cp sample/{login.html,login_handler.php} loginBun/files
+	cp sample/{login.html,login_handler.php} bundles/loginBun/files
 	echo "loginBun";
 fi
 if [[ $filename = "registration.html" || $filename = "registration_handler.php" ]]; then
-	cp sample/{registration.html,registration_handler.php} registerBun/files
+	cp sample/{registration.html,registration_handler.php} bundles/registerBun/files
 	echo "registerBun";
 fi
 if [[ $filename = "home.php" || $filename = "higherlower.php" || $filename = "upcoming.php" ]]; then
-	cp sample/{home.php,higherlower.php,upcoming.php} extrasBun/files
+	cp sample/{home.php,higherlower.php,upcoming.php} bundles/extrasBun/files
 	echo "extrasBun";
 fi
 if [[ $filename = "email.php" || $filename = "email_rec.php" ]]; then
-	cp {email.php,email_rec.php} emailBun/files
+	cp email.php bundles/emailBun/files
 	echo "emailBun";
 fi
 if [[ $filename = "background.jpg" || $filename = "madd.css" ]]; then
-	cp sample/{background.jpg,madd.css} webDesignBun/files
+	cp sample/{background.jpg,madd.css} bundles/webDesignBun/files
 	echo "webDesignBun";
 fi
 if [[ $filename = "details.php" || $filename = "get_reviews_handler.php" || $filename = "reviews.html" || $filename = "reviewsView.html" || $filename = "reviewsView_handler.php" || $filename = "reviews_handler.php" ]]; then
-	cp sample/{details.php,get_reviews_handler.php,reviews.html,reviewsView.html,reviewsView_handler.php,reviews_handler.php} reviewBun/files
+	cp sample/{details.php,get_reviews_handler.php,reviews.html,reviewsView.html,reviewsView_handler.php,reviews_handler.php} bundles/reviewBun/files
 	echo "reviewBun";
 fi
 if [[ $filename = "watchlist.php" || $filename = "watchlist_add.php" || $filename = "watchlist_handler.php" ]]; then
-	cp sample/{watchlist.php,watchlist_add.php,watchlist_handler.php} watchlistBun/files
+	cp sample/{watchlist.php,watchlist_add.php,watchlist_handler.php} bundles/watchlistBun/files
 	echo "watchlistBun";
 fi
 
