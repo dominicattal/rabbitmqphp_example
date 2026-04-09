@@ -162,7 +162,7 @@ function test($target, $archive_path)
    //echo "Version of INI is: $version\n";
    
     
-   $tarName = basename($archive_path);
+   $tarName = basename($archive_path,".tar");
    //echo "Tar file name: $tarName\n";
    
    $output2 = array(); 

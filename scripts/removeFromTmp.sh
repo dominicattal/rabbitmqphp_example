@@ -4,12 +4,12 @@
 name=$1
 type=$2;
 version=$3;
-newName=${type}_${version}_${name}
+#newName=${type}_${version}_${name}
 
 echo "$name"
 
 mkdir ~/bundles
-cp /tmp/$name ~/bundles/$newName
+cp /tmp/$name ~/bundles/$name
 rm /tmp/$name
 
-echo "${newName}"
+echo "${name}"
