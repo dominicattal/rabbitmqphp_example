@@ -5,13 +5,8 @@
 Deploy system works by pushing a `bundle` with `type` to a `target`. \
 `target` is either `dev`, `qa`, `prod`, `deploy`, or `main`. \
 `type` is either `web`, `db`, or `data`. \
-<<<<<<< HEAD
 The `dev`, `qa`, and `prod` targets combine with each type to create 9 `clusters`. Each cluster is a pair like `dev_web` or `qa_data`. \
 Each cluster, along with the `deploy` and `main` targets, will have its own vm for 11 total vms. These vms are:
-=======
-The `dev`, `qa`, and `prod` targets combine with each type to create 9 `machines`. Each machine is a pair like `dev_web` or `qa_data`. \
-Each machine, along with the `deploy` and `main` targets, will have its own vm for 11 total vms. These vms are:
->>>>>>> master
 ```
 main
 deploy
@@ -25,13 +20,8 @@ prod_web
 prod_db
 prod_data
 ```
-<<<<<<< HEAD
 A collection of types for a target (ex. `dev_web`, `dev_db`, `dev_data`) will henceforth be called a `cluster group`.
 The deployment system works by pushing `bundles` from the main vm to the deploy vm. The deploy vm reads the bundle info along with a target specified by the main vm to forward the bundle to a cluster.
-=======
-A collection of types for a target (ex. `dev_web`, `dev_db`, `dev_data`) will henceforth be called a `cluster`.
-The deployment system works by pushing `bundles` from the main vm to the deploy vm. The deploy vm reads the bundle info along with a target specified by the main vm to forward the bundle to a machine.
->>>>>>> master
 
 ## Setup
 
