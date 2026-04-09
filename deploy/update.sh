@@ -4,7 +4,6 @@
 
 deploy_files="deploy/ssh_copy.sh deploy/apt_deploy.sh deploy/broker_deploy.sh deploy/clusters.ini deploy/deploy.php ./rabbitMQLib.inc deploy/systemd.sh config/madd_handler.service config/madd_deploy.service scripts/removeFromTmp.sh schema_deployment.sql deploy/deploy_db.ini"
 
-
 cluster_files="deploy/handler.php ./rabbitMQLib.inc"
 
 web_files="$cluster_files deploy/apt_web.sh deploy/systemd.sh config/madd_handler.service config/madd_handler.service config/apache.conf .api.ini sample/*.php sample/*.html sample/madd.css sample/background.jpg"
