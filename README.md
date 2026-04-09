@@ -5,13 +5,8 @@
 Deploy system works by pushing a `bundle` with `type` to a `target`. \
 `target` is either `dev`, `qa`, `prod`, `deploy`, or `main`. \
 `type` is either `web`, `db`, or `data`. \
-<<<<<<< HEAD
 The `dev`, `qa`, and `prod` targets combine with each type to create 9 `clusters`. Each cluster is a pair like `dev_web` or `qa_data`. \
 Each cluster, along with the `deploy` and `main` targets, will have its own vm for 11 total vms. These vms are:
-=======
-The `dev`, `qa`, and `prod` targets combine with each type to create 9 `machines`. Each machine is a pair like `dev_web` or `qa_data`. \
-Each machine, along with the `deploy` and `main` targets, will have its own vm for 11 total vms. These vms are:
->>>>>>> master
 ```
 main
 deploy
@@ -25,13 +20,8 @@ prod_web
 prod_db
 prod_data
 ```
-<<<<<<< HEAD
 A collection of types for a target (ex. `dev_web`, `dev_db`, `dev_data`) will henceforth be called a `cluster group`.
 The deployment system works by pushing `bundles` from the main vm to the deploy vm. The deploy vm reads the bundle info along with a target specified by the main vm to forward the bundle to a cluster.
-=======
-A collection of types for a target (ex. `dev_web`, `dev_db`, `dev_data`) will henceforth be called a `cluster`.
-The deployment system works by pushing `bundles` from the main vm to the deploy vm. The deploy vm reads the bundle info along with a target specified by the main vm to forward the bundle to a machine.
->>>>>>> master
 
 ## Setup
 
@@ -66,9 +56,19 @@ sudo systemctl restart ssh
     2. There should be a script that looks like `apt_{type}.sh`. Run it.
     3. Run `handler.php cluster_server.ini` to listen for requests. This should be handled by systemd.
 
+### Client
+
+`deploy/client.php` is the script that will communicate from the main vm to all of the other machines. Everything, including pushing, rolling back, listing, and marking should be done using this command. The syntax is like `deploy/client.php [push/rollback/list/mark]`. Each function has its own syntax:
+```
+deploy/client.php push [dev/qa/prod] [path_to_bundle]
+deploy/client.php rollback [dev/qa/prod] [bundle_name]
+deploy/client.php list
+deploy/client.php mark [bundle_name] [good/bad/new]
+```
+
 ### Push
 
-Run `deploy/push.php [dev/qa/prod] [bundle]` to deploy a bundle to dev, qa, or prod. The structure of bundle should look like this:
+Run `deploy/client.php push [dev/qa/prod] [path_to_bundle]` to deploy a bundle to dev, qa, or prod. The structure of bundle should look like this:
 ```
 bundle
 |- info.ini
@@ -90,7 +90,69 @@ BUNDLE_TYPE="web"|"db"|"data"
 `installer.sh` is called after the target vm unzips files. this should copy all of the files from this directory into their correct place in the project.
 
 The deploy vm will make a copy of files and store it to be accessed by the database.
+
 ### Bundles
+
+These files will be bundled together
+```
+dataBun
+|- data.php
+dbBun
+|- db.php
+|- schema.sql
+|- db.sh
+|- db_clean.sh
+|- db_purge.sh
+brokerBun
+|- broker.sh
+|- broker_clean.sh
+|- broker_purge.sh
+webBun
+|- web.php
+|- sample
+   |-navbar.php
+   |-search.php
+   |-validation_handler.php
+   |-header.php
+   |.goutputstream-GY4MM3
+loginBun
+|- login.html
+|- login_handler.php
+registerBun
+|- registration.html
+|- registration_handler.php
+extrasBun
+|- home.php
+|- higherlower.php
+|- upcoming.php
+emailBun
+|- email.php
+webDesignBun
+|- background.jpg
+|- madd.css
+reviewBun
+|- details.php
+|- get_reviews_handler.php
+|- reviews.html
+|- reviewsView.html
+|- reviewsView_handler.php
+|- reviews_handler.php
+watchlistBun
+|- watchlist.php
+|- watchlist_add.php
+|- watchlist_handler.php
+```
+
+### Rollback
+
+Run `deploy/client.php rollback [dev/qa/prod] [bundle_name]` to rollback to most recent good version of bundle.
+
+### Marking Good or Bad
+
+Run `deploy/client.php mark [bundle_name] [good/bad/new]` to set the status of a bundle.
+
+### Bundles
+
 These files will be bundled together
 ```
 dataBun
@@ -167,6 +229,7 @@ Scripts are in the `scripts` directory. Deployment scripts are in `deploy` direc
 `deploy/genini.sh`          -> automatically generates all of the ini files and sends them to the specified machines. \
 `deploy/genufw.sh`          -> automatically generates all of the ufw scripts for configuring firewall \
 `deploy/systemd.sh`         -> adds user, sets permissions, copies .service files to etc/systemd/system, restarts and enables systemd files \
+`send2Bun.sh`               -> add filename you want to send to deploy as the command line argument, and the respective bundle should be echoed so you can push it. \
 
 execute these like `sudo scripts/broker.sh`
 

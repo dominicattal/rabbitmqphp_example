@@ -37,7 +37,7 @@ function pushBundle($target, $archive_path)
     $result_code = 0;
     $output = array();
     $dirname = dirname($archive_path);$output = array();
-    exec("tar -C '$dirname' -vf '$archive_path' -x info.ini", $output, $result_code);
+    exec("tar -C '$dirname' --overwrite -vf '$archive_path' -x info.ini", $output, $result_code);
     if ($result_code != 0) {
         echo "Could not extract bundle\n";
         return array(
@@ -56,13 +56,12 @@ function pushBundle($target, $archive_path)
     exec("scp '$archive_path' scp://$username@$hostname/$remote_path", $output, $result_code);
     if ($result_code != 0) {
         echo "SCP Failed\n";
+        var_dump($output);
         return array(
             "status" => "failed",
-            "response" => "Scp failed"
+            "response" => $output
         );
     }
-    
-  
 
     $queue_name = $queue_map[$target][$type]["queue_name"];
     $routing_key = $queue_map[$target][$type]["routing_key"];
@@ -85,9 +84,27 @@ function pushBundle($target, $archive_path)
     );
 }
 
-function rollbackBundle($target, $bundle_name, $version)
+function rollbackBundle($target, $bundle_name)
 {
-    return array("status" => "not implemented yet");
+    global $db_conn;
+    $query = "SELECT * FROM bundleList WHERE name='$bundle_name' LIMIT 1";
+    $result = $db_conn->query($query);
+    if ($result->num_rows == 0) {
+        return array(
+            "status" => "failed",
+            "message" => "$bundle_name does not exist"
+        );
+    }
+    $query = "SELECT * FROM bundleList WHERE name='$bundle_name' AND status='good' ORDER BY version DESC LIMIT 1";
+    $result = $db_conn->query($query);
+    if ($result->num_rows == 0) {
+        return array(
+            "status" => "failed",
+            "message" => "no good version of bundle $bundle_name found"
+        );
+    }
+    $row = $result->fetch_assoc();
+    return pushBundle($target, $row["file_path"]);
 }
 
 function listBundles($type)
@@ -185,7 +202,7 @@ function test($target, $archive_path)
    return array("status" => "Bundle Recieved and stored!");
 }
 
-function update_status($name_bundle, $version_bundle,$new_status)
+function markBundle($name_bundle, $version_bundle,$new_status)
 {
    global $db_conn;
    $query = "SELECT * FROM bundleList where version = '$version_bundle' AND name = '$name_bundle';";
@@ -214,7 +231,7 @@ function requestProcessor($request)
         case "push":
             return pushBundle($request["target"], $request["archive_path"]);
         case "rollback":
-            return rollbackBundle($request["target"], $request["bundle_name"], $request["version"]);
+            return rollbackBundle($request["target"], $request["bundle_name"]);
         case "list_bundles":
             return listBundles($request["type"]);
         case "list_bundle_versions":
@@ -223,7 +240,7 @@ function requestProcessor($request)
             return listCurrentBundles($request["target"]);
         case "test":
             return test($request["target"], $request["archive_path"]);
-        case "update_status":
+        case "mark":
             return update_status($request["name_bundle"],$request["version_bundle"],$request["new_status"]);
     }
     return array("failed" => "Unrecognized type");

@@ -1,5 +1,6 @@
 #!/bin/bash
 BUNDLE_NAME=$(awk -F "=" '/BUNDLE_NAME/ {print $2}' /tmp/info.ini);
+mkdir -p sample
 echo "Hello World"          # <--- this gets sent to $output array
 `echo "Goodbye World" >&2`  # <--- this prints to stderr
 echo $BUNDLE_NAME
@@ -20,11 +21,7 @@ if [[ $BUNDLE_NAME =~ "emailBun" ]]; then
 	echo "email";
 fi
 if [[ $BUNDLE_NAME =~ "webBundle" ]]; then
-	if [ ! -d sample ]; then
-		mkdir sample
-	fi
 	mv navbar.php search.php validation_handler.php header.php sample/
-	php -S 127.0.0.1:8000 -t sample
 fi
 if [[ $BUNDLE_NAME =~ "loginBun" ]]; then
 	if [ ! -d sample ]; then

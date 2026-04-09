@@ -1,0 +1,446 @@
+:root {
+  --primary: #000000;
+  --secondary: #FFFFFF;
+  --accent: #FF5E5B;
+  --shadow: 8px 8px 0px var(--primary);
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: 'Courier New', monospace;
+}
+
+body {
+  background: url("background.jpg");
+  background-repeat: no-repeat; 
+  background-size: cover;      
+  background-position: center; 
+  background-attachment: fixed;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  padding: 20px;
+}
+
+.login-container {
+  width: 100%;
+  max-width: 400px;
+  border: 2px solid var(--primary);
+  padding: 40px 30px;
+  background-color: var(--secondary);
+  box-shadow: var(--shadow);
+  position: relative;
+  border-radius: 12px;
+}
+
+/* The "offset" border effect */
+.login-container::before {
+  content: '';
+  position: absolute;
+  top: 6px;
+  left: 6px;
+  right: -6px;
+  bottom: -6px;
+  border: 2px solid var(--primary);
+  z-index: -1;
+  border-radius: 12px;
+  background-color: transparent;
+}
+
+h1 {
+  color: var(--primary);
+  margin-bottom: 30px;
+  font-size: 28px;
+  font-weight: 700;
+  text-align: center;
+}
+
+.input-group {
+  margin-bottom: 20px;
+}
+
+label {
+  display: block;
+  margin-bottom: 8px;
+  font-weight: bold;
+  color: var(--primary);
+}
+
+input {
+  width: 100%;
+  padding: 12px 15px;
+  border: 2px solid var(--primary);
+  background-color: var(--secondary);
+  font-size: 16px;
+  outline: none;
+  transition: all 0.3s;
+}
+
+input:focus {
+  box-shadow: 4px 4px 0px var(--primary);
+}
+
+button {
+  width: 100%;
+  padding: 12px;
+  background-color: var(--accent);
+  color: var(--secondary);
+  border: 2px solid var(--primary);
+  font-size: 16px;
+  font-weight: bold;
+  cursor: pointer;
+  margin-top: 10px;
+  transition: all 0.2s;
+}
+
+button:hover {
+  box-shadow: 4px 4px 0px var(--primary);
+  transform: translate(-2px, -2px);
+}
+
+.error-text {
+  text-align: center;
+  color: var(--accent);
+  margin-top: 15px;
+  font-size: 14px;
+  font-weight: bold;
+}
+
+.divider {
+  display: flex;
+  align-items: center;
+  margin: 25px 0;
+  color: var(--primary);
+  font-weight: bold;
+}
+
+.divider::before, .divider::after {
+  content: "";
+  flex: 1;
+  border-bottom: 2px solid var(--primary);
+  margin: 0 10px;
+}
+
+.social-login {
+  display: flex;
+  justify-content: center;
+  gap: 15px;
+}
+
+.social-btn {
+  width: 50px;
+  height: 50px;
+  border: 2px solid var(--primary);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+  transition: all 0.3s;
+  background-color: var(--secondary);
+  font-weight: bold;
+}
+
+.social-btn:hover {
+  box-shadow: 4px 4px 0px var(--primary);
+  transform: translate(-2px, -2px);
+}
+
+.footer {
+  text-align: center;
+  margin-top: 25px;
+  color: var(--primary);
+  font-size: 14px;
+}
+
+.footer a {
+  color: var(--primary);
+  font-weight: bold;
+  text-decoration: underline;
+}
+.movie-grid {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 20px; 
+    padding: 20px;
+    margin-top: 20px;
+}
+
+.movie-card {
+    background-color: var(--secondary);
+    border: 3px solid var(--primary);
+    box-shadow: var(--shadow);
+    border-radius: 12px;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    transition: transform 0.2s ease;
+}
+
+.movie-poster {
+    width: 100%;
+    height: auto; 
+    aspect-ratio: 2 / 3;
+    object-fit: cover;
+    border-bottom: 3px solid var(--primary);
+}
+
+.movie-link {
+    text-decoration: none; 
+    color: inherit; 
+    display: block;
+}
+
+.movie-link:hover .movie-card {
+    transform: translate(-6px, -6px);
+    box-shadow: 12px 12px 0px var(--primary);
+    border-color: var(--accent); 
+}
+
+.details-container {
+    display: flex;
+    gap: 40px;
+    background: var(--secondary);
+    border: 4px solid var(--primary);
+    padding: 30px;
+    box-shadow: var(--shadow);
+}
+
+.movie-info-card {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.details-poster {
+    width: 100%;
+    max-width: 300px;
+    border: 3px solid var(--primary);
+}
+
+.review-section {
+    flex: 1;
+    border-left: 2px solid var(--primary);
+    padding-left: 40px;
+}
+
+textarea {
+    width: 100%;
+    height: 100px;
+    border: 2px solid var(--primary);
+    padding: 10px;
+    font-family: inherit;
+    margin-bottom: 10px;
+}
+.higherlower-body{ 
+    backdrop-filter:brightness(15%);   
+    display:block;
+    padding:20px;
+    color: var(--secondary);
+    font-size:20px;
+    font-weight:bold;
+}
+.gameArea{
+    display:grid;
+    grid-template-columns:25% 25%;
+}
+.movieAreaA{
+    display: flex;
+    overflow:hidden;
+    object-fit:contain;
+    justify-content:center;
+    width:180px;
+    height:250px;
+    outline:5px solid #66ff00;
+}
+.movieAreaB{
+    display:flex;
+    overflow:hidden;
+    object-fit:contain;
+    justify-content:center;
+    width:180px;
+    height:250px;
+}
+.higherlowerBttns{
+   margin-top:10px;
+   margin-bottom:10px;
+   width:100px;
+   height:50px;
+}
+
+
+.home-body {
+    display: block;      
+    padding: 0;          
+    overflow-y: auto;
+}
+
+.navbar {
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+    display:flex; 
+    justify-content: space-between;
+    align-items: center; 
+    padding: 10px 10px;
+    background: var(--secondary);
+    border-bottom: 4px solid var(--primary);
+    width: 100%;
+}
+
+.nav-links {
+    display: flex;
+    align-items: center; 
+    gap: 15px;
+}
+
+.nav-btn, .dropdown-trigger {
+    text-decoration: none;
+    color: var(--primary);
+    font-weight: 900;
+    padding: 8px 16px;
+    border: 3px solid var(--primary);
+    background: var(--secondary);
+    cursor: pointer;
+    font-family: 'Courier New', monospace;
+    font-size:10px;
+    margin: 0; 
+    display: inline-flex;
+    align-items: center;
+    height: 30px; 
+}
+
+.nav-btn:hover {
+    background-color: var(--accent);
+    color: var(--secondary);
+    box-shadow: 4px 4px 0px var(--primary);
+    transform: translate(-2px, -2px);
+}
+
+.logo {
+    text-decoration: none;
+    color: var(--primary);
+    font-weight: 900;
+    font-size: 20px;
+}
+
+
+.profile-dropdown {
+    position: relative;
+    display: flex;
+    display: inline-block;
+}
+
+.dropdown-content {
+    display: none;
+    position: absolute;
+    right: 0;
+    background-color: var(--secondary);
+    min-width: 160px;
+    border: 3px solid var(--primary);
+    box-shadow: var(--shadow);
+    z-index: 1001;
+}
+
+
+.profile-dropdown:hover .dropdown-content {
+    display: block;
+}
+
+
+.dropdown-content a {
+    color: var(--primary);
+    padding: 12px 16px;
+    text-decoration: none;
+    display: block;
+    font-weight: bold;
+    font-size: 14px;
+    transition: background 0.2s;
+}
+
+.dropdown-content a:hover {
+    background-color: var(--accent);
+    color: var(--secondary);
+}
+
+.dropdown-divider {
+    border: 0;
+    border-top: 2px solid var(--primary);
+    margin: 0;
+}
+
+.content-wrapper {
+    background: rgba(0, 0, 0, 0.75);
+    border: 3px solid var(--primary);
+    box-shadow: var(--shadow);
+    padding: 30px;
+    margin: 40px auto;
+    max-width: 1100px;
+    border-radius: 12px;
+    min-height: 400px;
+}
+
+.section-title {
+    color: var(--accent); 
+    text-align: center;
+    font-size: 2.5rem;
+    margin-bottom: 20px;
+    text-transform: uppercase;
+ }
+
+.review-container {
+    display: flex;
+    gap: 40px;
+    width: 100%;
+    background: var(--secondary);
+    border: 4px solid var(--primary);
+    padding: 30px;
+    box-shadow: var(--shadow);
+}
+
+.searchbar-container form {
+    display: flex;
+    align-items: center;
+    padding: 5px;
+}
+
+.searchbar-input {
+    border: 3px solid var(--primary);
+    padding: 8px 12px;
+    background: var(--secondary);
+    font-weight: 900;
+    width: 280px;
+    outline: none;
+    height: 45px;
+}
+
+.searchbar-btn {
+    width: 45px;
+    height: 45px;
+    background: var(--secondary);
+    color: var(--primary);
+    border: 3px solid var(--primary);
+    border-left: none;
+    cursor: pointer;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding:10px;
+    margin: 0;
+}
+
+.searchbar-btn::before {
+    content: "\1F50D";
+    font-size: 20px;
+}
+
+.searchbar-btn:hover {
+   background-color: var(--accent);
+   color: var(--secondary);
+   box-shadow: 4px 4px 0px var(--primary);
+   transform: translate(-2px, -2px);
+}
+

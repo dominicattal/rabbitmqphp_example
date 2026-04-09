@@ -47,7 +47,6 @@ if [ "$target" == "all" ] || [ "$target" == "deploy" ]; then
         echo "-------- SSH COPY TO DEPLOY_HOST ---------"
         ssh_string="$DEPLOY_USER@$DEPLOY_HOST"
         echo $ssh_string
-            echo $ssh_string
         ssh-copy-id $ssh_string
     else
         echo "DEPLOY_HOST or DEPLOY_USER not in clusters.ini"
