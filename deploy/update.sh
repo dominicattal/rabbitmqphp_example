@@ -2,13 +2,12 @@
 
 # this script copies file to specified machines. not to be confused wiht deployment system, this is just for setting stuff up easily
 
-# -------- FILES TO COPY --------------
-deploy_files="deploy/ssh_copy.sh deploy/apt_deploy.sh deploy/broker_deploy.sh deploy/clusters.ini deploy/deploy.php ./rabbitMQLib.inc"
-
+# -------- FILES TO COPY --------------=
+deploy_files="deploy/ssh_copy.sh deploy/apt_deploy.sh deploy/broker_deploy.sh deploy/clusters.ini deploy/deploy.php ./rabbitMQLib.inc scripts/removeFromTmp.sh schema_deployment.sql deploy/deploy_db.ini" 
 cluster_files="deploy/handler.php ./rabbitMQLib.inc"
 
 web_files="$cluster_files deploy/apt_web.sh .api.ini"
-db_files="$cluster_files deploy/apt_db.sh deploy/broker_cluster.sh"
+db_files="$cluster_files deploy/apt_db.sh deploy/broker_cluster.sh scripts/db_deployment.sh"
 data_files="$cluster_files deploy/apt_data.sh .api.ini"
 
 dev_web_files="$web_files"

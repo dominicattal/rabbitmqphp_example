@@ -658,7 +658,7 @@ function requestProcessor($request)
     return "ERROR: unsupported message type";
 
 
-/*if($current_db == 1)
+if($current_db == 1)
 {
   echo "Using DB 1!\n";
   //We are using DB 1
@@ -713,7 +713,7 @@ else
      $config = parse_ini_file('db_mysql1.ini');
      $db_conn = new mysqli($config["MYSQL_HOST"],$config["MYSQL_USER"],$config["MYSQL_PASS"],$config["MYSQL_DB"]);
    }
-}*/
+}
 
   
 
