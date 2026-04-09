@@ -1,0 +1,15 @@
+[Unit]
+Description=MADD data service
+After=network.target
+
+[Service]
+Type=simple
+ExecStart=/usr/bin/php /var/www/madd/data.php data_server.ini
+WorkingDirectory=/var/www/madd
+Restart=on-failure
+RestartSec=5
+User=madd_system
+Group=madd_system
+
+[Install]
+WantedBy=multi-user.target
