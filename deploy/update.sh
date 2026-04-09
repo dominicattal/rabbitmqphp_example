@@ -2,7 +2,8 @@
 
 # this script copies file to specified machines. not to be confused wiht deployment system, this is just for setting stuff up easily
 
-deploy_files="deploy/ssh_copy.sh deploy/apt_deploy.sh deploy/broker_deploy.sh deploy/clusters.ini deploy/deploy.php ./rabbitMQLib.inc deploy/systemd.sh config/madd_handler.service config/madd_deploy.service scripts/removeFromTmp.sh schema_deployment.sql deploy/deploy_db.ini"
+# -------- FILES TO COPY --------------
+deploy_files="deploy/ssh_copy.sh deploy/apt_deploy.sh deploy/broker_deploy.sh deploy/clusters.ini deploy/deploy.php ./rabbitMQLib.inc scripts/removeFromTmp.sh schema_deployment.sql deploy/deploy_db.ini scripts/db_deployment.sh" 
 
 cluster_files="deploy/handler.php ./rabbitMQLib.inc"
 

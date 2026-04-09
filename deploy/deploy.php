@@ -201,7 +201,7 @@ function test($target, $archive_path)
    return array("status" => "Bundle Recieved and stored!");
 }
 
-function update_status($name_bundle, $version_bundle,$new_status)
+function markBundle($name_bundle, $version_bundle,$new_status)
 {
    global $db_conn;
    $query = "SELECT * FROM bundleList where version = '$version_bundle' AND name = '$name_bundle';";
@@ -239,7 +239,7 @@ function requestProcessor($request)
             return listCurrentBundles($request["target"]);
         case "test":
             return test($request["target"], $request["archive_path"]);
-        case "update_status":
+        case "mark":
             return update_status($request["name_bundle"],$request["version_bundle"],$request["new_status"]);
     }
     return array("failed" => "Unrecognized type");
