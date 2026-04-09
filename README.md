@@ -56,9 +56,19 @@ sudo systemctl restart ssh
     2. There should be a script that looks like `apt_{type}.sh`. Run it.
     3. Run `handler.php cluster_server.ini` to listen for requests. This should be handled by systemd.
 
+### Client
+
+`deploy/client.php` is the script that will communicate from the main vm to all of the other machines. Everything, including pushing, rolling back, listing, and marking should be done using this command. The syntax is like `deploy/client.php [push/rollback/list/mark]`. Each function has its own syntax:
+```
+deploy/client.php push [dev/qa/prod] [path_to_bundle]
+deploy/client.php rollback [dev/qa/prod] [bundle_name]
+deploy/client.php list
+deploy/client.php mark [bundle_name] [good/bad/new]
+```
+
 ### Push
 
-Run `deploy/push.php [dev/qa/prod] [bundle]` to deploy a bundle to dev, qa, or prod. The structure of bundle should look like this:
+Run `deploy/client.php push [dev/qa/prod] [path_to_bundle]` to deploy a bundle to dev, qa, or prod. The structure of bundle should look like this:
 ```
 bundle
 |- info.ini
@@ -80,7 +90,17 @@ BUNDLE_TYPE="web"|"db"|"data"
 `installer.sh` is called after the target vm unzips files. this should copy all of the files from this directory into their correct place in the project.
 
 The deploy vm will make a copy of files and store it to be accessed by the database.
+
+### Rollback
+
+Run `deploy/client.php rollback [dev/qa/prod] [bundle_name]` to rollback to most recent good version of bundle.
+
+### Marking Good or Bad
+
+Run `deploy/client.php mark [bundle_name] [good/bad/new]` to set the status of a bundle.
+
 ### Bundles
+
 These files will be bundled together
 ```
 dataBun

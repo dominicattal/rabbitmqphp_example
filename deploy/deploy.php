@@ -61,8 +61,6 @@ function pushBundle($target, $archive_path)
             "response" => "Scp failed"
         );
     }
-    
-  
 
     $queue_name = $queue_map[$target][$type]["queue_name"];
     $routing_key = $queue_map[$target][$type]["routing_key"];
@@ -85,9 +83,27 @@ function pushBundle($target, $archive_path)
     );
 }
 
-function rollbackBundle($target, $bundle_name, $version)
+function rollbackBundle($target, $bundle_name)
 {
-    return array("status" => "not implemented yet");
+    global $db_conn;
+    $query = "SELECT * FROM bundleList WHERE name='$bundle_name' LIMIT 1";
+    $result = $db_conn->query($query);
+    if ($result->num_rows == 0) {
+        return array(
+            "status" => "failed",
+            "message" => "$bundle_name does not exist"
+        );
+    }
+    $query = "SELECT * FROM bundleList WHERE name='$bundle_name' AND status='good' ORDER BY version DESC LIMIT 1";
+    $result = $db_conn->query($query);
+    if ($result->num_rows == 0) {
+        return array(
+            "status" => "failed",
+            "message" => "no good version of bundle $bundle_name found"
+        );
+    }
+    $row = $result->fetch_assoc();
+    return pushBundle($target, $row["file_path"]);
 }
 
 function listBundles($type)
@@ -214,7 +230,7 @@ function requestProcessor($request)
         case "push":
             return pushBundle($request["target"], $request["archive_path"]);
         case "rollback":
-            return rollbackBundle($request["target"], $request["bundle_name"], $request["version"]);
+            return rollbackBundle($request["target"], $request["bundle_name"]);
         case "list_bundles":
             return listBundles($request["type"]);
         case "list_bundle_versions":
