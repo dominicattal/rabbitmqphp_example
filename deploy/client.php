@@ -98,16 +98,22 @@ if ($function == "push") {
         echo "$bundle\n";
     }
 } else if ($function == "mark") {
-    if (count($argv) != 3) {
+    if (count($argv) != 5) {
         echo "Wrong number of arguments\n";
-        echo "Usage: client.php mark [bundle_name] [good/bad/new]\n";
+        echo "Usage: client.php mark [bundle_name] [version] [good/bad/new]\n";
         echo "Consult README.md\n";
         exit(1);
     }
-    $status = $argv[3];
+    if (!is_numeric($argv[3])) {
+        echo "Version must be a number\n";
+        echo "Usage: client.php mark [bundle_name] [version] [good/bad/new]\n";
+        echo "Consult README.md\n";
+        exit(1);
+    }
+    $status = $argv[4];
     if (!in_array($status, ["good","bad","new"])) {
         echo "Invalid status $status\n";
-        echo "Usage: client.php mark [bundle_name] [good/bad/new]\n";
+        echo "Usage: client.php mark [bundle_name] [version] [good/bad/new]\n";
         echo "Consult README.md\n";
         exit(1);
     }
@@ -115,7 +121,8 @@ if ($function == "push") {
     $request = array();
     $request['type'] = "mark";
     $request['bundle_name'] = $argv[2];
-    $request['status'] = $argv[3];
+    $request['version'] = $argv[3];
+    $request['status'] = $status;
     $response = $client->send_request($request);
     var_dump($response);
 }
