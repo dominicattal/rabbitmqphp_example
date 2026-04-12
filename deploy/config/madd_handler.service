@@ -1,16 +1,14 @@
 [Unit]
-Description=MADD db service
+Description=MADD handler service
 After=network.target
 
 [Service]
 Type=simple
-ExecStart=/usr/bin/php /var/www/madd/db.php db_server.ini
+ExecStart=/usr/bin/php /var/www/madd/handler.php cluster_server.ini
 WorkingDirectory=/var/www/madd
 Restart=on-failure
 RestartSec=5
-User=madd_system
-Group=madd_system
+User=username
 
 [Install]
 WantedBy=multi-user.target
-

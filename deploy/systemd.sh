@@ -1,6 +1,5 @@
 #!/bin/bash
 
-useradd -r -s /bin/false madd_system
 project_dir=$(pwd)
 ln -snf "$project_dir" /var/www/madd
 chmod +x /home/$SUDO_USER

@@ -47,75 +47,51 @@ function pushBundle($target, $archive_path)
         );
     }
     $info_ini = parse_ini_file("$dirname/info.ini", false);
+    $bundle_name = $info_ini["BUNDLE_NAME"];
     $type = $info_ini["BUNDLE_TYPE"];
-    //$version = $info_ini["BUNDLE_VERSION"];
 
     $pfx = strtoupper("${target}_${type}");
     $hostname = $clusters["${pfx}_HOST"];
     $username = $clusters["${pfx}_USER"];
     $remote_path = $archive_path;
+   
+    $query = "SELECT * FROM bundleList WHERE type = '$type' ORDER BY version DESC LIMIT 1";
+    $result = $db_conn->query($query);
 
-   $tarName = basename($archive_path,".tar");
-   //echo "Tar file name: $tarName\n";
+    $state = "new";
    
-   $query = "SELECT * FROM bundleList where type = '$type' ORDER BY version DESC LIMIT 1";
-   $result = $db_conn->query($query);
-   
-   //Type = type
+    //Type = type
     if ($result->num_rows == 0)
     {
-	   $output2 = array(); 
-	   exec(__DIR__ . "/removeFromTmp.sh " . $tarName . " " .$type . " " . " 2>&1"   , $output2, $return_code);  
-
-	   //echo "Post test!\n";
-	   var_dump($output2);
-	   $newName = end($output2);
-	   $newName2 = "~/bundles/".$newName;
 	   $version = 1;
-	   //Now need to send the newly made db_1_bundle.tar to the DB server for storage?
-	   $state = "new";
-	   $query = "INSERT INTO bundleList (name, version, type, status, file_path) VALUES ('$newName','$type','$state','$newName2');";
-	   
-	   $result = $db_conn->query($query);
-	   
-
-	   
-	   echo "Finished with pushing the bundle, moving it to ~/bundles, and storing it in the DB";
-	   
-	    exec("scp '$archive_path' scp://$username@$hostname/$remote_path", $output, $result_code);
-	    if ($result_code != 0) {
-		echo "SCP Failed\n";
-		var_dump($output);
-		return array(
-		    "status" => "failed",
-		    "response" => $output
-		);
-	    }
+	   echo "Bundle does not exist, moving it to ~/bundles, and storing it in the DB\n";
     } else 
     {
 	    //increment version
-	    echo "Bundle exist! Updating the version for the new one!";
-	    $output2=array();
-	       exec(__DIR__ . "/removeFromTmp.sh " . $tarName . " " .$type . " " . " 2>&1"   , $output2, $return_code);  
-	    
-           $q_data = $result->fetch_assoc();   
-           $bundle_id = $q_data['id']; 
-           $version_num = $q_data['version'];
-           $version_num+=1;
-           var_dump($version_num);
+	    echo "Bundle exist! Updating the version for the new one!\n";
+        $q_data = $result->fetch_assoc();   
+        $version = $q_data['version'] + 1;
 
-           //$query = "DELETE FROM bundleList where ID = '$bundle_id';";
-           //$result = $db_conn->query($query);
-           
-           $state = "new";
-           $newName = end($output2);
-           $newName2 = "~/bundles/".$newName;
-   	   
-   	   
-           $query = "INSERT INTO bundleList (name, version, type, status, file_path) VALUES ('$newName','$version_num','$type','$state','$newName2');";
-           
-           $result = $db_conn->query($query);
-           
+    }
+
+    $file_path = "~/bundles/${bundle_name}_${version}.tar";
+    $query = "INSERT INTO bundleList (name, version, type, status, file_path) VALUES ('$bundle_name','$version','$type','$state','$file_path');";
+    $result = $db_conn->query($query);
+
+    exec("mkdir -p ~/bundles", $output, $return_code);
+    exec("cp $archive_path $file_path", $output, $return_code);
+    if ($return_code != 0) {
+        echo "Could not copy\n";
+        return array("status" => "failed");
+    }
+    exec("scp '$archive_path' scp://$username@$hostname/$remote_path", $output, $result_code);
+    if ($result_code != 0) {
+        echo "SCP Failed\n";
+        var_dump($output);
+        return array(
+            "status" => "failed",
+            "response" => $output
+        );
     }
 
     $queue_name = $queue_map[$target][$type]["queue_name"];
@@ -134,7 +110,8 @@ function pushBundle($target, $archive_path)
     }
     return array(
         "status" => "success",
-        "version" => 0,
+        "bundle_name" => $bundle_name,
+        "version" => $version,
         "response" => $response
     );
 }
@@ -183,14 +160,12 @@ function listBundles($type)
        "response" =>$response
        );
     }
-        $response=array();
-        while ($row = $result->fetch_assoc()) 
-        {
-            
-            $response[] = $row;
-        }
-        var_dump($response);
-        return $response;
+    $response=array();
+    while ($row = $result->fetch_assoc()) 
+    {
+        $response[] = "$row[name] v$row[version] $row[type] $row[status]";
+    }
+    return $response;
 }
 
 function listBundleVersions($bundle_name)

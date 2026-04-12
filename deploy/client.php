@@ -65,7 +65,7 @@ if ($function == "push") {
     $request['target'] = $target;
     $request['archive_path'] = $remote_path;
     $response = $client->send_request($request);
-    var_dump($response);
+    echo "created $response[bundle_name] v$response[version]\n";
 
 } else if ($function == "rollback") {
     echo "Rolling back\n";
@@ -94,7 +94,9 @@ if ($function == "push") {
     $request = array();
     $request['type'] = "list_bundles";
     $response = $client->send_request($request);
-    var_dump($response);
+    foreach ($response as $bundle) {
+        echo "$bundle\n";
+    }
 } else if ($function == "mark") {
     if (count($argv) != 3) {
         echo "Wrong number of arguments\n";

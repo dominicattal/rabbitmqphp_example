@@ -1,16 +1,14 @@
 [Unit]
-Description=MADD deploy service
+Description=MADD data service
 After=network.target
 
 [Service]
 Type=simple
-ExecStart=/usr/bin/php /var/www/madd/deploy/deploy.php deploy_server.ini
+ExecStart=/usr/bin/php /var/www/madd/data.php data_server.ini
 WorkingDirectory=/var/www/madd
 Restart=on-failure
 RestartSec=5
-User=madd_system
-Group=madd_system
+User=username
 
 [Install]
 WantedBy=multi-user.target
-

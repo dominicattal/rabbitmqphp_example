@@ -44,17 +44,20 @@ sudo systemctl restart ssh
     - You can specify targets and type like `deploy/update.sh [deploy/dev/qa/prod/all] [web/db/data/all]`
     - You can specify which files get sent by specifying them after the target and type in the command line, so like
         `deploy/update.sh dev web deploy/dev_web_server.ini`
-5. Setup deploy vm:
+5. Run `deploy/genini.sh`. This will create the configuration files for each machine based on `deploy/clusters.ini`
+6. Run `deploy/genufw.sh`. This will create the firewall run commands for each machine based on `deploy/clusters.ini`
+7. Run `deploy/genconfig.sh`. This will create the systemd configuration files for each machine.
+8. Setup deploy vm:
     1. `cd it490`
     2. On deploy vm, run `sudo apt_deploy.sh` to ensure necessary packages are installed
     3. On deploy vm, run `sudo broker_deploy.sh` to create rabbitmq stuff
         - if you want to delete the queues, you can do `sudo rabbitmqctl delete_vhost it490`
-    4. Run `ssh_copy.sh all all` to create ssh key and copy them to other machines.
-    5. Run `deploy.php` to listen for requests. This should be handled by systemd.
-6. Setup {target} {type} vm
+    4. Run `ssh_copy.sh all all` to create ssh key and copy them to other machines. Do NOT run it as sudo.
+    5. Run `sudo ./systemd.sh` to initalize the madd_deploy service.
+9. Setup {target} {type} vm
     1. `cd it490`
     2. There should be a script that looks like `apt_{type}.sh`. Run it.
-    3. Run `handler.php cluster_server.ini` to listen for requests. This should be handled by systemd.
+    3. Run `sudo ./systemd.sh` to initialize the madd services.
 
 ### Client
 
@@ -90,58 +93,6 @@ BUNDLE_TYPE="web"|"db"|"data"
 `installer.sh` is called after the target vm unzips files. this should copy all of the files from this directory into their correct place in the project.
 
 The deploy vm will make a copy of files and store it to be accessed by the database.
-
-### Bundles
-
-These files will be bundled together
-```
-dataBun
-|- data.php
-dbBun
-|- db.php
-|- schema.sql
-|- db.sh
-|- db_clean.sh
-|- db_purge.sh
-brokerBun
-|- broker.sh
-|- broker_clean.sh
-|- broker_purge.sh
-webBun
-|- web.php
-|- sample
-   |-navbar.php
-   |-search.php
-   |-validation_handler.php
-   |-header.php
-   |.goutputstream-GY4MM3
-loginBun
-|- login.html
-|- login_handler.php
-registerBun
-|- registration.html
-|- registration_handler.php
-extrasBun
-|- home.php
-|- higherlower.php
-|- upcoming.php
-emailBun
-|- email.php
-webDesignBun
-|- background.jpg
-|- madd.css
-reviewBun
-|- details.php
-|- get_reviews_handler.php
-|- reviews.html
-|- reviewsView.html
-|- reviewsView_handler.php
-|- reviews_handler.php
-watchlistBun
-|- watchlist.php
-|- watchlist_add.php
-|- watchlist_handler.php
-```
 
 ### Rollback
 
@@ -229,7 +180,7 @@ Scripts are in the `scripts` directory. Deployment scripts are in `deploy` direc
 `deploy/genini.sh`          -> automatically generates all of the ini files and sends them to the specified machines. \
 `deploy/genufw.sh`          -> automatically generates all of the ufw scripts for configuring firewall \
 `deploy/systemd.sh`         -> adds user, sets permissions, copies .service files to etc/systemd/system, restarts and enables systemd files \
-`send2Bun.sh`               -> add filename you want to send to deploy as the command line argument, and the respective bundle should be echoed so you can push it. \
+`send2Bun.sh`               -> add filename you want to send to deploy as the command line argument, and the respective bundle should be echoed so you can push it.
 
 execute these like `sudo scripts/broker.sh`
 
