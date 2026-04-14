@@ -29,14 +29,128 @@ $queue_map["prod"]["db"]["routing_key"] = "prod_db_listen";
 $queue_map["prod"]["data"]["queue_name"] = "prod_data_listen_queue";
 $queue_map["prod"]["data"]["routing_key"] = "prod_data_listen";
 
-function pushBundle($target, $archive_path)
+function updateBundle($archive_path)
+{
+    global $db_conn;
+    $dirname = dirname($archive_path);
+    $output = array();
+    $return_code = 0;
+
+    exec("tar -C '$dirname' --overwrite -vf '$archive_path' -x info.ini", $output, $result_code);
+    if ($return_code != 0) {
+        return array(
+            "status" => "failed",
+            "resposne" => "Could not extract info.ini from bundle"
+        );
+    }
+
+    $info_ini = parse_ini_file("$dirname/info.ini", false);
+    $bundle_name = $info_ini["BUNDLE_NAME"];
+    $description = $info_ini["BUNDLE_DESC"];
+    $type = $info_ini["BUNDLE_TYPE"];
+    $query = "SELECT type, version FROM bundleList WHERE name='$bundle_name' ORDER BY version DESC LIMIT 1";
+    $result = $db_conn->query($query);
+    $state = "new";
+    if ($result->num_rows == 0) {
+        echo "Bundle does not exist, moving it to ~/bundles, and storing it in the DB\n";
+        $version = 1;
+    } else {
+	    echo "Bundle exist! Updating the version for the new one!\n";
+        $q_data = $result->fetch_assoc();   
+        if ($q_data['type'] != $type) {
+            return array(
+                "status" => "failed",
+                "resposne" => "$bundle_name is stored as $q_data[type], but info.ini says it is $type"
+            );
+        }
+        $version = $q_data['version'] + 1;
+    }
+    $file_path = "~/bundles/${bundle_name}_${version}.tar";
+
+    exec("mkdir -p ~/bundles", $output, $return_code);
+    exec("cp $archive_path $file_path", $output, $return_code);
+    if ($return_code != 0) {
+        echo "Could not copy\n";
+        return array(
+            "status" => "failed", 
+            "response" => "Could not copy bundle"
+        );
+    }
+
+    $query = "INSERT INTO bundleList (name, version, description, type, status, file_path) VALUES ('$bundle_name','$version','$description','$type','$state','$file_path');";
+    $result = $db_conn->query($query);
+
+    return array(
+        "status" => "success",
+        "bundle_name" => $bundle_name,
+        "type" => $type,
+        "version" => $version
+    );
+}
+
+function pushBundle($target, $bundle_name, $version)
+{
+    global $db_conn, $queue_map, $clusters;
+    $output = array();
+    $return_code = 0;
+
+    $query = "SELECT file_path, type FROM bundleList WHERE name='$bundle_name' AND version=$version";
+    $result = $db_conn->query($query);
+    if ($result->num_rows == 0) {
+        return array(
+            "status" => "failed",
+            "response" => "Could not find $bundle_name v$version"
+        );
+    }
+    $row = $result->fetch_assoc();
+    $file_path = $row["file_path"];
+    $type = $row["type"];
+
+    $pfx = strtoupper("${target}_${type}");
+    $hostname = $clusters["${pfx}_HOST"];
+    $username = $clusters["${pfx}_USER"];
+    $remote_path = "/tmp/$bundle_name.tar";
+
+    exec("scp -O $file_path scp://$username@$hostname/$remote_path", $output, $result_code);
+    if ($result_code != 0) {
+        echo "SCP Failed\n";
+        var_dump($output);
+        return array(
+            "status" => "failed",
+            "response" => "Could not scp"
+        );
+    }
+
+    $queue_name = $queue_map[$target][$type]["queue_name"];
+    $routing_key = $queue_map[$target][$type]["routing_key"];
+    $client = new rabbitMQClient("deploy_client.ini", $queue_name, $routing_key);
+    $request = array();
+    $request['type'] = "push";
+    $request['archive_path'] = $remote_path;
+    $response = $client->send_request($request);
+    unset($client);
+    if (!isset($response["status"]) || $response["status"] != "success") {
+        return array(
+            "status" => "failed",
+            "response" => $response
+        );
+    }
+    return array(
+        "status" => "success",
+        "bundle_name" => $bundle_name,
+        "version" => $version,
+        "response" => $response
+    );
+}
+
+function pushBundle_old($target, $archive_path)
 {
     global $db_conn, $queue_map, $clusters;
     var_dump($target);
     var_dump($archive_path);
     $result_code = 0;
     $output = array();
-    $dirname = dirname($archive_path);$output = array();
+    $dirname = dirname($archive_path);
     exec("tar -C '$dirname' --overwrite -vf '$archive_path' -x info.ini", $output, $result_code);
     if ($result_code != 0) {
         echo "Could not extract bundle\n";
@@ -300,8 +414,10 @@ function requestProcessor($request)
 //New, Good, Bad $tarName = basename($archive_path);
     var_dump($request);
     switch ($request["type"]) {
+        case "update":
+            return updateBundle($request["archive_path"]);
         case "push":
-            return pushBundle($request["target"], $request["archive_path"]);
+            return pushBundle($request["target"], $request["bundle_name"], $request["version"]);
         case "rollback":
             return rollbackBundle($request["target"], $request["bundle_name"]);
         case "list_bundles":

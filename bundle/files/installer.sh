@@ -1,3 +1,3 @@
 #!/bin/bash
 
-cp /tmp/files/file1.txt ~
+cp /tmp/files/hello.txt ~

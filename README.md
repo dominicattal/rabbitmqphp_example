@@ -61,17 +61,18 @@ sudo systemctl restart ssh
 
 ### Client
 
-`deploy/client.php` is the script that will communicate from the main vm to all of the other machines. Everything, including pushing, rolling back, listing, and marking should be done using this command. The syntax is like `deploy/client.php [push/rollback/list/mark]`. Each function has its own syntax:
+`deploy/client.php` is the script that will communicate from the main vm to all of the other machines. Everything, including pushing, rolling back, listing, and marking should be done using this command. The syntax is like `deploy/client.php [push/set/rollback/list/mark]`. Each function has its own syntax:
 ```
-deploy/client.php push [dev/qa/prod] [path_to_bundle]
+deploy/client.php update [path_to_bundle]
+deploy/client.php push [dev/qa/prod] [bundle_name] [bundle_version]
 deploy/client.php rollback [dev/qa/prod] [bundle_name]
+deploy/client.php mark [bundle_name] [version] [good/bad/new]
 deploy/client.php list
-deploy/client.php mark [bundle_name] [good/bad/new]
 ```
 
 ### Push
 
-Run `deploy/client.php push [dev/qa/prod] [path_to_bundle]` to deploy a bundle to dev, qa, or prod. The structure of bundle should look like this:
+Run `deploy/client.php push [path_to_bundle]` to deploy a bundle to dev, qa, or prod. The structure of bundle should look like this:
 ```
 bundle
 |- info.ini
@@ -85,7 +86,6 @@ bundle
 `info.ini` contains the bundle info that the deploy machine reads. It should have the following fields:
 ```
 BUNDLE_NAME="test_bundle"
-BUNDLE_HR_NAME="Test Bundle"
 BUNDLE_DESC="This Bundle is a Test"
 BUNDLE_TYPE="web"|"db"|"data"
 ```
@@ -93,6 +93,10 @@ BUNDLE_TYPE="web"|"db"|"data"
 `installer.sh` is called after the target vm unzips files. this should copy all of the files from this directory into their correct place in the project.
 
 The deploy vm will make a copy of files and store it to be accessed by the database.
+
+### Set
+
+Run `deploy/client.php set [dev/qa/prod] [bundle_name] [bundle_version]` to set a bundle version for a cluster.
 
 ### Rollback
 

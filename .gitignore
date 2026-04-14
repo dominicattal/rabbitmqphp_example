@@ -3,4 +3,5 @@ vendor
 out.txt
 *.tar
 deploy/clusters.ini
+deploy/clusters_real.ini
 main_client.ini

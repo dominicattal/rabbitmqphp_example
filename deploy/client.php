@@ -3,14 +3,14 @@
 include "rabbitMQLib.inc";
 
 if (count($argv) == 1) {
-    echo "Usage: deploy/client.php [push/rollback/list/mark]\n";
+    echo "Usage: deploy/client.php [push/update/rollback/list/mark]\n";
     echo "Consult README.md\n";
     exit(1);
 }
 $function = $argv[1];
-if (!in_array($function, ["push","rollback","list","mark"])) {
+if (!in_array($function, ["push","update","rollback","list","mark"])) {
     echo "Wrong function type\n";
-    echo "Usage: deploy/client.php [push/rollback/list/mark]\n";
+    echo "Usage: deploy/client.php [push/update/rollback/list/mark]\n";
     echo "Consult README.md\n";
     exit(1);
 }
@@ -20,22 +20,15 @@ function validateTarget($target)
     return $target == "dev" || $target == "qa" || $target == "prod";
 }
 
-if ($function == "push") {
-    echo "Pushing\n";
-    if (count($argv) != 4) {
+if ($function == "update") {
+    echo "Updating\n";
+    if (count($argv) != 3) {
         echo "Wrong number of arguments\n";
-        echo "Usage: client.php push [dev/qa/prod] [path_to_bundle]\n";
+        echo "Usage: client.php update [path_to_bundle]\n";
         echo "Consult README.md\n";
         exit(1);
     }
-    $target = $argv[2];
-    if (!validateTarget($target)) {
-        echo "Invalid target $target\n";
-        echo "Usage: client.php push [dev/qa/prod] [path_to_bundle]\n";
-        echo "Consult README.md\n";
-        exit(1);
-    }
-    $path = $argv[3];
+    $path = $argv[2];
     $output = array();
     $result_code = 0;
     exec("deploy/bundlify.sh $path", $output, $result_code);
@@ -61,15 +54,39 @@ if ($function == "push") {
 
     $client = new rabbitMQClient("main_client.ini", "deploy_listen_queue", "deploy_listen");
     $request = array();
-    $request['type'] = "push";
-    $request['target'] = $target;
+    $request['type'] = "update";
     $request['archive_path'] = $remote_path;
     $response = $client->send_request($request);
     if (isset($repsonse["status"]) && $response["status"] == "success")
         echo "created $response[bundle_name] v$response[version]\n";
     else
         var_dump($response);
-
+} else if ($function == "push") {
+    echo "Pushing\n";
+    if (count($argv) != 5) {
+        echo "Wrong number of arguments\n";
+        echo "Usage: client.php push [dev/qa/prod] [bundle_name] [bundle_version]\n";
+        echo "Consult README.md\n";
+        exit(1);
+    }
+    $target = $argv[2];
+    if (!validateTarget($target)) {
+        echo "Invalid target\n";
+        echo "Usage: client.php push [dev/qa/prod] [bundle_name] [bundle_version]\n";
+        echo "Consult README.md\n";
+        exit(1);
+    }
+    $client = new rabbitMQClient("main_client.ini", "deploy_listen_queue", "deploy_listen");
+    $request = array();
+    $request['type'] = "push";
+    $request['target'] = $argv[2];
+    $request['bundle_name'] = $argv[3];
+    $request['version'] = $argv[4];
+    $response = $client->send_request($request);
+    if (isset($repsonse["status"]) && $response["status"] == "success")
+        echo "created $response[bundle_name] v$response[version]\n";
+    else
+        var_dump($response);
 } else if ($function == "rollback") {
     echo "Rolling back\n";
     if (count($argv) != 4) {

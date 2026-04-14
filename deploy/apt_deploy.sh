@@ -1,4 +1,8 @@
 #!/bin/bash
 
-apt install php rabbitmq-server php-amqp mysql-server mysql-client-core php-mysql
+apt install mysql-client-core 
+if [ $? -ne 0 ]; then
+    apt install mysql-client-core-8.0 # works on darren vm but not on dom vm
+fi
+apt install php rabbitmq-server php-amqp mysql-server php-mysql
 
