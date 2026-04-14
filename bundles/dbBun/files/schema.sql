@@ -55,3 +55,4 @@ CREATE TABLE IF NOT EXISTS genres (
     name VARCHAR(255) NOT NULL,
     createdAt BIGINT NOT NULL
 );
+
