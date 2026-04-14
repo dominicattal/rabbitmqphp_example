@@ -28,14 +28,16 @@ function pushBundle($archive_path)
     if ($result_code != 0) {
         return array(
             "status" => "failed",
-            "response" => $output
+            "response" => "failed to chmod run script path '$run_script_path'",
+            "output" => $output
         );
     }
     exec($run_script_path, $output, $result_code);
     if ($result_code != 0) {
         return array(
             "status" => "failed",
-            "response" => $output
+            "response" => "failed to run script '$run_script_path'",
+            "output" => $output
         );
     }
     return array(
