@@ -111,6 +111,7 @@ if [ $type == "all" ] || [ $type == "db" ]; then
         if [ -n "${PROD_DB_HOST}" ] && [ -n "${PROD_DB_USER}" ]; then
             echo "-------- SSH COPY TO PROD_DB_HOST --------"
             ssh_string="$PROD_DB_USER@$PROD_DB_HOST"
+            echo $ssh_string
             ssh-copy-id $ssh_string
         else
             echo "PROD_DB_HOST or PROD_DB_USER not in clusters.ini"

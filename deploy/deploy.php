@@ -22,12 +22,12 @@ $queue_map["qa"]["db"]["queue_name"] = "qa_db_listen_queue";
 $queue_map["qa"]["db"]["routing_key"] = "qa_db_listen";
 $queue_map["qa"]["data"]["queue_name"] = "qa_data_listen_queue";
 $queue_map["qa"]["data"]["routing_key"] = "qa_data_listen";
-$queue_map["data"]["web"]["queue_name"] = "data_web_listen_queue";
-$queue_map["data"]["web"]["routing_key"] = "data_web_listen";
-$queue_map["data"]["db"]["queue_name"] = "data_db_listen_queue";
-$queue_map["data"]["db"]["routing_key"] = "data_db_listen";
-$queue_map["data"]["data"]["queue_name"] = "data_data_listen_queue";
-$queue_map["data"]["data"]["routing_key"] = "data_data_listen";
+$queue_map["prod"]["web"]["queue_name"] = "data_web_listen_queue";
+$queue_map["prod"]["web"]["routing_key"] = "data_web_listen";
+$queue_map["prod"]["db"]["queue_name"] = "prod_db_listen_queue";
+$queue_map["prod"]["db"]["routing_key"] = "prod_db_listen";
+$queue_map["prod"]["data"]["queue_name"] = "prod_data_listen_queue";
+$queue_map["prod"]["data"]["routing_key"] = "prod_data_listen";
 
 function pushBundle($target, $archive_path)
 {
@@ -83,7 +83,7 @@ function pushBundle($target, $archive_path)
         echo "Could not copy\n";
         return array("status" => "failed");
     }
-    exec("scp \"$archive_path\" scp://$username@$hostname/$remote_path", $output, $result_code);
+    exec("scp -O \"$archive_path\" scp://$username@$hostname/$remote_path", $output, $result_code);
     if ($result_code != 0) {
         echo "SCP Failed\n";
         var_dump($output);
@@ -146,7 +146,7 @@ function rollbackBundle($target, $bundle_name)
     $username = $clusters["${pfx}_USER"];
     $remote_path = "/tmp/$bundle_name.tar";
 
-    exec("scp $file_path scp://$username@$hostname/$remote_path", $output, $result_code);
+    exec("scp -O $file_path scp://$username@$hostname/$remote_path", $output, $result_code);
     if ($result_code != 0) {
         echo "SCP Failed\n";
         return array(

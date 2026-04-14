@@ -36,7 +36,7 @@ fi
 if [ "$target" == "all" ] || [ "$target" == "main" ]; then
     echo "Creating main_client.ini"
     path="./main_client.ini"
-    sed -e "s/hostname/$DEPLOY_HOST/" -e "s/target/main/g" -e "s/type_//g" -e "s/LISTEN/REPLY/" -e "s/_listen//" -e "s/_server/_client/" deploy/template_server.ini > $path
+    sed -e "s/hostname/$DEPLOY_HOST/" -e "s/target/main/g" -e "s/type_//g" -e "s/LISTEN/REPLY/" -e "s/_listen//" -e "s/_server/_client/" deploy/template_cluster_server.ini > $path
     sed -i "2i DEPLOY_USER=$DEPLOY_USER" $path
     sed -i "2i DEPLOY_HOST=$DEPLOY_HOST" $path
 fi
@@ -47,11 +47,11 @@ if [ "$target" == "all" ] || [ "$target" == "deploy" ]; then
         ssh_string="$DEPLOY_USER@$DEPLOY_HOST"
         echo "Generating inis for DEPLOY_HOST ($ssh_string)"
         path="/tmp/deploy_server.ini"
-        sed -e "s/hostname/localhost/" -e "s/target/deploy/g" -e "s/type_//g" deploy/template_server.ini > $path
+        sed -e "s/hostname/localhost/" -e "s/target/deploy/g" -e "s/type_//g" deploy/template_cluster_server.ini > $path
         ssh $ssh_string "mkdir -p ~/it490"
         scp "$path" "scp://$ssh_string/~/it490/"
         path="/tmp/deploy_client.ini"
-        sed -e "s/hostname/localhost/" -e "s/target/deploy/g" -e "s/type_//g" -e "s/LISTEN/REPLY/" -e "s/_listen//" -e "s/_server/_client/" deploy/template_server.ini > $path
+        sed -e "s/hostname/localhost/" -e "s/target/deploy/g" -e "s/type_//g" -e "s/LISTEN/REPLY/" -e "s/_listen//" -e "s/_server/_client/" deploy/template_cluster_server.ini > $path
         scp "$path" "scp://$ssh_string/~/it490/"
     fi
 fi
@@ -63,7 +63,7 @@ if [ "$type" == "all" ] || [ "$type" == "web" ]; then
             ssh_string="$DEV_WEB_USER@$DEV_WEB_HOST"
             echo "Generating inis for DEV_WEB_HOST ($ssh_string)"
             path="/tmp/cluster_server.ini"
-            sed -e "s/hostname/$DEPLOY_HOST/" -e "s/target/dev/g" -e "s/type/web/g" deploy/template_server.ini > $path
+            sed -e "s/hostname/$DEPLOY_HOST/" -e "s/target/dev/g" -e "s/type/web/g" deploy/template_cluster_server.ini > $path
             ssh $ssh_string "mkdir -p ~/it490"
             scp "$path" "scp://$ssh_string/~/it490/"
             path="/tmp/web_client.ini"
@@ -78,7 +78,7 @@ if [ "$type" == "all" ] || [ "$type" == "web" ]; then
             ssh_string="$QA_WEB_USER@$QA_WEB_HOST"
             echo "Generating inis for QA_WEB_HOST ($ssh_string)"
             path="/tmp/cluster_server.ini"
-            sed -e "s/hostname/$DEPLOY_HOST/" -e "s/target/dev/g" -e "s/type/web/g" deploy/template_server.ini > $path
+            sed -e "s/hostname/$DEPLOY_HOST/" -e "s/target/qa/g" -e "s/type/web/g" deploy/template_cluster_server.ini > $path
             ssh $ssh_string "mkdir -p ~/it490"
             scp "$path" "scp://$ssh_string/~/it490/"
             path="/tmp/web_client.ini"
@@ -93,7 +93,7 @@ if [ "$type" == "all" ] || [ "$type" == "web" ]; then
             ssh_string="$PROD_WEB_USER@$PROD_WEB_HOST"
             echo "Generating inis for PROD_WEB_HOST ($ssh_string)"
             path="/tmp/cluster_server.ini"
-            sed -e "s/hostname/$DEPLOY_HOST/" -e "s/target/dev/g" -e "s/type/web/g" deploy/template_server.ini > $path
+            sed -e "s/hostname/$DEPLOY_HOST/" -e "s/target/prod/g" -e "s/type/web/g" deploy/template_cluster_server.ini > $path
             ssh $ssh_string "mkdir -p ~/it490"
             scp "$path" "scp://$ssh_string/~/it490/"
             path="/tmp/web_client.ini"
@@ -110,7 +110,7 @@ if [ "$type" == "all" ] || [ "$type" == "db" ]; then
             ssh_string="$DEV_DB_USER@$DEV_DB_HOST"
             echo "Generating inis for DEV_DB_HOST ($ssh_string)"
             path="/tmp/cluster_server.ini"
-            sed -e "s/hostname/$DEPLOY_HOST/" -e "s/target/dev/g" -e "s/type/db/g" deploy/template_server.ini > $path
+            sed -e "s/hostname/$DEPLOY_HOST/" -e "s/target/dev/g" -e "s/type/db/g" deploy/template_cluster_server.ini > $path
             ssh $ssh_string "mkdir -p ~/it490"
             scp "$path" "scp://$ssh_string/~/it490/"
             path="/tmp/db_client.ini"
@@ -129,7 +129,7 @@ if [ "$type" == "all" ] || [ "$type" == "db" ]; then
             ssh_string="$QA_DB_USER@$QA_DB_HOST"
             echo "Generating inis for QA_DB_HOST ($ssh_string)"
             path="/tmp/cluster_server.ini"
-            sed -e "s/hostname/$DEPLOY_HOST/" -e "s/target/dev/g" -e "s/type/db/g" deploy/template_server.ini > $path
+            sed -e "s/hostname/$DEPLOY_HOST/" -e "s/target/qa/g" -e "s/type/db/g" deploy/template_cluster_server.ini > $path
             ssh $ssh_string "mkdir -p ~/it490"
             scp "$path" "scp://$ssh_string/~/it490/"
             path="/tmp/db_client.ini"
@@ -148,7 +148,7 @@ if [ "$type" == "all" ] || [ "$type" == "db" ]; then
             ssh_string="$PROD_DB_USER@$PROD_DB_HOST"
             echo "Generating inis for PROD_DB_HOST ($ssh_string)"
             path="/tmp/cluster_server.ini"
-            sed -e "s/hostname/$DEPLOY_HOST/" -e "s/target/dev/g" -e "s/type/db/g" deploy/template_server.ini > $path
+            sed -e "s/hostname/$DEPLOY_HOST/" -e "s/target/prod/g" -e "s/type/db/g" deploy/template_cluster_server.ini > $path
             ssh $ssh_string "mkdir -p ~/it490"
             scp "$path" "scp://$ssh_string/~/it490/"
             path="/tmp/db_client.ini"
@@ -169,7 +169,7 @@ if [ "$type" == "all" ] || [ "$type" == "data" ]; then
             ssh_string="$DEV_DATA_USER@$DEV_DATA_HOST"
             echo "Generating inis for DEV_DATA_HOST ($ssh_string)"
             path="/tmp/cluster_server.ini"
-            sed -e "s/hostname/$DEPLOY_HOST/" -e "s/target/dev/g" -e "s/type/data/g" deploy/template_server.ini > $path
+            sed -e "s/hostname/$DEPLOY_HOST/" -e "s/target/dev/g" -e "s/type/data/g" deploy/template_cluster_server.ini > $path
             ssh $ssh_string "mkdir -p ~/it490"
             scp "$path" "scp://$ssh_string/~/it490/"
             path="/tmp/data_server.ini"
@@ -184,7 +184,7 @@ if [ "$type" == "all" ] || [ "$type" == "data" ]; then
             ssh_string="$QA_DATA_USER@$QA_DATA_HOST"
             echo "Generating inis for QA_DATA_HOST ($ssh_string)"
             path="/tmp/cluster_server.ini"
-            sed -e "s/hostname/$DEPLOY_HOST/" -e "s/target/dev/g" -e "s/type/data/g" deploy/template_server.ini > $path
+            sed -e "s/hostname/$DEPLOY_HOST/" -e "s/target/qa/g" -e "s/type/data/g" deploy/template_cluster_server.ini > $path
             ssh $ssh_string "mkdir -p ~/it490"
             scp "$path" "scp://$ssh_string/~/it490/"
             path="/tmp/data_server.ini"
@@ -199,7 +199,7 @@ if [ "$type" == "all" ] || [ "$type" == "data" ]; then
             ssh_string="$PROD_DATA_USER@$PROD_DATA_HOST"
             echo "Generating inis for PROD_DATA_HOST ($ssh_string)"
             path="/tmp/cluster_server.ini"
-            sed -e "s/hostname/$DEPLOY_HOST/" -e "s/target/dev/g" -e "s/type/data/g" deploy/template_server.ini > $path
+            sed -e "s/hostname/$DEPLOY_HOST/" -e "s/target/prod/g" -e "s/type/data/g" deploy/template_cluster_server.ini > $path
             ssh $ssh_string "mkdir -p ~/it490"
             scp "$path" "scp://$ssh_string/~/it490/"
             path="/tmp/data_server.ini"

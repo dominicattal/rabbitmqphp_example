@@ -19,9 +19,9 @@ qa_web_files="$web_files"
 qa_db_files="$db_files"
 qa_data_files="$data_files"
 
-data_web_files="$web_files"
-data_db_files="$db_files"
-data_data_files="$data_files"
+prod_web_files="$web_files"
+prod_db_files="$db_files"
+prod_data_files="$data_files"
 # ---------------------------------------
 
 if [ $# -eq 0 ]; then

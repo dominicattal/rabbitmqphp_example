@@ -65,7 +65,10 @@ if ($function == "push") {
     $request['target'] = $target;
     $request['archive_path'] = $remote_path;
     $response = $client->send_request($request);
-    echo "created $response[bundle_name] v$response[version]\n";
+    if (isset($repsonse["status"]) && $response["status"] == "success")
+        echo "created $response[bundle_name] v$response[version]\n";
+    else
+        var_dump($response);
 
 } else if ($function == "rollback") {
     echo "Rolling back\n";
