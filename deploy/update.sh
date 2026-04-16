@@ -8,7 +8,7 @@ deploy_files="deploy/ssh_copy.sh deploy/apt_deploy.sh deploy/broker_deploy.sh de
 cluster_files="deploy/handler.php ./rabbitMQLib.inc"
 
 web_files="$cluster_files deploy/apt_web.sh deploy/systemd.sh deploy/config/apache.conf .api.ini"
-db_files="$cluster_files deploy/apt_db.sh deploy/broker_cluster.sh deploy/systemd.sh scripts/db_deployment.sh schema_deployment.sql"
+db_files="$cluster_files deploy/apt_db.sh deploy/broker_cluster.sh deploy/systemd.sh scripts/db_deployment.sh scripts/db.sh schema.sql"
 data_files="$cluster_files deploy/apt_data.sh deploy/systemd.sh .api.ini"
 
 dev_web_files="$web_files"
@@ -87,7 +87,7 @@ if [ "$target" == "all" ] || [ "$target" == "deploy" ]; then
         for file in $deploy_files; do
             if [ -f "$file" ]; then
                 ssh $ssh_string "mkdir -p ~/it490"
-                scp "$file" "scp://$ssh_string/~/it490/"
+                scp -O "$file" "scp://$ssh_string/~/it490/"
             else
                 echo "$file does not exist, skipping"
             fi
@@ -104,7 +104,7 @@ if [ "$type" == "all" ] || [ "$type" == "web" ]; then
             for file in $dev_web_files; do
                 if [ -f "$file" ]; then
                     ssh $ssh_string "mkdir -p ~/it490"
-                    scp "$file" "scp://$ssh_string/~/it490/"
+                    scp -O "$file" "scp://$ssh_string/~/it490/"
                 else
                     echo "$file does not exist, skipping"
                 fi
@@ -120,7 +120,7 @@ if [ "$type" == "all" ] || [ "$type" == "web" ]; then
             for file in $qa_web_files; do
                 if [ -f "$file" ]; then
                     ssh $ssh_string "mkdir -p ~/it490"
-                    scp "$file" "scp://$ssh_string/~/it490/"
+                    scp -O "$file" "scp://$ssh_string/~/it490/"
                 else
                     echo "$file does not exist, skipping"
                 fi
@@ -136,7 +136,7 @@ if [ "$type" == "all" ] || [ "$type" == "web" ]; then
             for file in $prod_web_files; do
                 if [ -f "$file" ]; then
                     ssh $ssh_string "mkdir -p ~/it490"
-                    scp "$file" "scp://$ssh_string/~/it490/"
+                    scp -O "$file" "scp://$ssh_string/~/it490/"
                 else
                     echo "$file does not exist, skipping"
                 fi
@@ -154,7 +154,7 @@ if [ "$type" == "all" ] || [ "$type" == "db" ]; then
             for file in $dev_db_files; do
                 if [ -f "$file" ]; then
                     ssh $ssh_string "mkdir -p ~/it490"
-                    scp "$file" "scp://$ssh_string/~/it490/"
+                    scp -O "$file" "scp://$ssh_string/~/it490/"
                 else
                     echo "$file does not exist, skipping"
                 fi
@@ -170,7 +170,7 @@ if [ "$type" == "all" ] || [ "$type" == "db" ]; then
             for file in $qa_db_files; do
                 if [ -f "$file" ]; then
                     ssh $ssh_string "mkdir -p ~/it490"
-                    scp "$file" "scp://$ssh_string/~/it490/"
+                    scp -O "$file" "scp://$ssh_string/~/it490/"
                 else
                     echo "$file does not exist, skipping"
                 fi
@@ -186,7 +186,7 @@ if [ "$type" == "all" ] || [ "$type" == "db" ]; then
             for file in $prod_db_files; do
                 if [ -f "$file" ]; then
                     ssh $ssh_string "mkdir -p ~/it490"
-                    scp "$file" "scp://$ssh_string/~/it490/"
+                    scp -O "$file" "scp://$ssh_string/~/it490/"
                 else
                     echo "$file does not exist, skipping"
                 fi
@@ -204,7 +204,7 @@ if [ "$type" == "all" ] || [ "$type" == "data" ]; then
             for file in $dev_data_files; do
                 if [ -f "$file" ]; then
                     ssh $ssh_string "mkdir -p ~/it490"
-                    scp "$file" "scp://$ssh_string/~/it490/"
+                    scp -O "$file" "scp://$ssh_string/~/it490/"
                 else
                     echo "$file does not exist, skipping"
                 fi
@@ -220,7 +220,7 @@ if [ "$type" == "all" ] || [ "$type" == "data" ]; then
             for file in $qa_data_files; do
                 if [ -f "$file" ]; then
                     ssh $ssh_string "mkdir -p ~/it490"
-                    scp "$file" "scp://$ssh_string/~/it490/"
+                    scp -O "$file" "scp://$ssh_string/~/it490/"
                 else
                     echo "$file does not exist, skipping"
                 fi
@@ -236,7 +236,7 @@ if [ "$type" == "all" ] || [ "$type" == "data" ]; then
             for file in $prod_data_files; do
                 if [ -f "$file" ]; then
                     ssh $ssh_string "mkdir -p ~/it490"
-                    scp "$file" "scp://$ssh_string/~/it490/"
+                    scp -O "$file" "scp://$ssh_string/~/it490/"
                 else
                     echo "$file does not exist, skipping"
                 fi

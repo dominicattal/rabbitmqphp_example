@@ -5,7 +5,7 @@
 </script>
 <?php
 require_once('../rabbitMQLib.inc');
-$client=new rabbitMQClient("../web_client.ini", "db_web_queue","db");
+$client=new rabbitMQClient("../web_client.ini", "db_listen_queue","db");
 $request=array();
 $request['type']='higherlower';
 $request['count']=6;

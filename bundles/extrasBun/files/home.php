@@ -1,6 +1,6 @@
 <?php
 require_once('../rabbitMQLib.inc');
-$client = new rabbitMQClient("web_client.ini", "db_web_queue", "db_web");
+$client = new rabbitMQClient("web_client.ini", "db_listen_queue", "db_listen");
 $request = array();
 $request['type'] = "popular";
 $response = $client->send_request($request);

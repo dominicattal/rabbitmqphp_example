@@ -13,7 +13,7 @@ if(!sessionStorage.getItem("username"))
 require_once('../rabbitMQLib.inc');
 $search = $_GET['search'] ?? null;
 $movies = [];
-$client = new rabbitMQClient("web_client.ini", "db_web_queue", "db_web");
+$client = new rabbitMQClient("web_client.ini", "db_listen_queue", "db_listen");
 $request = array();
 $request['type'] = "search";
 $request['query'] = $search;

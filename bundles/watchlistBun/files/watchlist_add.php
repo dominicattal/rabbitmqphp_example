@@ -5,7 +5,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $movieId = $_POST['movie_id'];
     $movieName = $_POST['movie_name'];
 
-    $client = new rabbitMQClient("web_client.ini", "db_web_queue", "db_web");
+    $client = new rabbitMQClient("web_client.ini", "db_listen_queue", "db_listen");
     $request = [
         'type' => "add_watchlist",
         'username' => $_POST["username"],

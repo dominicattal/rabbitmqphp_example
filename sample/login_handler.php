@@ -13,7 +13,7 @@ $password = htmlspecialchars($_POST["password"]);
 
 require_once('../rabbitMQLib.inc');
 
-$client = new rabbitMQClient("../web_client.ini", "db_web_queue", "db_web");
+$client = new rabbitMQClient("../web_client.ini", "db_listen_queue", "db_listen");
 
 //$encryptedPassword = password_hash($password,PASSWORD_DEFAULT);
 
