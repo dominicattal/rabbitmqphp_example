@@ -1,4 +1,4 @@
 #!/bin/bash
-mv /tmp/files/watchlist.php /tmp/files/watchlist_add.php /tmp/files/watchlist_handler.php /var/www/html/
+mv /tmp/files/{watchlist.php,watchlist_add.php,watchlist_handler.php,profile.php} /var/www/html/
 
 

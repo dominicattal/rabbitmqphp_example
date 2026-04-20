@@ -1,3 +1,3 @@
 #!/bin/bash
 
-mv /tmp/files/email.php /tmp/files/email_rec.php /var/www/sample/
+mv /tmp/files/{email.php,email_rec.php} /var/www/html/

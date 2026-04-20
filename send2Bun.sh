@@ -18,8 +18,8 @@ if [[ $filename = "navbar.php" || $filename = "search.php" || $filename = "valid
 	cp sample/{navbar.php,search.php,validation_handler.php,header.php} bundles/webBun/files
 	echo "webBun";
 fi
-if [[ $filename = "login.html" || $filename = "login_handler.php" || $filename = "all" ]]; then
-	cp sample/{login.html,login_handler.php} bundles/loginBun/files
+if [[ $filename = "login.html" || $filename = "login_handler.php" || $filename = "index.php" || $filename = "all" ]]; then
+	cp sample/{login.html,login_handler.php,index.php} bundles/loginBun/files
 	echo "loginBun";
 fi
 if [[ $filename = "registration.html" || $filename = "registration_handler.php" || $filename = "all" ]]; then
