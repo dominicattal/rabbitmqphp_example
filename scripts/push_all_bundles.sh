@@ -16,8 +16,7 @@ deploy/client.php push $target watchlistBun 1
 deploy/client.php push $target webBun 1
 deploy/client.php push $target registerBun 1
 deploy/client.php push $target emailBun 1
-deploy/client.php push $target extrasBun 1
-deploy/client.php push $target brokerBun 1
+deploy/client.php push $target extraBun 1
 deploy/client.php push $target recBun 1
 deploy/client.php push $target reviewBun 1
 deploy/client.php push $target dbBun 1

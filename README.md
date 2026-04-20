@@ -62,6 +62,8 @@ sudo systemctl restart ssh
     5. Run `sudo ln -snf ~/it490/html/ /var/www/html` to create symlink. Run this as sudo.
     6. Make sure that the html directory in it490 is not root.
     7. Make sure `/var/www/html` exists and looks like `html -> /home/it490/it490/html`.
+    8. Run `sudo a2ensite apache.conf`. This will enable our apache config. Verify it worked by looking in `/etc/apache2/sites-enabled/apache.conf`
+        - If it did not work (it should be the same as `deploy/config/apache.conf` in the main vm), then copy it like `sudo cp apache2.conf /etc/apache2/sites-enabled/apache.conf`. Then, run `sudo systemctl restart apache2`
 10. Setup db vm
     1. `cd it490`
     2. Run `apt_db.sh`
