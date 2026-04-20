@@ -112,14 +112,14 @@ if [ "$type" == "all" ] || [ "$type" == "db" ]; then
             path="/tmp/cluster_server.ini"
             sed -e "s/hostname/$DEPLOY_HOST/" -e "s/target/dev/g" -e "s/type/db/g" deploy/template_cluster_server.ini > $path
             ssh $ssh_string "mkdir -p ~/it490"
-            scp "$path" "scp://$ssh_string/~/it490/"
+            scp -O "$path" "scp://$ssh_string/~/it490/"
             path="/tmp/db_client.ini"
             sed -e "s/hostname/$DEV_DB_HOST/" deploy/template_db_client.ini > $path
-            scp "$path" "scp://$ssh_string/~/it490/"
+            scp -O "$path" "scp://$ssh_string/~/it490/"
             path="/tmp/db_server.ini"
             sed -e "s/hostname/$DEV_DB_HOST/" deploy/template_db_server.ini > $path
-            scp "$path" "scp://$ssh_string/~/it490/"
-            scp "db_mysql.ini" "scp://$ssh_string/~/it490/"
+            scp -O "$path" "scp://$ssh_string/~/it490/"
+            scp -O "db_mysql.ini" "scp://$ssh_string/~/it490/"
         fi
     fi
     if [ "$target" == "all" ] || [ "$target" == "qa" ]; then

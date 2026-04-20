@@ -91,7 +91,7 @@ if [ "$type" == "all" ] || [ "$type" == "web" ]; then
             fi
             echo "ufw enable" >> $path
             ssh $ssh_string "mkdir -p ~/it490"
-            scp "$path" "scp://$ssh_string/~/it490/"
+            scp -O "$path" "scp://$ssh_string/~/it490/"
         fi
     fi
     if [ "$target" == "all" ] || [ "$target" == "qa" ]; then
@@ -144,7 +144,7 @@ if [ "$type" == "all" ] || [ "$type" == "db" ]; then
             echo "ufw allow from ${DEPLOY_HOST} proto tcp to any port 5672 # DEPLOY_HOST" >> $path
             echo "ufw enable" >> $path
             ssh $ssh_string "mkdir -p ~/it490"
-            scp "$path" "scp://$ssh_string/~/it490/"
+            scp -O "$path" "scp://$ssh_string/~/it490/"
         fi
     fi
     if [ "$target" == "all" ] || [ "$target" == "qa" ]; then

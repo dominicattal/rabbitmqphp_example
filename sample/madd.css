@@ -1,7 +1,7 @@
 :root {
   --primary: #000000;
   --secondary: #FFFFFF;
-  --accent: #FF5E5B;
+  --accent: #000000;
   --shadow: 8px 8px 0px var(--primary);
 }
 

@@ -42,8 +42,8 @@ if [[ $filename = "details.php" || $filename = "get_reviews_handler.php" || $fil
 	cp sample/{details.php,get_reviews_handler.php,reviews.html,reviewsView.html,reviewsView_handler.php,reviews_handler.php} bundles/reviewBun/files
 	echo "reviewBun";
 fi
-if [[ $filename = "watchlist.php" || $filename = "watchlist_add.php" || $filename = "watchlist_handler.php" || $filename = "all" ]]; then
-	cp sample/{watchlist.php,watchlist_add.php,watchlist_handler.php} bundles/watchlistBun/files
+if [[ $filename = "watchlist.php" || $filename = "watchlist_add.php" || $filename = "watchlist_handler.php" || $filename = "profile.php" || $filename = "all" ]]; then
+	cp sample/{watchlist.php,watchlist_add.php,watchlist_handler.php,profile.php} bundles/watchlistBun/files
 	echo "watchlistBun";
 fi
 if [[ $filename = "recommmend.php" || $filename = "recommend_hander.php" || $filename = "all" ]]; then
