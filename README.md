@@ -53,11 +53,23 @@ sudo systemctl restart ssh
     3. On deploy vm, run `sudo broker_deploy.sh` to create rabbitmq stuff
         - if you want to delete the queues, you can do `sudo rabbitmqctl delete_vhost it490`
     4. Run `ssh_copy.sh all all` to create ssh key and copy them to other machines. Do NOT run it as sudo.
-    5. Run `sudo ./systemd.sh` to initalize the madd_deploy service.
-9. Setup {target} {type} vm
+    5. Run `sudo ./systemd.sh` to initalize the `madd_deploy` service.
+9. Setup web vm
     1. `cd it490`
-    2. There should be a script that looks like `apt_{type}.sh`. Run it.
-    3. Run `sudo ./systemd.sh` to initialize the madd services.
+    2. Run `apt_web.sh`
+    3. Run `sudo ./systemd.sh` to initialize the madd service.
+    4. Run `mkdir html`. Do NOT run as sudo.
+    5. Run `sudo ln -snf ~/it490/html/ /var/www/html` to create symlink. Run this as sudo.
+    6. Make sure that the html directory in it490 is not root.
+    7. Make sure `/var/www/html` exists and looks like `html -> /home/it490/it490/html`.
+10. Setup db vm
+    1. `cd it490`
+    2. Run `apt_db.sh`
+    3. Run `sudo ./systemd.sh` to initialize the madd service.
+11. Setup data vm
+    1. `cd it490`
+    2. Run `apt_data.sh`
+    3. Run `sudo ./systemd.sh` to initialize the madd service.
 
 ### Client
 

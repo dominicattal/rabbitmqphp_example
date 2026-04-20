@@ -8,7 +8,7 @@ deploy_files="deploy/ssh_copy.sh deploy/apt_deploy.sh deploy/broker_deploy.sh de
 cluster_files="deploy/handler.php ./rabbitMQLib.inc"
 
 web_files="$cluster_files deploy/apt_web.sh deploy/systemd.sh deploy/config/apache.conf .api.ini"
-db_files="$cluster_files deploy/apt_db.sh deploy/broker_cluster.sh deploy/systemd.sh scripts/db_deployment.sh scripts/db.sh schema.sql"
+db_files="$cluster_files deploy/apt_db.sh deploy/broker_cluster.sh deploy/systemd.sh scripts/db.sh schema.sql"
 data_files="$cluster_files deploy/apt_data.sh deploy/systemd.sh .api.ini"
 
 dev_web_files="$web_files"
@@ -78,7 +78,7 @@ else
     exit 1
 fi
 
-if [ "$target" == "all" ] || [ "$target" == "deploy" ]; then
+if ([ "$target" == "all" ] && [ "$type" == "all" ]) || [ "$target" == "deploy" ]; then
     if [ -z ${DEPLOY_USER} ] || [ -z ${DEPLOY_HOST} ]; then
         echo "Deploy host or user not in cluster.ini"
     else
