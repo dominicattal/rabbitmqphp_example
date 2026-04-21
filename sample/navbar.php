@@ -1,3 +1,41 @@
+<nav class="navbar navbar-default">
+  <div type="container-fluid">
+    <div type="navbar-header">
+      <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#Navbar">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="home.php">MADD FOR MOVIES</a>
+    </div>
+
+    <div class="collapse navbar-collapse" id="Navbar">
+      <ul class="nav navbar-nav">
+        <li class="active"><a href="home.php">HOME</li>
+        <li><a href="upcoming.php">UPCOMING</li>
+        <li><a href="higherlower.php">HIGHER/LOWER</li>
+        <li><a href="recommend.php">RECOMMENDED</li>
+      </ul>
+
+      <ul class="nav navbar-nav navbar-right">
+        <li class="dropdown">
+	  <a class="dropdown-toggle" data-toggle="dropdown" href="#">
+            <span class="glyphicon glyphicon-user"></span>PROFILE<span class="caret"></span>
+          </a>
+	  <ul class="dropdown-menu">
+            <li><a href="profile.php">MY ACCOUNT</a></li>
+            <li><a href="watchlist.php">WATCHLIST</a></li>
+            <li class="divider"></li>
+            <li><a href"login.html" onclick="sessionStorage.clear()">LOGOUT</a></li>
+          </ul>
+        </li>
+      </ul>
+    </div>
+  </div>
+</nav>  
+
+<!--
+OLD CODE
 <nav class="navbar">
    <div class="logo-container">
        <a href="home.php" class="logo">MADD FOR MOVIES</a>
