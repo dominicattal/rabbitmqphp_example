@@ -1,6 +1,6 @@
 #!/bin/bash
 
-if ping -c 1 127.0.0.1 > /dev/null 2>&1; then
+if ping -c 1 100.111.93.122 > /dev/null 2>&1; then
   echo "online!"
 else
    echo "offline!"
