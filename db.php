@@ -572,7 +572,7 @@ function updateReview($username, $message, $movieID,$rating)
 function reviewAll()
 {
     global $db_conn;
-    $query = "SELECT username,movie_id,score, review from reviews";
+    $query = "SELECT * from reviews";
     $result = $db_conn->query($query);
 
     if ($result->num_rows == 0)
@@ -584,7 +584,22 @@ function reviewAll()
         $reviewsArray = array();
         while ($row = $result->fetch_assoc()) 
         {
-            $reviewsArray[] = $row;
+            $query = "SELECT COUNT(*) count FROM review_reviews WHERE review_id='$row[id]' AND status=1";
+            $result = $db_conn->query($query);
+            $num_likes = 0;
+            if ($result->num_rows > 0) {
+                $temp_row = $result->fetch_assoc();
+                $num_likes = $temp_row['count'];
+            }
+            $query = "SELECT COUNT(*) count FROM review_reviews WHERE review_id='$row[id]' AND status=0";
+            $result = $db_conn->query($query);
+            $num_dislikes = 0;
+            if ($result->num_rows > 0) {
+                $temp_row = $result->fetch_assoc();
+                $num_dislikes = $temp_row['count'];
+            }
+            $res = array_merge($row, array("likes"=>$num_likes,"dislikes"=>$num_dislikes));
+            $reviewsArray[] = $res;
         }
         return $reviewsArray;
     }
@@ -593,6 +608,37 @@ function reviewAll()
         "message" => "Internal Error!"
     );
 }
+
+function reviewReview($username, $review_id, $status)
+{
+    global $db_conn;
+    $query = "SELECT * FROM review_reviews WHERE username='$username' AND review_id='$review_id'";
+    $result = $db_conn->query($query);
+    if ($result->num_rows == 0) {
+        $query = "INSERT INTO review_reviews (username, review_id, status) VALUES ('$username', $review_id, $status)";
+        $result = $db_conn->query($query);
+        if (!$result)
+            echo "failed\n";
+        var_dump( array("test"=>"0"));
+        return;
+    }
+    $row = $result->fetch_assoc();
+    echo "$status $row[status]\n";
+    if ($row['status'] == $status) {
+        $query = "DELETE FROM review_reviews WHERE username='$username' AND review_id='$review_id'"; 
+        $db_conn->query($query);
+        if (!$result)
+            echo "failed\n";
+        var_dump( array("test"=>"1"));
+    } else {
+        $query = "UPDATE review_reviews SET status=$status WHERE username='$username' AND review_id='$review_id'"; 
+        $db_conn->query($query);
+        if (!$result)
+            echo "failed\n";
+        var_dump( array("test"=>"2"));
+    }
+}
+
 function higherlower($count){
 	global $db_conn;
 	$now=time();
@@ -742,6 +788,8 @@ else
           return addToWatchlist($request["username"], $request["movie_id"], $request["movie_name"], $request["release_date"]);
         case "review_movie":
           return updateReview($request['username'],$request['message'],$request['movieID'],$request['rating']);
+        case "review_review":
+          return reviewReview($request['username'], $request['review_id'], $request['status']);
         case "reviewAll":
           return reviewAll();
         case "getAllReviewsOne":
