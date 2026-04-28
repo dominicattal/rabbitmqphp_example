@@ -12,6 +12,10 @@ if(!sessionStorage.getItem("username"))
 <?php
 require_once('../rabbitMQLib.inc');
 $search = $_GET['search'] ?? null;
+if(preg_match("/^@.*/",$search)) {
+ 	header("Location: searchProfile.php");
+	exit;
+}
 $movies = [];
 $client = new rabbitMQClient("web_client.ini", "db_listen_queue", "db_listen");
 $request = array();

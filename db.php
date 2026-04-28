@@ -647,6 +647,13 @@ function getSearch($request) {
    return array("results"=>$search);
 }
 
+function getSearchProfile($request) {
+   global $db_conn;
+   $query="SELECT * FROM users WHERE username='$username'";
+   $result=$db_conn->query($query);   
+   return $result;      
+}
+
 function requestProcessor($request)
 {
   global $db_conn;  
@@ -656,6 +663,7 @@ function requestProcessor($request)
   var_dump($request);
   if(!isset($request['type']))
     return "ERROR: unsupported message type";
+
 
 
 /*if($current_db == 1)
@@ -754,8 +762,9 @@ else
           return higherlower($request['count']);
         case "search":
           return getSearch($request);
-          
-         default:
+	case "searchProfile":
+	  return getSearchProfile($request);    
+        default:
           return "Error: Sent an invalid request type!";
       }
       return array("returnCode" => '0', 'message'=>"Server received request and processed");
