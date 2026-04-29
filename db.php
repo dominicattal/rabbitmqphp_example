@@ -649,9 +649,16 @@ function getSearch($request) {
 
 function getSearchProfile($request) {
    global $db_conn;
-   $query="SELECT * FROM users WHERE username='$username'";
-   $result=$db_conn->query($query);   
-   return $result;      
+   $query="SELECT * FROM users WHERE username LIKE '$request%'";
+   $result=$db_conn->query($query); 
+   $users=array();
+   while($row=$result->fetch_assoc()){
+	$user=array(
+	"username" => $row["username"]
+	);
+	array_push($users,$user);
+	}
+   return $profiles;
 }
 
 function requestProcessor($request)
