@@ -1,6 +1,6 @@
 #!/bin/bash
 
-apt install php rabbitmq-server php-amqp apache2 libapache2-mod-php php-mysql php-curl curl
+apt install php rabbitmq-server php-amqp apache2 libapache2-mod-php php-mysql php-curl curl openssl ssl-cert -y
 
 project_dir=$(pwd)
 mkdir -p "$project_dir/sample"
@@ -10,5 +10,9 @@ chmod +x /home/$SUDO_USER
 chmod -R 755 "$project_dir"
 cp "$project_dir/apache.conf" /etc/apache2/sites-available/apache.conf
 a2ensite apache.conf
+cp "$project_dir/ssl.conf" /etc/apache2/sites-available/ssl.conf
+a2enmod ssl
+a2ensite ssl.conf
 systemctl reload apache2
 systemctl status apache2
+
