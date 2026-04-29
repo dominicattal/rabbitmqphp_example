@@ -1,7 +1,7 @@
 #!/bin/php
 <?php
 require_once('rabbitMQLib.inc');
-
+//AJBFIJBASJKBAJSBGJASGB 
 //This is a flag to indicate which DB is currently in use - ME
 $current_db = 1;
 
@@ -152,6 +152,23 @@ function doValidate($username)
     $query = "SELECT expiresAt FROM validations WHERE username = '$username'";
     $result = $db_conn->query($query);
     $now = time();
+    
+    if($result->num_rows == 0)
+    {
+       echo("No session found! Making one!");
+       $key = bin2hex(random_bytes(10));
+        $expTime = $now + $timeToAdd;
+
+        $query = "INSERT INTO validations (username, sessionKey, createdAt, expiresAt)
+                   VALUES ('$username', '$key', $now, $expTime)";
+        $db_conn->query($query);
+
+        return array(
+            "status" => "success",
+            "key" => $key,
+            "message" => "User logged in!"
+        );
+    }
 	
     if ($result->num_rows > 0) 
     {
@@ -658,7 +675,7 @@ function requestProcessor($request)
     return "ERROR: unsupported message type";
 
 
-if($current_db == 1)
+/*if($current_db == 1)
 {
   echo "Using DB 1!\n";
   $output;
@@ -697,7 +714,7 @@ else
      $config = parse_ini_file('db_mysql2.ini');
      $db_conn = new mysqli($config["MYSQL_HOST"],$config["MYSQL_USER"],$config["MYSQL_PASS"],$config["MYSQL_DB"]);
    }
-}
+}*/
 
   
 
