@@ -2,16 +2,14 @@
 require_once('../rabbitMQLib.inc');
 $client = new rabbitMQClient("web_client.ini", "db_listen_queue", "db_listen");
 $searchProfile=$_GET['search'] ?? null;
-var_dump($searchProfile);
 $request=array();
 $profiles=[];
 $request['type']="searchProfile";
 $request['query']=$searchProfile;
 $response=$client->send_request($request);
 $profiles=$response['results'];
-var_dump($response);
 ?>
-<?php// include "header.php"; ?>
+<?php include "header.php"; ?>
 <body class="home-body">
 <?php include "navbar.php"; ?>
 <h1 style="font-size:50px; color:#F9870A;">Search Profiles</h1>
@@ -21,13 +19,26 @@ var_dump($response);
 		<button type="submit" >Find Profile</button>
 	</div>
 </form>
-<?php var_dump($profiles);
-var_dump($response);?>
+<!--To debug. checks whats in search <?php var_dump($profiles); var_dump($response);?> -->
+<div class="results" style="font-size:30px;">
+	<p style="font-size:50px; font-weight:bold; color:#F9870A;">
+
+		<?php if (empty($profiles)){ 
+			echo "No results";
+		}	 
+      		      else
+			echo "Results:";
+		?>
+	</p>
+</div>
 <?php foreach($profiles as $profile):?>
-	<div class="profileBox" style="padding:20px; display:block; font-size:30px; font-color:#000000;">
-	<p> <?php echo htmlspecialchars($profile["username"]);?> </p>
+	<div class="profileBox" style="padding:20px; display:block;">
+		<a href="profile.php">
+		<p style="font-size:30px; font-weight:bold; color:#F9870A;">
+			<?php echo htmlspecialchars($profile['username']);?>
+		</p>
+		</a>
 	</div>
-<?php endforeach; ?>
-	     
+<?php endforeach; ?>	     
 </div>
 </body>
