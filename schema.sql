@@ -23,6 +23,13 @@ CREATE TABLE IF NOT EXISTS reviews (
     review VARCHAR(255) NOT NULL
 );
 
+CREATE TABLE IF NOT EXISTS review_reviews (
+    review_id INT NOT NULL,
+    username VARCHAR(255) NOT NULL,
+    status INT NOT NULL,
+    PRIMARY KEY (review_id, username)
+);
+
 INSERT INTO users (username, email, password) VALUES ('test_recommend', 'it490madd@gmail.com', 'test');
 INSERT INTO reviews (username, movie_id, score, review) VALUES ('test_recommend', '1266798', 8, 'This movie freaking rules');
 
