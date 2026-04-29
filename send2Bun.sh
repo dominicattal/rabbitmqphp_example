@@ -26,8 +26,8 @@ if [[ $filename = "registration.html" || $filename = "registration_handler.php" 
 	cp sample/{registration.html,registration_handler.php} bundles/registerBun/files
 	echo "registerBun";
 fi
-if [[ $filename = "home.php" || $filename = "higherlower.php" || $filename = "upcoming.php" || $filename = "all" ]]; then
-	cp sample/{home.php,higherlower.php,upcoming.php} bundles/extrasBun/files
+if [[ $filename = "home.php" || $filename = "higherlower.php" || $filename = "searchProfile.php" || $filename = "upcoming.php" || $filename = "all" ]]; then
+	cp sample/{home.php,higherlower.php,upcoming.php,searchProfile.php} bundles/extrasBun/files
 	echo "extrasBun";
 fi
 if [[ $filename = "email.php" || $filename = "email_rec.php" || $filename = "all" ]]; then
