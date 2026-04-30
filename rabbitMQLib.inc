@@ -175,17 +175,17 @@ class rabbitMQClient
   	  		$output = shell_exec("/var/www/madd/pingDB1.sh");
   	  		$output = trim($output);
   	  		
-  	  		error_log("\nOutput is: ".$output,3,"/var/www/madd/logs/error.log");
+  	  		//error_log("\nOutput is: ".$output,3,"/var/www/madd/logs/error.log");
 			
 			 if($output == "online!")
 		  	 {		
-		     	     error_log("\nUsing DB1"." ".date("Y-m-d H:i:s")."\n",3,"/var/www/madd/logs/error.log");
+		     	     //error_log("\nUsing DB1"." ".date("Y-m-d H:i:s")."\n",3,"/var/www/madd/logs/error.log");
 		     	     $params['host'] = $this->HOST;
 		  	 }
 		  	 else //if (isset($this->machine["MQ_HOST2"]))
 		  	 {
 		  	     //Use DB 2
-		  	      error_log("\nUsing DB2"."\n".date("Y-m-d H:i:s")."\n",3,"/var/www/madd/logs/error.log");
+		  	      //error_log("\nUsing DB2"."\n".date("Y-m-d H:i:s")."\n",3,"/var/www/madd/logs/error.log");
 		  	      $params['host'] = $this->HOST_BACKUP;
 		  	 }
 		  	 /*else
