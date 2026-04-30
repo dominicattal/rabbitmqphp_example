@@ -11,6 +11,70 @@ $db_conn = new mysqli($config["MYSQL_HOST"],$config["MYSQL_USER"],$config["MYSQL
 
 define("API_CACHE_DURATION", 60*60*24);
 
+function getAchievements($username)
+{
+    global $db_conn;
+    $response = array();
+    $query = "SELECT * FROM achievements";
+    $result = $db_conn->query($query);
+    while ($row = $result->fetch_assoc()) { 
+        $response["$row[name]"] = array(
+            "hr_name" => $row["hr_name"],
+            "unlocked" => false
+        );
+    }
+
+    $query = "SELECT * FROM user_achievements WHERE username='$username'";
+    $result = $db_conn->query($query);
+    while ($row = $result->fetch_assoc()) { 
+        $response[$row["achievement_name"]]["unlocked"] = true;
+    }
+
+    return $response;
+}
+
+function updateAchievements($username)
+{
+    global $db_conn;
+    $query = "SELECT COUNT(*) count FROM reviews WHERE username='$username'";
+    $result = $db_conn->query($query);
+    if ($result->num_rows >= 1) {
+        $query = "SELECT * FROM user_achievements WHERE username='$username' AND achievement_name ='review_1'";
+        $result2 = $db_conn->query($query);
+        if ($result2->num_rows == 0) {
+            $query = "INSERT INTO user_achievements (achievement_name, username) VALUES ('review_1', '$username')";
+            $db_conn->query($query);
+        }
+    }
+    if ($result->num_rows >= 2) {
+        $query = "SELECT * FROM user_achievements WHERE username='$username' AND achievement_name='review_2'";
+        $result3 = $db_conn->query($query);
+        if ($result3->num_rows == 0) {
+            $query = "INSERT INTO user_achievements (achievement_name, username) VALUES ('review_2', '$username')";
+            $db_conn->query($query);
+        }
+    }
+    if ($result->num_rows >= 3) {
+        $query = "SELECT * FROM user_achievements WHERE username='$username' AND achievement_name='review_3'";
+        $result4 = $db_conn->query($query);
+        if ($result4->num_rows == 0) {
+            $query = "INSERT INTO user_achievements (achievement_name, username) VALUES ('review_3', '$username')";
+            $db_conn->query($query);
+        }
+    }
+
+    $query = "SELECT * FROM review_reviews WHERE username='$username'";
+    $result = $db_conn->query($query);
+    if ($result->num_rows > 0) {
+        $query = "SELECT * FROM user_achievements WHERE username='$username' AND achievement_name='review_review'";
+        $result4 = $db_conn->query($query);
+        if ($result4->num_rows == 0) {
+            $query = "INSERT INTO user_achievements (achievement_name, username) VALUES ('review_review', '$username')";
+            $db_conn->query($query);
+        }
+    }
+}
+
 function doLogin($username)
 {
   global $db_conn;
@@ -270,6 +334,11 @@ function getMovieFromCache($movieId)
 function cacheMovie($movie)
 {
     global $db_conn;
+
+    if ($movie['success']) {
+        echo "Movie not right format\n";
+        return array("id" => -1);
+    }
 
     $id = $movie["id"];
     $title = $movie['title'];
@@ -697,11 +766,11 @@ function requestProcessor($request)
 {
   global $db_conn;  
   global $current_db;
-   
+
   echo "received request".PHP_EOL;
   var_dump($request);
   if(!isset($request['type']))
-    return "ERROR: unsupported message type";
+    return array("status"=>"failed","message"=>"ERROR: unsupported message type");
 
 
 /*if($current_db == 1)
@@ -761,52 +830,74 @@ else
    }
 }*/
 
-  
+  $response = array("status"=>"failed","message"=>"ERROR: unsupported message type");
 
   try {
       switch ($request['type'])
       {
         case "login":
-          return doLogin($request['username']);
+          $response = doLogin($request['username']);
+          break;
         case "register":
-          return doRegister($request['username'],$request['email'],$request['password']);
+          $response = doRegister($request['username'],$request['email'],$request['password']);
+          break;
         case "get_email":
-          return getEmail($request['username']);
+          $response = getEmail($request['username']);
+          break;
         case "validate_session":
-          return doValidate($request['username']);
+          $response = doValidate($request['username']);
+          break;
         case "movie":
-          return getMovie($request['id']);
+          $response = getMovie($request['id']);
+          break;
         case "popular":
-          return getPopularMovies();
+          $response = getPopularMovies();
+          break;
         case "recommend":
-          return getRecommendations($request["username"]);
+          $response = getRecommendations($request["username"]);
+          break;
         case "watchlist":
-          return getWatchlist($request["username"]);
+          $response = getWatchlist($request["username"]);
+          break;
         case "upcoming":
-          return getUpcoming();
+          $response = getUpcoming();
+          break;
         case "add_watchlist":
-          return addToWatchlist($request["username"], $request["movie_id"], $request["movie_name"], $request["release_date"]);
+          $response = addToWatchlist($request["username"], $request["movie_id"], $request["movie_name"], $request["release_date"]);
+          break;
         case "review_movie":
-          return updateReview($request['username'],$request['message'],$request['movieID'],$request['rating']);
+          $response = updateReview($request['username'],$request['message'],$request['movieID'],$request['rating']);
+          break;
         case "review_review":
-          return reviewReview($request['username'], $request['review_id'], $request['status']);
+          $response = reviewReview($request['username'], $request['review_id'], $request['status']);
+          break;
         case "reviewAll":
-          return reviewAll();
+          $response = reviewAll();
+          break;
         case "getAllReviewsOne":
-          return getAllReviewsOne($request['username'],$request['movieID']);
+          $response = getAllReviewsOne($request['username'],$request['movieID']);
+          break;
         case "get_all_reviews_for_user":
-          return getAllReviewsForUser($request['username']);
+          $response = getAllReviewsForUser($request['username']);
+          break;
         case "createReview":
-          return createReview($request['username'],$request['message'],$request['movieID'],$request['rating']);
+          $response = createReview($request['username'],$request['message'],$request['movieID'],$request['rating']);
+          break;
         case "higherlower":
-          return higherlower($request['count']);
+          $response = higherlower($request['count']);
+          break;
         case "search":
-          return getSearch($request);
-          
-         default:
-          return "Error: Sent an invalid request type!";
+          $response = getSearch($request);
+          break;
+        case "achievement":
+          $response = getAchievements($request['username']);  
+          break;
       }
-      return array("returnCode" => '0', 'message'=>"Server received request and processed");
+
+      if (isset($request['username']))
+          updateAchievements($request['username']);
+
+      return $response;
   } catch (Exception $e) {
       echo "PHP ERROR: " . $e->getMessage() . "\n";
       $i = 1;

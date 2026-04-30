@@ -20,6 +20,7 @@
           <div class="dropdown-content">
               <a href="profile.php">MY ACCOUNT</a>
               <a href="watchlist.php">WATCHLIST</a>
+              <a href="achievements.php">ACHIEVEMENTS</a>
               <hr class="dropdown-divider">
               <a href="login.html" class="logout-link" onclick="sessionStorage.clear()">LOGOUT</a>
           </div>
