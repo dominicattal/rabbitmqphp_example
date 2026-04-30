@@ -23,6 +23,13 @@ CREATE TABLE IF NOT EXISTS reviews (
     review VARCHAR(255) NOT NULL
 );
 
+CREATE TABLE IF NOT EXISTS review_reviews (
+    review_id INT NOT NULL,
+    username VARCHAR(255) NOT NULL,
+    status INT NOT NULL,
+    PRIMARY KEY (review_id, username)
+);
+
 INSERT INTO users (username, email, password) VALUES ('test_recommend', 'it490madd@gmail.com', 'test');
 INSERT INTO reviews (username, movie_id, score, review) VALUES ('test_recommend', '1266798', 8, 'This movie freaking rules');
 
@@ -55,3 +62,19 @@ CREATE TABLE IF NOT EXISTS genres (
     name VARCHAR(255) NOT NULL,
     createdAt BIGINT NOT NULL
 );
+
+CREATE TABLE IF NOT EXISTS achievements (
+    name VARCHAR(255) NOT NULL,
+    hr_name VARCHAR(255) NOT NULL
+);
+
+CREATE TABLE IF NOT EXISTS user_achievements (
+    achievement_name VARCHAR(255),
+    username VARCHAR(255),
+    PRIMARY KEY (achievement_name, username)
+);
+
+INSERT INTO achievements (name, hr_name) VALUES ('review_1', 'Review One Movie');
+INSERT INTO achievements (name, hr_name) VALUES ('review_2', 'Review Two Movies');
+INSERT INTO achievements (name, hr_name) VALUES ('review_3', 'Review Three Movies');
+INSERT INTO achievements (name, hr_name) VALUES ('review_review', 'Review a Review');

@@ -122,7 +122,7 @@ Run `deploy/client.php mark [bundle_name] [good/bad/new]` to set the status of a
 
 ### Bundles
 
-These files will be bundled together
+These files will be bundled together. When you make a change in the sample folder, run `send2Bun.sh [filename/all]` to add the file into the bundles automatically.
 ```
 dataBun
 |- data.php
@@ -137,15 +137,14 @@ brokerBun
 |- broker_clean.sh
 |- broker_purge.sh
 webBun
-|- web.php
-|- sample
-   |-navbar.php
-   |-search.php
-   |-validation_handler.php
-   |-header.php
+|-navbar.php
+|-search.php
+|-validation_handler.php
+|-header.php
 loginBun
 |- login.html
 |- login_handler.php
+|- index.php
 registerBun
 |- registration.html
 |- registration_handler.php
@@ -170,7 +169,10 @@ watchlistBun
 |- watchlist.php
 |- watchlist_add.php
 |- watchlist_handler.php
-
+|- profile.php
+recBun
+|- recommend.php
+|- recommend_handler.php
 ```
 ### Running locally
 

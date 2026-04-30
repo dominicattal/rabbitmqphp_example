@@ -20,7 +20,7 @@ function addMovies(movies)
         movie_grid.appendChild(p_tag);
         return;
     }
-    for (movie of movies) {
+    for (const [name, movie] of Object.entries(movies)) {
         let movie_link = document.createElement("a");
         movie_link.setAttribute("href", `details.php?id=${movie.id}`);
         movie_link.classList.add("movie-link");

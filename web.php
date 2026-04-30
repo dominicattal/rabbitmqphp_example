@@ -2,7 +2,7 @@
 <?php
 require_once('rabbitMQLib.inc');
 
-$client = new rabbitMQClient("web_client.ini", "db_web_queue", "db_web");
+$client = new rabbitMQClient("web_client.ini", "db_listen_queue", "db_listen");
 
 $request = array();
 
@@ -34,6 +34,9 @@ $request = array();
 
 //$request['type'] = "search";
 //$request['query'] = "Shelter";
+
+$request['type'] = "achievement";
+$request['username'] = "asdf";
 
 $response = $client->send_request($request);
 //$response = $client->publish($request);
