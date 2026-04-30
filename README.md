@@ -188,7 +188,7 @@ Scripts are in the `scripts` directory. Deployment scripts are in `deploy` direc
 `scripts/db_clean.sh`       -> run commands for cleaning up all the stuff in rcdb.sh \
 `scripts/db_purge.sh`       -> run commands for purging the cached api calls \
 `deploy/apt_deploy.sh`      -> packages to install on deploy vm \
-`deploy/apt_web.sh`         -> packages to install on web vm, copies project files to sample folder, copies conf to etc/apache2/sites-available, sets permissions, and enables apache \
+`deploy/apt_web.sh`         -> packages to install on web vm, copies configuration files to etc/apache2/sites-available, sets permissions, and enables apache and ssl \
 `deploy/apt_db.sh`          -> packages to install on db vm \
 `deploy/apt_data.sh`        -> packages to install on data vm \
 `deploy/broker_deploy.sh`   -> creates rabbitmq server on deploy vm \
@@ -201,6 +201,7 @@ Scripts are in the `scripts` directory. Deployment scripts are in `deploy` direc
 `deploy/genufw.sh`          -> automatically generates all of the ufw scripts for configuring firewall \
 `deploy/systemd.sh`         -> adds user, sets permissions, copies .service files to etc/systemd/system, restarts and enables systemd files \
 `send2Bun.sh`               -> add filename you want to send to deploy as the command line argument, and the respective bundle should be echoed so you can push it.
+'deploy/ssl.sh'             -> packages to install on web vm, generates certificates, sets permissions, allows port 443 \
 
 execute these like `sudo scripts/broker.sh`
 
