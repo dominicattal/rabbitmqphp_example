@@ -73,6 +73,17 @@ function updateAchievements($username)
             $db_conn->query($query);
         }
     }
+
+    $query = "SELECT COUNT(*) count FROM watchlist WHERE username='$username'";
+    $result = $db_conn->query($query);
+    if ($result->num_rows > 0) {
+        $query = "SELECT * FROM user_achievements WHERE username='$username' AND achievement_name='watchlist_1'";
+        $result4 = $db_conn->query($query);
+        if ($result4->num_rows == 0) {
+            $query = "INSERT INTO user_achievements (achievement_name, username) VALUES ('watchlist_1', '$username')";
+            $db_conn->query($query);
+        }
+    }
 }
 
 function doLogin($username)

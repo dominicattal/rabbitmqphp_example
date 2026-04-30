@@ -77,4 +77,5 @@ CREATE TABLE IF NOT EXISTS user_achievements (
 INSERT INTO achievements (name, hr_name) VALUES ('review_1', 'Review One Movie');
 INSERT INTO achievements (name, hr_name) VALUES ('review_2', 'Review Two Movies');
 INSERT INTO achievements (name, hr_name) VALUES ('review_3', 'Review Three Movies');
+INSERT INTO achievements (name, hr_name) VALUES ('watchlist_1', 'Add a Movie to Watchlist');
 INSERT INTO achievements (name, hr_name) VALUES ('review_review', 'Review a Review');
