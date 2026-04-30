@@ -3,8 +3,8 @@
    <?php include "navbar.php"; ?>
    <main class="content-wrapper">
       <div class="profile-header" style="text-align: center; margin-bottom: 40px;">
-	 <h1 class="section-title">USER PROFILE</h1>
-	 <div class="movie-card" style="display: inline-block; padding: 20px; min-width: 300px;">
+		 <h1 class="section-title">USER PROFILE</h1>
+		 <div class="movie-card" style="display: inline-block; padding: 20px; min-width: 300px;">
             <h2 id="profile-name" style="color: var(--accent);"></h2>
             <p id="profile-email" style="margin-top: 10px; font-weight: bold;"></p>
          </div> 
@@ -24,8 +24,15 @@ const username = sessionStorage.getItem("username");
 const email = sessionStorage.getItem("email");
 
 if (username) {
-   document.getElementById("profile-name").textContent = `@${username}`;
-   document.getElementById("profile-email").textContent = email;
+	<?php 
+	if (isset($_GET['username']) && isset($_GET['email'])) {
+		echo "document.getElementById('profile-name').textContent = '$_GET[username]'\n;";
+		echo "document.getElementById('profile-email').textContent = '$_GET[email]'\n;";
+	} else {
+		echo "document.getElementById('profile-name').textContent = `@\${username}`\n;";
+		echo "document.getElementById('profile-email').textContent = email\n;";
+	}
+	?>
 }
 else {
    window.location.href="login.html";
@@ -53,7 +60,7 @@ function addReviews(reviews) {
    });
 }
 
-function getReviews() {
+function getReviews(explicit_username) {
    var request = new XMLHttpRequest();
    request.open("POST","get_reviews_handler.php", true);
    request.setRequestHeader("Content-Type","application/x-www-form-urlencoded");
@@ -62,8 +69,9 @@ function getReviews() {
               addReviews(JSON.parse(this.responseText));   
        }
    }
-   request.send(`username=${username}`);
+   request.send(`username=${explicit_username}`);
 }
+
 getReviews();
 
 function addAchievements(achievements)
@@ -82,7 +90,7 @@ function addAchievements(achievements)
         achievement_grid.appendChild(achievement_card);
     }
 }
-function getAchievements() 
+function getAchievements(explicit_username) 
 {
 	var request = new XMLHttpRequest();
     let username = sessionStorage.getItem("username");
@@ -95,8 +103,16 @@ function getAchievements()
             addAchievements(JSON.parse(this.responseText));
 		}		
 	}
-	request.send(`username=${username}`);
+	request.send(`username=${explicit_username}`);
 }
 
-getAchievements();
+<?php 
+if (isset($_GET['username'])) {
+	echo "getReviews('$_GET[username]');\n";
+	echo "getAchievements('$_GET[username]');\n";
+} else {
+	echo "getReviews(username);\n";
+	echo "getAchievements(username);\n";
+}
+?>
 </script>
