@@ -701,7 +701,8 @@ function getSearchProfile($request) {
    $users=array();
    while($row=$result->fetch_assoc()){
 	$user=array(
-	"username" => $row["username"]
+	"username" => $row["username"],
+	"email" => $row["email"]
 	);
 	array_push($users,$user);
 	}

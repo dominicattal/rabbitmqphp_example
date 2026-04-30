@@ -33,7 +33,7 @@ $profiles=$response['results'];
 </div>
 <?php foreach($profiles as $profile):?>
 	<div class="profileBox" style="padding:20px; display:block;">
-		<a href="profile.php">
+		<a href="profile.php?username=<?php echo $profile['username'];?>&email=<?php echo $profile['email'];?>">
 		<p style="font-size:30px; font-weight:bold; color:#F9870A;">
 			<?php echo htmlspecialchars($profile['username']);?>
 		</p>
