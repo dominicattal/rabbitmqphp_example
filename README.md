@@ -350,13 +350,13 @@ Navigate to
    
    sudo mysql create new user for replication - Creates a user for DB replication
    	EX:  CREATE USER 'rep_user'@'rep_server_ip' IDENTIFIED WITH mysql_native_password BY 'password';
-   
+   ```
    grant replication slave on *.* to 'rep_user'@'rep_server_ip'	- Grants slave status to that user
    grant replication *.* to rep_user@rep_server_ip;		-Grants replication to user@ip - make one for DB2
    FLUSH PRIVILEGES;
    flush tables with read lock;			- Prevents tables from being read/written to
    SHOW MASTER STATUS;				-Shows Binlog ID: REQUIRES TABLE LOCK TO PREVENT IT CHANGING!
-   
+   ```
    Write down the position and file name
 	EX: binlog000033 499 
    
@@ -367,24 +367,25 @@ Navigate to
 Configure DB 2
   Navigate  to /etc/mysql/mysql.conf.d/
    Edit:
+   ```
      Server-id -> 2
      log_bin -> /var/log/mysql/mysql-bin.log
      binlog_do_db -> same DB name as above
      relay-log -> /var/log/mysql/mysql-relay-bin.log
+   ```
    
    save file then restart mysql
    
    use mysql
    use the db
-   
-   
+   ```
    CHANGE REPLICATION SOURCE TO
 	MASTER_HOST ='source server ip',
 	MASTER_USER = 'replica_user from above',
 	MASTER_PASSWORD ='password for that user',
 	MASTER_LOG_FILE = 'mysql-bin file you wrote down earlier',
 	MASTER_LOG_POS = Position number written down ealier;
-
+```
    start the replica
    START REPLICA;
    
