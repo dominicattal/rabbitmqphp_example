@@ -13,6 +13,8 @@ class rabbitMQServer
     public $listen_queue;
 	public $routing_key;
     public $callback;
+    
+    
 
 	function __construct($ini)
 	{
@@ -123,6 +125,8 @@ class rabbitMQClient
     public $send_queue;
     public $response;
     public $correlation_id;
+    public $HOST_BACKUP;
+    
 
 	function __construct($ini, $send_queue_name, $send_routing_key)
 	{
@@ -138,6 +142,11 @@ class rabbitMQClient
 		$this->reply_queue_name     = $this->machine["MQ_REPLY_QUEUE_NAME"];
 		$this->send_queue_name      = $send_queue_name;
 		$this->send_routing_key     = $send_routing_key;
+		
+		if (isset($this->machine["MQ_HOST_BACKUP"]))
+		{
+		    $this->HOST_BACKUP = $this->machine["MQ_HOST_BACKUP"];
+		}
 	}
 
 	function process_response(AMQPEnvelope $response)
@@ -156,13 +165,35 @@ class rabbitMQClient
 	function send_request($message)
 	{
 		$this->correlation_id = uniqid();
-        $message["reply_queue_name"] = $this->reply_queue_name;
-        $message["reply_routing_key"] = $this->reply_routing_key;
+        	$message["reply_queue_name"] = $this->reply_queue_name;
+        	$message["reply_routing_key"] = $this->reply_routing_key;
 		$json_message = json_encode($message);
 		try
 		{
 			$params = array();
-			$params['host'] = $this->HOST;
+		       
+  	  		$output = shell_exec("/var/www/madd/pingDB1.sh");
+  	  		$output = trim($output);
+  	  		
+  	  		//error_log("\nOutput is: ".$output,3,"/var/www/madd/logs/error.log");
+			
+			 if($output == "online!")
+		  	 {		
+		     	     //error_log("\nUsing DB1"." ".date("Y-m-d H:i:s")."\n",3,"/var/www/madd/logs/error.log");
+		     	     $params['host'] = $this->HOST;
+		  	 }
+		  	 else //if (isset($this->machine["MQ_HOST2"]))
+		  	 {
+		  	     //Use DB 2
+		  	      //error_log("\nUsing DB2"."\n".date("Y-m-d H:i:s")."\n",3,"/var/www/madd/logs/error.log");
+		  	      $params['host'] = $this->HOST_BACKUP;
+		  	 }
+		  	 /*else
+		  	 {
+		  	 error_log("Matt Related Error!",3,"/var/www/madd/logs/error.log");
+		  	    return array("status"=>"failed");
+		  	 }*/
+			
 			$params['port'] = $this->PORT;
 			$params['login'] = $this->USER;
 			$params['password'] = $this->PASSWORD;

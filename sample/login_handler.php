@@ -36,7 +36,7 @@ if (isset($response["status"]) && $response["status"] === "success") {
 
     if($verify)  
     {
-      //Now need to validate User!
+      //Now need to validate User! - ME
       $request = array();
       $request['type'] = "validate_session";
       $request['username'] = $username;
