@@ -175,6 +175,10 @@ class rabbitMQClient
   	  		$output = shell_exec("/var/www/madd/pingDB1.sh");
   	  		$output = trim($output);
   	  		
+  	  		//Uncomment this line if you do not want to change pingDB1.sh to your DB IP
+  	  		//$output = "online";
+
+
   	  		//error_log("\nOutput is: ".$output,3,"/var/www/madd/logs/error.log");
 			
 			 if($output == "online!")
