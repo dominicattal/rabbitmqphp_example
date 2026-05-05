@@ -38,7 +38,9 @@ function updateAchievements($username)
     global $db_conn;
     $query = "SELECT COUNT(*) count FROM reviews WHERE username='$username'";
     $result = $db_conn->query($query);
-    if ($result->num_rows >= 1) {
+    $row = $result->fetch_assoc();
+    $num_reviews = $row["count"];
+    if ($num_reviews >= 1) {
         $query = "SELECT * FROM user_achievements WHERE username='$username' AND achievement_name ='review_1'";
         $result2 = $db_conn->query($query);
         if ($result2->num_rows == 0) {
@@ -46,7 +48,7 @@ function updateAchievements($username)
             $db_conn->query($query);
         }
     }
-    if ($result->num_rows >= 2) {
+    if ($num_reviews >= 2) {
         $query = "SELECT * FROM user_achievements WHERE username='$username' AND achievement_name='review_2'";
         $result3 = $db_conn->query($query);
         if ($result3->num_rows == 0) {
@@ -54,7 +56,7 @@ function updateAchievements($username)
             $db_conn->query($query);
         }
     }
-    if ($result->num_rows >= 3) {
+    if ($num_reviews >= 3) {
         $query = "SELECT * FROM user_achievements WHERE username='$username' AND achievement_name='review_3'";
         $result4 = $db_conn->query($query);
         if ($result4->num_rows == 0) {
@@ -63,8 +65,10 @@ function updateAchievements($username)
         }
     }
 
-    $query = "SELECT * FROM review_reviews WHERE username='$username'";
+    $query = "SELECT COUNT(*) count FROM review_reviews WHERE username='$username'";
     $result = $db_conn->query($query);
+    $row = $result->fetch_assoc();
+    $num_reviews = $row["count"];
     if ($result->num_rows > 0) {
         $query = "SELECT * FROM user_achievements WHERE username='$username' AND achievement_name='review_review'";
         $result4 = $db_conn->query($query);
@@ -76,7 +80,9 @@ function updateAchievements($username)
 
     $query = "SELECT COUNT(*) count FROM watchlist WHERE username='$username'";
     $result = $db_conn->query($query);
-    if ($result->num_rows > 0) {
+    $row = $result->fetch_assoc();
+    $num_reviews = $row["count"];
+    if ($num_reviews > 0) {
         $query = "SELECT * FROM user_achievements WHERE username='$username' AND achievement_name='watchlist_1'";
         $result4 = $db_conn->query($query);
         if ($result4->num_rows == 0) {
