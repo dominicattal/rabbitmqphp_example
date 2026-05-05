@@ -188,7 +188,7 @@ Scripts are in the `scripts` directory. Deployment scripts are in `deploy` direc
 `scripts/db_clean.sh`       -> run commands for cleaning up all the stuff in rcdb.sh \
 `scripts/db_purge.sh`       -> run commands for purging the cached api calls \
 `deploy/apt_deploy.sh`      -> packages to install on deploy vm \
-`deploy/apt_web.sh`         -> packages to install on web vm, copies project files to sample folder, copies conf to etc/apache2/sites-available, sets permissions, and enables apache \
+`deploy/apt_web.sh`         -> packages to install on web vm, copies configuration files to etc/apache2/sites-available, sets permissions, and enables apache and ssl \
 `deploy/apt_db.sh`          -> packages to install on db vm \
 `deploy/apt_data.sh`        -> packages to install on data vm \
 `deploy/broker_deploy.sh`   -> creates rabbitmq server on deploy vm \
@@ -201,6 +201,7 @@ Scripts are in the `scripts` directory. Deployment scripts are in `deploy` direc
 `deploy/genufw.sh`          -> automatically generates all of the ufw scripts for configuring firewall \
 `deploy/systemd.sh`         -> adds user, sets permissions, copies .service files to etc/systemd/system, restarts and enables systemd files \
 `send2Bun.sh`               -> add filename you want to send to deploy as the command line argument, and the respective bundle should be echoed so you can push it.
+'deploy/ssl.sh'             -> packages to install on web vm, generates certificates, sets permissions, allows port 443 \
 
 execute these like `sudo scripts/broker.sh`
 
@@ -325,3 +326,74 @@ If the frontend wants to call an endpoint, do it from the db.
 = Like popular, except it gives the most popular by genre
     
 ```
+
+### Database Replication
+How to setup Replication:
+Create 2 Database Server VMS
+On BOTH install ssh/scp and Mysql
+
+On DB 1
+Navigate to
+    /etc/mysql/mysql.conf.d/
+    open mysqld.cnf using sudo so it can be saved!
+    
+    Uncomment and edit these commands:
+    bind-address -> server_source's ip
+    server-id -> 1
+    log_bin -> /var/log/mysql/mysql-bin.log
+    binlog_do_db -> nameOfDB
+    
+   Save mysql.conf.d
+   
+   restart mysql
+   use mysql
+   goto and use your DB and run these commands
+   
+   sudo mysql create new user for replication - Creates a user for DB replication
+   	EX:  CREATE USER 'rep_user'@'rep_server_ip' IDENTIFIED WITH mysql_native_password BY 'password';
+   ```
+   grant replication slave on *.* to 'rep_user'@'rep_server_ip'	- Grants slave status to that user
+   grant replication *.* to rep_user@rep_server_ip;		-Grants replication to user@ip - make one for DB2
+   FLUSH PRIVILEGES;
+   flush tables with read lock;			- Prevents tables from being read/written to
+   SHOW MASTER STATUS;				-Shows Binlog ID: REQUIRES TABLE LOCK TO PREVENT IT CHANGING!
+   ```
+   Write down the position and file name
+	EX: binlog000033 499 
+   
+  If you have data in the DB, dump the table and scp it to the other server
+  
+  
+  
+Configure DB 2
+  Navigate  to /etc/mysql/mysql.conf.d/
+   Edit:
+   ```
+     Server-id -> 2
+     log_bin -> /var/log/mysql/mysql-bin.log
+     binlog_do_db -> same DB name as above
+     relay-log -> /var/log/mysql/mysql-relay-bin.log
+   ```
+   
+   save file then restart mysql
+   
+   use mysql
+   use the db
+   ```
+   CHANGE REPLICATION SOURCE TO
+	MASTER_HOST ='source server ip',
+	MASTER_USER = 'replica_user from above',
+	MASTER_PASSWORD ='password for that user',
+	MASTER_LOG_FILE = 'mysql-bin file you wrote down earlier',
+	MASTER_LOG_POS = Position number written down ealier;
+```
+   start the replica
+   START REPLICA;
+   
+   SHOW REPLICA STATUS\G; -Confirms whether it is working
+   
+   If no errors, then this is now a 1 way replication.
+   To make this 2 ways do what was done on 1's sql in 2 and vice versa
+   
+   Primary guide used to help set this up! - NOTE Some instructions are dated and or wrong for the version of mysql we used, refer to the above guide for more accurate commands!
+   https://www.digitalocean.com/community/tutorials/how-to-set-up-replication-in-mysql

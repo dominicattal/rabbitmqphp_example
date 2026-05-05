@@ -10,6 +10,10 @@
          </div> 
       </div>
 
+      <h2 class="section-title">YOUR ACHIEVEMENTS</h2>
+      <div class="achievements achievement-grid">
+      </div>
+
       <h2 class="section-title">YOUR REVIEWS</h2>
       <div class="movie-grid" id="reviews-grid"></div>
    </main>
@@ -72,5 +76,47 @@ if (isset($_GET['username']))
 	echo "getReviews('$_GET[username]')";
 else
 	echo "getReviews(username)";
+getReviews();
+
+function addAchievements(achievements)
+{
+    let achievement_grid = document.getElementsByClassName("achievement-grid")[0];
+    console.log(achievement_grid);
+    console.log(achievements);
+    for (const [name, vals] of Object.entries(achievements)) {
+        let achievement_card = document.createElement("div");
+        achievement_card.classList.add("movie-card");
+        achievement_card.textContent = vals.hr_name;
+        if (vals.unlocked)
+            achievement_card.setAttribute("style", "display: inline-block; padding: 20px; min-width: 300px; color: green;");
+        else
+            achievement_card.setAttribute("style", "display: inline-block; padding: 20px; min-width: 300px; color: red;");
+        achievement_grid.appendChild(achievement_card);
+    }
+}
+function getAchievements(explicit_username) 
+{
+	var request = new XMLHttpRequest();
+    let username = sessionStorage.getItem("username");
+	request.open("POST","achievement_handler.php",true);
+	request.setRequestHeader("Content-Type","application/x-www-form-urlencoded");
+	request.onreadystatechange = function ()
+    {
+		if ((this.readyState == 4)&&(this.status == 200))
+		{
+            addAchievements(JSON.parse(this.responseText));
+		}		
+	}
+	request.send(`username=${explicit_username}`);
+}
+
+<?php 
+if (isset($_GET['username'])) {
+	echo "getReviews('$_GET[username]');\n";
+	echo "getAchievements('$_GET[username]');\n";
+} else {
+	echo "getReviews(username);\n";
+	echo "getAchievements(username);\n";
+}
 ?>
 </script>
