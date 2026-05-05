@@ -69,7 +69,7 @@ function updateAchievements($username)
     $result = $db_conn->query($query);
     $row = $result->fetch_assoc();
     $num_reviews = $row["count"];
-    if ($result->num_rows > 0) {
+    if ($num_reviews > 0) {
         $query = "SELECT * FROM user_achievements WHERE username='$username' AND achievement_name='review_review'";
         $result4 = $db_conn->query($query);
         if ($result4->num_rows == 0) {
