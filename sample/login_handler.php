@@ -5,6 +5,7 @@ $location = "login.html";
 
 if (!isset($_POST["username"]) || !isset($_POST["password"])) {
     $web_response = "Missing post data";
+	//LOG DIS ALY
     goto fail;
 }
 
@@ -26,6 +27,7 @@ $request['username'] = $username;
 $response = $client->send_request($request);
 
 if (!isset($response["status"])) {
+	//LOG DIS ALY
     $web_response = "Internal Error: No response from database.";
     goto fail;
 }
@@ -47,16 +49,19 @@ if (isset($response["status"]) && $response["status"] === "success") {
         $location = "home.php";
       else
       {
-      	
+      	//LOG DIS ALY
 	goto fail;
       }
        
     }
-    else
+    else{
+	 //LOG DIS ALY
      goto fail;
+	}
     
 } else {
     $web_response = $response["message"];
+	//LOG DIS ALY
     goto fail;
 }
 

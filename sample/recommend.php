@@ -23,6 +23,7 @@ function addMovies(movies)
         let p_tag = document.createElement("p");
         p_tag.setAttribute("style", "color: white; text-align: center; padding: 20px;");
         p_tag.textContent = "No released movies in your watchlist.";
+		//LOG DIS ALY
         movie_grid.appendChild(p_tag);
         return;
     }

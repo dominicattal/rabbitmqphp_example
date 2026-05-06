@@ -3,6 +3,7 @@
 //If not, dumps them at the log in screen -Matt
 if(!sessionStorage.getItem("username"))
 {
+  //LOG DIS ALY
   //At some point this might need to be changed to check for session info aswell
   window.location.href = "login.html";
 }

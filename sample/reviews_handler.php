@@ -4,6 +4,7 @@
 $web_response = "";
 
 if (!isset($_POST)) {
+  //LOG DIS ALY
   trigger_error("Missing post data", E_USER_WARNING);
   goto fail;
 }
@@ -11,6 +12,7 @@ if (!isset($_POST)) {
 $location = $_POST["currentPage"];
 if (!isset($location)) {
     $web_response = "Missing location";
+	//LOG DIS ALY
     //goto fail; //Just goin to hard write this one 'cause it broke out of nowhere - ME
    $location = "home.php";
 }
@@ -19,29 +21,34 @@ if (!isset($location)) {
 $username = $_POST["username"];
 if (!isset($username)) {
     $web_response = "Missing username";
+	//LOG DIS ALY
     goto fail;
 }
 
 $message = $_POST["message"];
 if (!isset($message)) {
   trigger_error("Missing message", E_USER_WARNING);
+  //LOG DIS ALY
   goto fail;
 }
 
 $movieID = $_POST["movieID"];
 if (!isset($movieID)) {
   trigger_error("Missing movieID", E_USER_WARNING);
+  //LOG DIS ALY
   goto fail;
 }
 
 $UOI = $_POST["UOI"];
 if (!isset($UOI)) {
+  //LOG DIS ALY
   trigger_error("Missing UOI", E_USER_WARNING);
   goto fail;
 }
 
 $rating = $_POST["rating"];
 if (!isset($rating)) {
+	//LOG DIS ALY
   trigger_error("Missing rating", E_USER_WARNING);
   goto fail;
 }
@@ -96,11 +103,13 @@ if($UOI == "U" || $UOI == "UPDATE" || $UOI == "u")
 		if ($response["status"] !== "success") 
 		{
 		    $web_response = $response["message"];
+			//LOG DIS ALY
 		    goto fail;
 		}
 	}
 	else
 	{
+		//LOG DIS ALY
 	  goto fail;
 	}
 }
@@ -130,12 +139,14 @@ else if($UOI == "I" || $UOI == "INSERT" || $UOI == "i")
 
 		if ($response["status"] !== "success") 
 		{
+			//LOG DIS ALY
 		    $web_response = $response["message"];
 		    goto fail;
 		}
 	}
 	else
 	{
+	  //LOG DIS ALY
 	  goto fail;
 	}
 
@@ -143,7 +154,7 @@ else if($UOI == "I" || $UOI == "INSERT" || $UOI == "i")
 else
 {
 trigger_error("User never declared U or I!!!!!!!!!!", E_USER_WARNING);
-	goto fail;
+	goto fail; //LOG DIS ALY
 }
  
 

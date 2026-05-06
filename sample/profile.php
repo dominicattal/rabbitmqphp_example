@@ -35,6 +35,7 @@ if (username) {
 	?>
 }
 else {
+   //LOG DIS ALY
    window.location.href="login.html";
 }
 

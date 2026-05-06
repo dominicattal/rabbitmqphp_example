@@ -89,6 +89,7 @@ function requestProcessor($request)
 	    return getSearch($request["query"]); 
     }
     return array("status" => "failed", "message" => "unrecognized type");
+	//LOG DIS ALY
 }
 
 $server = new rabbitMQServer("data_server.ini");

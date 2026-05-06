@@ -6,21 +6,25 @@ $location = "registration.html";
 
 if (!isset($_POST)) {
   trigger_error("Missing post data", E_USER_WARNING);
+  //LOG DIS ALY
   goto fail;
 }
 $username = $_POST["username"];
 if (!isset($username)) {
   trigger_error("Missing username", E_USER_WARNING);
+  //LOG DIS ALY
   goto fail;
 }
 $email = $_POST["email"];
 if (!isset($email)) {
   trigger_error("Missing email", E_USER_WARNING);
+  //LOG DIS ALY
   goto fail;
 }
 $password = htmlspecialchars($_POST["password"]);
 if (!isset($password)) {
   trigger_error("Missing password", E_USER_WARNING);
+  //LOG DIS ALY
   goto fail;
 }
 
@@ -38,10 +42,12 @@ $request['password'] = $encryptedPassword;
 $response = $client->send_request($request);
 if (!isset($response["status"])) {
     $web_response = "Internal Error";
+    //LOG DIS ALY
     goto fail;
 }
 if ($response["status"] !== "success") {
     $web_response = $response["message"];
+    //LOG DIS ALY
     goto fail;
 }
 
@@ -61,7 +67,9 @@ if ($web_response) {
     echo "sessionStorage.setItem('username', '$username');\n";
     echo "sessionStorage.setItem('email', '$email');\n";
     echo "sessionStorage.setItem('key', '$response[key]')\n";
+
 } else {
+	//LOG DIS ALY
     trigger_error("how'd this happen", E_USER_WARNING);
 }
 echo "window.location = '$location';\n";

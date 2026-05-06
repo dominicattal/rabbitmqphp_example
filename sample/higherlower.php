@@ -1,6 +1,7 @@
 <script>
 	if(!sessionStorage.getItem("username")){
 		window.location.href="login.html";
+	//LOG DIS ALY
 	}
 </script>
 <?php

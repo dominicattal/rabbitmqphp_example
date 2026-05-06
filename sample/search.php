@@ -4,7 +4,7 @@
   //At some point this might need to be changed to check for session info aswell - ME
 if(!sessionStorage.getItem("username"))
 {
-
+  //LOG DIS ALY
   window.location.href = "login.html";
 }
 </script>

@@ -1,6 +1,7 @@
 #!/bin/bash
 #Put in a file as the argument and that should grab all the related files to the bundle. it will then tell you which bundle to push to deploy
 filename=$1;
+if [ -n "$filename" ];then
 if [[ $filename = "data.php" || $filename = "all" ]]; then
 	cp data.php bundles/dataBun/files
 	echo "dataBun";
@@ -50,4 +51,7 @@ if [[ $filename = "recommmend.php" || $filename = "recommend_hander.php" || $fil
 	cp sample/{recommend.php,recommend_handler.php} bundles/recBun/files
 	echo "recBun";
 fi
-
+else
+	echo "teehee";
+#LOG DIS ALY
+fi
