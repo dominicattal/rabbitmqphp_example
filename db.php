@@ -97,6 +97,7 @@ function doLogin($username)
       "status" => "failed",
       "message" => "User not found"
     );
+	//LOG DIS ALY
   }
   $row = $result->fetch_assoc();
   return array(
@@ -175,6 +176,7 @@ function doRegister($username,$email,$password)
           "status" => "failed",
           "message" => "User exists"
       );
+	//LOG DIS ALY
   }
   $query = "INSERT INTO users (username, email, password) VALUES ('$username','$email','$password');";
   $result = $db_conn->query($query);
@@ -194,6 +196,7 @@ function getEmail($username)
   $result = $db_conn->query($query);
   if ($result->num_rows == 0)
       return "404";
+	  //LOG DIS ALY
   $row = $result->fetch_assoc();
   return $row["email"];
 }
@@ -230,6 +233,7 @@ function doValidate($username)
     
     if($result->num_rows == 0)
     {
+	   //LOG DIS ALY
        echo("No session found! Making one!");
        $key = bin2hex(random_bytes(10));
         $expTime = $now + $timeToAdd;
@@ -255,7 +259,7 @@ function doValidate($username)
           echo "User has prior session, clearing then adding!\n";
           $query = "DELETE FROM validations WHERE username = '$username'";
           $result = $db_conn->query($query);
-
+		  //LOG DIS ALY
           $key = bin2hex(random_bytes(10));
           $now = time();
           $expTime = $now + $timeToAdd;
@@ -274,7 +278,7 @@ function doValidate($username)
           echo "User has an expired Key! Boot 'em!\n";
           $query = "DELETE FROM validations WHERE username = '$username'";
           $result = $db_conn->query($query);
-
+		  //LOG DIS ALY
           return array(
             "status" => "boot",
             "message" => "User needs to be logged out!"
@@ -312,7 +316,7 @@ function getGenres()
 destroy_genres:
     $query = "DELETE FROM genres";
     $result = $db_conn->query($query);
-
+	//LOG DIS ALY
 create_genres:
     $client = new rabbitMQClient("db_client.ini", "data_listen_queue", "data_listen");
     $request = array();
@@ -337,6 +341,7 @@ function getMovieFromCache($movieId)
     $result = $db_conn->query($query);
     if ($result->num_rows == 0)
         return false;
+	//LOG DIS ALY
     $row = $result->fetch_assoc();
     if ($row["createdAt"] + API_CACHE_DURATION > $now)
 	return false;
@@ -364,7 +369,8 @@ function cacheMovie($movie)
     global $db_conn;
 
     if ($movie['success']) {
-        echo "Movie not right format\n";
+        //LOG DIS ALY
+		echo "Movie not right format\n";
         return array("id" => -1);
     }
 
@@ -406,6 +412,7 @@ function cacheMovie($movie)
     $query = "SELECT * FROM movies WHERE id='$id'";
     $result = $db_conn->query($query);
     if ($result->num_rows == 0) {
+		//LOG DIS ALY
         echo "Movie id $id ($title) not found in cache adding now\n";
         $query = "INSERT INTO movies (id, title, overview, genre_id, poster_img_url, release_date, vote_average, createdAt) 
                     VALUES ('$id', '$title', '$overview', $genre_id, '$poster_img_url', '$release_date', '$vote_average', $now)";
@@ -415,6 +422,7 @@ function cacheMovie($movie)
     $row = $result->fetch_assoc();
     if ($row["createdAt"] + API_CACHE_DURATION > $now) {
         echo "Movie id $id ($title) found in cache but was expired, updating now\n";
+		//LOG DIS ALY
         $query = "UPDATE movies SET createdAt=$now WHERE id='$id'";
         $result = $db_conn->query($query);
         return $ret;
@@ -465,6 +473,7 @@ delete_popular:
 
 update_popular:
     echo "Popular movies either not cached or expired, retrieving now\n";
+	//LOG DIS ALY
     $client = new rabbitMQClient("db_client.ini", "data_listen_queue", "data_listen");
     $request = array();
     $request['type'] = "popular";
@@ -485,6 +494,7 @@ function getRecommendations($username)
     $result = $db_conn->query($query);
     if ($result->num_rows == 0) {
         echo "User $username doesn't have a review with 7 or higher score, returing popular movies as recommendation\n";
+		//LOG DIS ALY
         return array(
             "found_movie" => false,
             "results" => getPopularMovies($username)
@@ -570,6 +580,7 @@ function getAllReviewsOne($username,$movieID)
 
     if ($result->num_rows == 0)
     {
+		//LOG DIS ALY
         echo "No reviews exist for this movie!\n";
     }
     else
@@ -584,6 +595,7 @@ function getAllReviewsOne($username,$movieID)
         echo "Success!\n";
     }
     return array(
+		//LOG DIS ALY
         "status" => "failed",
         "message" => "Internal Error!"
     );
@@ -604,7 +616,7 @@ function createReview($username, $message, $movieID, $rating)
 	if ($result->num_rows == 0)
 	{
 		echo "No rows from movie!\n";
-		
+		//LOG DIS ALY
 		//IMPORTANT MAKE SURE TO VERIFY WITH THE DATA THAT THE MOVIE ID EXIST!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 		
 		//$query = "INSERT INTO users VALUES ('$username','$password');";
@@ -623,6 +635,7 @@ function createReview($username, $message, $movieID, $rating)
 	}
 
   	      return array(
+			//LOG DIS ALY
           "status" => "failed",
           "message" => "Internal Error or user+movie combo not exists!"
       );
@@ -644,6 +657,7 @@ function updateReview($username, $message, $movieID,$rating)
 	if ($result->num_rows == 0)
 	{
 		echo "No rows from movie! Either no reviews or movie not real!\n";
+		//LOG DIS ALY
 	}
 	else
 	{
@@ -660,6 +674,7 @@ function updateReview($username, $message, $movieID,$rating)
 	}
 
   	      return array(
+			//log dis aly
           "status" => "failed",
           "message" => "Internal Error or user+movie combo not exists!"
       );
@@ -674,6 +689,7 @@ function reviewAll()
 
     if ($result->num_rows == 0)
     {
+	//LOG DIS ALY
         echo "No Movies have been reviewed!\n";
     }
     else
@@ -701,6 +717,7 @@ function reviewAll()
         return $reviewsArray;
     }
     return array(
+	//LOG DIS ALY
         "status" => "failed",
         "message" => "Internal Error!"
     );
@@ -714,8 +731,10 @@ function reviewReview($username, $review_id, $status)
     if ($result->num_rows == 0) {
         $query = "INSERT INTO review_reviews (username, review_id, status) VALUES ('$username', $review_id, $status)";
         $result = $db_conn->query($query);
-        if (!$result)
+        if (!$result){
             echo "failed\n";
+			//LOG DIS ALY
+		}
         var_dump( array("test"=>"0"));
         return;
     }
@@ -724,14 +743,18 @@ function reviewReview($username, $review_id, $status)
     if ($row['status'] == $status) {
         $query = "DELETE FROM review_reviews WHERE username='$username' AND review_id='$review_id'"; 
         $db_conn->query($query);
-        if (!$result)
+        if (!$result){
             echo "failed\n";
+			//LOG DIS ALY
+		}
         var_dump( array("test"=>"1"));
     } else {
         $query = "UPDATE review_reviews SET status=$status WHERE username='$username' AND review_id='$review_id'"; 
         $db_conn->query($query);
-        if (!$result)
+        if (!$result){
             echo "failed\n";
+			//LOG DIS ALY
+		}
         var_dump( array("test"=>"2"));
     }
 }
@@ -747,6 +770,7 @@ function higherlower($count){
             $movies[] = $row;
 		return array("results"=>$movies);
 	}
+	//LOG DIS ALY
 	echo "new movies\n";
 	$client=new rabbitMQClient("db_client.ini", "data_listen_queue","data_listen");
 	$request=array();
@@ -813,9 +837,10 @@ function requestProcessor($request)
 
   echo "received request".PHP_EOL;
   var_dump($request);
-  if(!isset($request['type']))
+  if(!isset($request['type'])){
+	//LOG DIS ALY
     return array("status"=>"failed","message"=>"ERROR: unsupported message type");
-
+}
 
 
 /*if($current_db == 1)
@@ -860,7 +885,7 @@ else
 }*/
 
   $response = array("status"=>"failed","message"=>"ERROR: unsupported message type");
-
+//LOG DIS ALY
   try {
       switch ($request['type'])
       {
@@ -931,6 +956,7 @@ else
 
       return $response;
   } catch (Exception $e) {
+	  //LOG DIS ALY
       echo "PHP ERROR: " . $e->getMessage() . "\n";
       $i = 1;
       foreach ($e->getTrace() as $call) {
@@ -943,6 +969,7 @@ else
           $i++;
       }
       return array("status" => "failed");
+	  //LOG DIS ALY
   }
 }
 
