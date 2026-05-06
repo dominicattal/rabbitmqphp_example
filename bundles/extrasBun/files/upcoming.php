@@ -3,6 +3,7 @@
 //If not, dumps them at the log in screen -Matt
 if(!sessionStorage.getItem("username"))
 {
+  //LOG DIS ALY
   //At some point this might need to be changed to check for session info aswell
   window.location.href = "login.html";
 }
@@ -10,11 +11,16 @@ if(!sessionStorage.getItem("username"))
 
 <?php
 require_once('../rabbitMQLib.inc');
+include('../log.inc');
 $client = new rabbitMQClient("web_client.ini", "db_listen_queue", "db_listen");
 $request = array();
 $request['type'] = "upcoming";
 $request['count'] = 10;
 $response = $client->send_request($request);
+if ($response == false){
+	maddLog("upcoming movies request failed in web");
+	return array("status"=>"failed");
+}
 $movies = $response;
 // REMOVED upcoming movies request here to restore stability - ME
 ?>

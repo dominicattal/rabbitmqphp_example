@@ -15,11 +15,13 @@
       <a href="upcoming.php" class="nav-btn">UPCOMING</a>
       <a href="higherlower.php" class="nav-btn">HIGHER/LOWER</a>
       <a href="recommend.php" class="nav-btn">RECOMMENDED</a>
+      <a href="searchProfile.php" class="nav-btn">USERS</a>
       <div class="profile-dropdown">
           <button class="nav-btn">PROFILE ▼</button>
           <div class="dropdown-content">
               <a href="profile.php">MY ACCOUNT</a>
               <a href="watchlist.php">WATCHLIST</a>
+              <a href="achievements.php">ACHIEVEMENTS</a>
               <hr class="dropdown-divider">
               <a href="login.html" class="logout-link" onclick="sessionStorage.clear()">LOGOUT</a>
           </div>

@@ -158,10 +158,10 @@ if [ "$type" == "all" ] || [ "$type" == "db" ]; then
             else
                 path="/tmp/log_client.ini"
                 sed -e "s/web_host/$DEV_WEB_HOST/" -e "s/db_host/$DEV_DB_HOST/" -e "s/data_host/$DEV_DATA_HOST/" deploy/template_log_client.ini > $path
-                scp "$path" "scp://$ssh_string/~/it490/"
+                scp -O "$path" "scp://$ssh_string/~/it490/"
                 path="/tmp/log_server.ini"
                 sed "s/hostname/$DEV_DB_HOST/" deploy/template_log_server.ini > $path
-                scp "$path" "scp://$ssh_string/~/it490/"
+                scp -O "$path" "scp://$ssh_string/~/it490/"
             fi
         fi
     fi

@@ -27,8 +27,8 @@ if [[ $filename = "registration.html" || $filename = "registration_handler.php" 
 	cp sample/{registration.html,registration_handler.php} bundles/registerBun/files
 	echo "registerBun";
 fi
-if [[ $filename = "home.php" || $filename = "higherlower.php" || $filename = "searchProfile.php" || $filename = "upcoming.php" || $filename = "all" ]]; then
-	cp sample/{home.php,higherlower.php,upcoming.php,searchProfile.php} bundles/extrasBun/files
+if [[ $filename = "home.php" || $filename = "higherlower.php" || $filename = "searchProfile.php" || $filename = "upcoming.php" || $filename = "achievement_handler.php" || $filename = "all" ]]; then
+	cp sample/{home.php,higherlower.php,upcoming.php,searchProfile.php,achievement_handler.php} bundles/extrasBun/files
 	echo "extrasBun";
 fi
 if [[ $filename = "email.php" || $filename = "email_rec.php" || $filename = "all" ]]; then
@@ -39,8 +39,8 @@ if [[ $filename = "background.jpg" || $filename = "madd.css" || $filename = "all
 	cp sample/{background.jpg,madd.css} bundles/webDesignBun/files
 	echo "webDesignBun";
 fi
-if [[ $filename = "details.php" || $filename = "get_reviews_handler.php" || $filename = "reviews.html" || $filename = "reviewsView.html" || $filename = "reviewsView_handler.php" || $filename = "reviews_handler.php" || $filename = "all" ]]; then
-	cp sample/{details.php,get_reviews_handler.php,reviews.html,reviewsView.html,reviewsView_handler.php,reviews_handler.php} bundles/reviewBun/files
+if [[ $filename = "details.php" || $filename = "get_reviews_handler.php" || $filename = "reviews.html" || $filename = "reviewsView.html" || $filename = "reviewsView_handler.php" || $filename = "reviews_handler.php" || $filename = "review_reviews_handler.php" || $filename = "all" ]]; then
+	cp sample/{details.php,get_reviews_handler.php,reviews.html,reviewsView.html,reviewsView_handler.php,reviews_handler.php,review_reviews_handler.php} bundles/reviewBun/files
 	echo "reviewBun";
 fi
 if [[ $filename = "watchlist.php" || $filename = "watchlist_add.php" || $filename = "watchlist_handler.php" || $filename = "profile.php" || $filename = "all" ]]; then
@@ -52,6 +52,5 @@ if [[ $filename = "recommmend.php" || $filename = "recommend_hander.php" || $fil
 	echo "recBun";
 fi
 else
-	echo "teehee";
-#LOG DIS ALY
+	echo "No argument provided";
 fi

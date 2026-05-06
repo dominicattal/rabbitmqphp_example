@@ -22,7 +22,7 @@ if (!isset($message)) {
 }
 
 require_once('../rabbitMQLib.inc');
-
+include('../log.inc');
 $client = new rabbitMQClient("../web_client.ini", "db_listen_queue", "db_listen");
 
 $request = array();
@@ -33,7 +33,10 @@ $request['message'] = $message;
 
 
 $response = $client->send_request($request);
-
+if ($response == false){
+	maddLog("validate session request failed in web");
+	return array("status"=>"failed");
+}
 
 if (!isset($response["status"])) {
     $web_response = "Internal Error";

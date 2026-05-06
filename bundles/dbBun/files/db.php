@@ -7,21 +7,144 @@ $current_db = 1;
 
 $config = parse_ini_file('db_mysql.ini');
 
+include('log.inc');
+
 $db_conn = new mysqli($config["MYSQL_HOST"],$config["MYSQL_USER"],$config["MYSQL_PASS"],$config["MYSQL_DB"]);
 
 define("API_CACHE_DURATION", 60*60*24);
+
+function getAchievements($username)
+{
+    global $db_conn;
+    $response = array();
+    $query = "SELECT * FROM achievements";
+    $result = $db_conn->query($query);
+	if ($result == false){
+		maddLog("Query failed in achievements in DB");
+		return array("status"=>"failed");
+	}
+    while ($row = $result->fetch_assoc()) { 
+        $response["$row[name]"] = array(
+            "hr_name" => $row["hr_name"],
+            "unlocked" => false
+        );
+    }
+
+    $query = "SELECT * FROM user_achievements WHERE username='$username'";
+    $result = $db_conn->query($query);
+	if ($result == false){
+		maddLog("Query failed when selecting user achievements in DB");
+		return array("status"=>"failed");
+	}
+    while ($row = $result->fetch_assoc()) { 
+        $response[$row["achievement_name"]]["unlocked"] = true;
+    }
+
+    return $response;
+}
+
+function updateAchievements($username)
+{
+    global $db_conn;
+    $query = "SELECT COUNT(*) count FROM reviews WHERE username='$username'";
+    $result = $db_conn->query($query);
+	if ($result == false){
+		maddLog("Query failed when selecting achievement count in DB");
+		return array("status"=>"failed");
+	}
+    $row = $result->fetch_assoc();
+    $num_reviews = $row["count"];
+    if ($num_reviews >= 1) {
+        $query = "SELECT * FROM user_achievements WHERE username='$username' AND achievement_name ='review_1'";
+        $result2 = $db_conn->query($query);
+		if ($result2 == false){
+		maddLog("Query failed when finding user's achievements in DB");
+		return array("status"=>"failed");
+		}
+        if ($result2->num_rows == 0) {
+            $query = "INSERT INTO user_achievements (achievement_name, username) VALUES ('review_1', '$username')";
+            $db_conn->query($query);
+        }
+    }
+    if ($num_reviews >= 2) {
+        $query = "SELECT * FROM user_achievements WHERE username='$username' AND achievement_name='review_2'";
+        $result3 = $db_conn->query($query);
+		if ($result3 == false){
+			maddLog("Query failed when user achievements in DB");
+			return array("status"=>"failed");
+		}
+        if ($result3->num_rows == 0) {
+            $query = "INSERT INTO user_achievements (achievement_name, username) VALUES ('review_2', '$username')";
+            $db_conn->query($query);
+        }
+    }
+    if ($num_reviews >= 3) {
+        $query = "SELECT * FROM user_achievements WHERE username='$username' AND achievement_name='review_3'";
+        $result4 = $db_conn->query($query);
+		if ($result4 == false){
+		maddLog("Query failed when selecting user achievements in DB");
+		return array("status"=>"failed");
+	}
+        if ($result4->num_rows == 0) {
+            $query = "INSERT INTO user_achievements (achievement_name, username) VALUES ('review_3', '$username')";
+            $db_conn->query($query);
+        }
+    }
+
+    $query = "SELECT COUNT(*) count FROM review_reviews WHERE username='$username'";
+    $result = $db_conn->query($query);
+	if ($result == false){
+		maddLog("Query failed when selecting count from user achievements in DB");
+		return array("status"=>"failed");
+	}
+    $row = $result->fetch_assoc();
+    $num_reviews = $row["count"];
+    if ($num_reviews > 0) {
+        $query = "SELECT * FROM user_achievements WHERE username='$username' AND achievement_name='review_review'";
+        $result4 = $db_conn->query($query);
+		if ($result4 == false){
+			maddLog("Query failed when selecting user achievements in DB");
+			return array("status"=>"failed");
+		}	
+        if ($result4->num_rows == 0) {
+            $query = "INSERT INTO user_achievements (achievement_name, username) VALUES ('review_review', '$username')";
+            $db_conn->query($query);
+        }
+    }
+
+    $query = "SELECT COUNT(*) count FROM watchlist WHERE username='$username'";
+    $result = $db_conn->query($query);
+	if ($result == false){
+		maddLog("Query failed when selecting watchlist in DB");
+		return array("status"=>"failed");
+	}
+    $row = $result->fetch_assoc();
+    $num_reviews = $row["count"];
+    if ($num_reviews > 0) {
+        $query = "SELECT * FROM user_achievements WHERE username='$username' AND achievement_name='watchlist_1'";
+        $result4 = $db_conn->query($query);
+        if ($result4->num_rows == 0) {
+            $query = "INSERT INTO user_achievements (achievement_name, username) VALUES ('watchlist_1', '$username')";
+            $db_conn->query($query);
+        }
+    }
+}
 
 function doLogin($username)
 {
   global $db_conn;
   $query = "SELECT password FROM users WHERE username ='$username'";
   $result = $db_conn->query($query);
-  
+  if ($result == false){
+		maddLog("Query failed finding password in DB");
+		return array("status"=>"failed");
+	}
  if ($result->num_rows == 0) {
     return array(
       "status" => "failed",
       "message" => "User not found"
     );
+	
   }
   $row = $result->fetch_assoc();
   return array(
@@ -95,14 +218,23 @@ function doRegister($username,$email,$password)
   global $db_conn;
   $query = "SELECT username FROM users WHERE username='$username'";
   $result = $db_conn->query($query);
+  if ($result == false){
+		maddLog("username does not exist when registering in db");
+		return array("status"=>"failed");
+	} 
   if ($result->num_rows != 0) {
       return array(
           "status" => "failed",
           "message" => "User exists"
       );
+
   }
   $query = "INSERT INTO users (username, email, password) VALUES ('$username','$email','$password');";
   $result = $db_conn->query($query);
+  if ($result == false){
+		maddLog("username could not be inserted in db");
+		return array("status"=>"failed");
+	}
   $arr = doValidate($username);
 
   return array(
@@ -117,6 +249,10 @@ function getEmail($username)
   global $db_conn;
   $query = "SELECT email FROM users WHERE username='$username'";
   $result = $db_conn->query($query);
+  if ($result == false){
+		maddLog("email dne in db");
+		return array("status"=>"failed");
+	}
   if ($result->num_rows == 0)
       return "404";
   $row = $result->fetch_assoc();
@@ -130,6 +266,10 @@ function doValidate($username)
     global $db_conn;
     $query = "SELECT username from validations where username='$username'";
     $result = $db_conn->query($query);
+	if ($result == false){
+		maddLog("validation failed in db");
+		return array("status"=>"failed");
+	} 
     $key = "";
     $timeToAdd=300;
     
@@ -145,13 +285,38 @@ function doValidate($username)
     $query = "INSERT INTO validations (username, sessionKey, createdAt, expiresAt)
         VALUES ('$username', '$key', $now, $expTime);";
     $result = $db_conn->query($query);
+	if ($result == false){
+		maddLog("validation failed in db");
+		return array("status"=>"failed");
+	}
    }
    else
    {
     //Check if the user is expired. If not clear the old time and give them a new one/new key - ME
     $query = "SELECT expiresAt FROM validations WHERE username = '$username'";
     $result = $db_conn->query($query);
+	if ($result == false){
+		maddLog("user expired in db");
+		return array("status"=>"failed");
+	}
     $now = time();
+    
+    if($result->num_rows == 0)
+    {
+       echo("No session found! Making one!");
+       $key = bin2hex(random_bytes(10));
+        $expTime = $now + $timeToAdd;
+
+        $query = "INSERT INTO validations (username, sessionKey, createdAt, expiresAt)
+                   VALUES ('$username', '$key', $now, $expTime)";
+        $db_conn->query($query);
+
+        return array(
+            "status" => "success",
+            "key" => $key,
+            "message" => "User logged in!"
+        );
+    }
 	
     if ($result->num_rows > 0) 
     {
@@ -163,14 +328,20 @@ function doValidate($username)
           echo "User has prior session, clearing then adding!\n";
           $query = "DELETE FROM validations WHERE username = '$username'";
           $result = $db_conn->query($query);
-
+		  if ($result == false){
+			maddLog("validation failed in db");
+			return array("status"=>"failed");
+			}
           $key = bin2hex(random_bytes(10));
           $now = time();
           $expTime = $now + $timeToAdd;
           $query = "INSERT INTO validations (username, sessionKey, createdAt, expiresAt)
           VALUES ('$username', '$key', $now, $expTime);";
           $result = $db_conn->query($query);
-
+			if ($result == false){
+			maddLog("insert into validation failed in db");
+			return array("status"=>"failed");
+			}
           return array(
             "status" => "success",
             "key" => $key,
@@ -182,7 +353,10 @@ function doValidate($username)
           echo "User has an expired Key! Boot 'em!\n";
           $query = "DELETE FROM validations WHERE username = '$username'";
           $result = $db_conn->query($query);
-
+		  if ($result == false){
+			maddLog("user expired in db");
+			return array("status"=>"failed");
+			}
           return array(
             "status" => "boot",
             "message" => "User needs to be logged out!"
@@ -202,6 +376,10 @@ function getGenres()
     global $db_conn;
     $query = "SELECT * FROM genres";
     $result = $db_conn->query($query);
+	if ($result == false){
+			maddLog("genre query failed in db");
+			return array("status"=>"failed");
+			}
     $now = time();
     if ($result->num_rows == 0)
         goto create_genres;
@@ -220,13 +398,19 @@ function getGenres()
 destroy_genres:
     $query = "DELETE FROM genres";
     $result = $db_conn->query($query);
-
+	if ($result == false){
+			maddLog("delete genre failed in db");
+			return array("status"=>"failed");
+			}
 create_genres:
     $client = new rabbitMQClient("db_client.ini", "data_listen_queue", "data_listen");
     $request = array();
     $request['type'] = "genres";
     $raw_genres = $client->send_request($request)["genres"];
-
+	if ($raw_genres == false){
+		maddLog("could not fetch raw genres in DB");
+		return array("status"=>"failed");
+	}
     $genres = array();
     foreach ($raw_genres as $genre) {
         $genres[$genre["id"]] = $genre["name"];
@@ -243,6 +427,10 @@ function getMovieFromCache($movieId)
     $now = time();
     $query = "SELECT * FROM movies WHERE id='$movieId'";
     $result = $db_conn->query($query);
+	if ($result == false){
+    	maddLog("movie query failed in DB");
+		return array("status"=>"failed");
+	} 
     if ($result->num_rows == 0)
         return false;
     $row = $result->fetch_assoc();
@@ -270,6 +458,11 @@ function getMovieFromCache($movieId)
 function cacheMovie($movie)
 {
     global $db_conn;
+
+    if ($movie['success']) {
+       	echo "Movie not right format\n";
+        return array("id" => -1);
+    }
 
     $id = $movie["id"];
     $title = $movie['title'];
@@ -308,18 +501,31 @@ function cacheMovie($movie)
     $now = time();
     $query = "SELECT * FROM movies WHERE id='$id'";
     $result = $db_conn->query($query);
+	if ($result == false){
+    	maddLog("movie query failed");
+		return array("status"=>"failed");
+	}
     if ($result->num_rows == 0) {
         echo "Movie id $id ($title) not found in cache adding now\n";
         $query = "INSERT INTO movies (id, title, overview, genre_id, poster_img_url, release_date, vote_average, createdAt) 
                     VALUES ('$id', '$title', '$overview', $genre_id, '$poster_img_url', '$release_date', '$vote_average', $now)";
         $result = $db_conn->query($query);
+		if ($result == false){
+    	maddLog("insert movie query failed");
+		return array("status"=>"failed");
+		}
         return $ret;
     }
     $row = $result->fetch_assoc();
     if ($row["createdAt"] + API_CACHE_DURATION > $now) {
         echo "Movie id $id ($title) found in cache but was expired, updating now\n";
+		//LOG DIS ALY
         $query = "UPDATE movies SET createdAt=$now WHERE id='$id'";
         $result = $db_conn->query($query);
+		if ($result == false ){
+			maddLog("update query failed in db");
+			return array("status"=>"failed");
+        }			
         return $ret;
     }
 
@@ -339,7 +545,10 @@ function getMovie($movieId)
     $request['type'] = "movie";
     $request['id'] = $movieId;
     $movie = $client->send_request($request);
-
+	if ($movie == false ){
+			maddLog("movie request failed in db");
+			return array("status"=>"failed");
+        }
     return cacheMovie($movie);
 }
 
@@ -349,7 +558,11 @@ function getPopularMovies()
     $query = "SELECT * FROM popular_movies";
     $popular = array();
     $result = $db_conn->query($query);
-    $now = time();
+    if ($result == false ){
+    	maddLog("popular movie query failed");
+		return array("status"=>"failed");
+	} 	
+	$now = time();
     if ($result->num_rows == 0)
         goto update_popular;
     $row = $result->fetch_assoc();
@@ -365,6 +578,10 @@ function getPopularMovies()
 delete_popular:
     $query = "DELETE FROM popular_movies";
     $result = $db_conn->query($query);
+	 if ($result == false ){
+    	maddLog("delete movie query failed");
+		return array("status"=>"failed");
+	}
 
 update_popular:
     echo "Popular movies either not cached or expired, retrieving now\n";
@@ -372,6 +589,10 @@ update_popular:
     $request = array();
     $request['type'] = "popular";
     $movies_data = $client->send_request($request);
+	if ($movies_data == false ){
+    	maddLog("request popular movies query failed");
+		return array("status"=>"failed");
+	}
     $movies = $movies_data["results"];
     foreach ($movies as $movie) {
         array_push($popular, cacheMovie($movie));
@@ -386,6 +607,10 @@ function getRecommendations($username)
     global $db_conn;
     $query = "SELECT movie_id FROM reviews WHERE username='$username' AND score >= 7";
     $result = $db_conn->query($query);
+	if ($result == false){
+		maddLog("movie id query failed in db");
+		return array("status"=>"failed");
+    } 
     if ($result->num_rows == 0) {
         echo "User $username doesn't have a review with 7 or higher score, returing popular movies as recommendation\n";
         return array(
@@ -404,7 +629,10 @@ function getRecommendations($username)
     $request['type'] = "popular_in_genre";
     $request['genre_id'] = $movie["genre_id"];
     $raw_movies = $client->send_request($request)["results"];
-
+	if ($raw_movies == false ){
+		maddLog("raw movies request failed in DB");
+		return array("status"=>"failed");
+	}	
     $movies = array();
 
     foreach ($raw_movies as $movie) {
@@ -424,6 +652,10 @@ function getWatchlist($user)
       global $db_conn;
       $query = "SELECT movie_id FROM watchlist WHERE username='$user'";
       $result = $db_conn->query($query);
+	  if ($result == false ){
+		maddLog("movieid query failed in DB");
+		return array("status"=>"failed");
+	  } 
       $list = [];
       while ($row = $result->fetch_assoc()) { 
           $list[] = getMovie($row["movie_id"]); 
@@ -438,6 +670,10 @@ function getUpcoming()
     $request = array();
     $request['type'] = "upcoming";
     $raw_upcoming = $client->send_request($request);
+	if ($raw_upcoming == false){
+		maddLog("upcoming request failed in DB");
+		return array("status"=>"failed");
+	}	
     $upcoming = array();
     foreach ($raw_upcoming["results"] as $movie) {
         array_push($upcoming, cacheMovie($movie));
@@ -450,7 +686,10 @@ function addToWatchlist($user, $m_id, $m_name, $r_date)
       global $db_conn;
       $check = "SELECT id FROM watchlist WHERE username='$user' AND movie_id='$m_id'";
       $result = $db_conn->query($check);
-
+	  if ($result == false){
+		maddLog("id query watchlist failed in DB");
+		return array("status"=>"failed");
+	}
       if ($result->num_rows == 0) {
         $query = "INSERT INTO watchlist (username, movie_id, movie_name, release_date) VALUES ('$user', '$m_id', '$m_name', '$r_date')";
         $db_conn->query($query);
@@ -466,13 +705,17 @@ function getAllReviewsOne($username,$movieID)
     global $db_conn;
     $query = "SELECT username,movie_id,score, review FROM reviews WHERE movie_id = '$movieID'";
     $result = $db_conn->query($query);
-	
+	if ($result == false){
+		maddLog("get all reviews query failed in DB");
+		return array("status"=>"failed");
+	}
 	//var_dump($username);
 	//var_dump($message);
 	
 
     if ($result->num_rows == 0)
     {
+		
         echo "No reviews exist for this movie!\n";
     }
     else
@@ -487,6 +730,7 @@ function getAllReviewsOne($username,$movieID)
         echo "Success!\n";
     }
     return array(
+		
         "status" => "failed",
         "message" => "Internal Error!"
     );
@@ -503,18 +747,24 @@ function createReview($username, $message, $movieID, $rating)
 	global $db_conn;
     	$query = "SELECT * from reviews where username='$username' and movie_id ='$movieID'";
 	$result = $db_conn->query($query);
-	
+	if ($result == false){
+		maddLog("create review failed in DB");
+		return array("status"=>"failed");
+	}	
 	if ($result->num_rows == 0)
 	{
 		echo "No rows from movie!\n";
-		
+
 		//IMPORTANT MAKE SURE TO VERIFY WITH THE DATA THAT THE MOVIE ID EXIST!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 		
 		//$query = "INSERT INTO users VALUES ('$username','$password');";
 		$query = "INSERT INTO reviews (username, movie_id, score, review) VALUES ('$username', '$movieID', 	$rating, '$message');";
 
 		$result = $db_conn->query($query);
-
+		if ($result == false){
+		maddLog("insert review failed in DB");
+		return array("status"=>"failed");
+	}
 		return array (
 	"status" => "success",
 	"message" => "Inserted User's review into DB!"
@@ -543,10 +793,15 @@ function updateReview($username, $message, $movieID,$rating)
 	global $db_conn;
     	$query = "SELECT * from reviews where username='$username' and movie_id ='$movieID'";
 	$result = $db_conn->query($query);
-	
+	if ($result == false){
+		maddLog("select reviews failed in DB");
+		return array("status"=>"failed");
+	}	
+			
 	if ($result->num_rows == 0)
 	{
 		echo "No rows from movie! Either no reviews or movie not real!\n";
+	
 	}
 	else
 	{
@@ -554,7 +809,10 @@ function updateReview($username, $message, $movieID,$rating)
 
 		$query = "UPDATE reviews set review = '$message', score = $rating where username ='$username'";
 		 $result = $db_conn->query($query);
-		
+		if ($result == false){
+		maddLog("update reviews failed in DB");
+		return array("status"=>"failed");
+	}
 		echo "Review should be updated!\n";
 		  return array(
 		    "status" => "success",
@@ -563,6 +821,7 @@ function updateReview($username, $message, $movieID,$rating)
 	}
 
   	      return array(
+
           "status" => "failed",
           "message" => "Internal Error or user+movie combo not exists!"
       );
@@ -572,9 +831,12 @@ function updateReview($username, $message, $movieID,$rating)
 function reviewAll()
 {
     global $db_conn;
-    $query = "SELECT username,movie_id,score, review from reviews";
+    $query = "SELECT * from reviews";
     $result = $db_conn->query($query);
-
+	if ($result == false){
+		maddLog("review query failed in DB");
+		return array("status"=>"failed");
+	}			
     if ($result->num_rows == 0)
     {
         echo "No Movies have been reviewed!\n";
@@ -584,32 +846,101 @@ function reviewAll()
         $reviewsArray = array();
         while ($row = $result->fetch_assoc()) 
         {
-            $reviewsArray[] = $row;
+            $query = "SELECT COUNT(*) count FROM review_reviews WHERE review_id='$row[id]' AND status=1";
+            $result = $db_conn->query($query);
+            $num_likes = 0;
+            if ($result->num_rows > 0) {
+                $temp_row = $result->fetch_assoc();
+                $num_likes = $temp_row['count'];
+            }
+            $query = "SELECT COUNT(*) count FROM review_reviews WHERE review_id='$row[id]' AND status=0";
+            $result = $db_conn->query($query);
+            $num_dislikes = 0;
+            if ($result->num_rows > 0) {
+                $temp_row = $result->fetch_assoc();
+                $num_dislikes = $temp_row['count'];
+            }
+            $res = array_merge($row, array("likes"=>$num_likes,"dislikes"=>$num_dislikes));
+            $reviewsArray[] = $res;
         }
         return $reviewsArray;
     }
     return array(
+	
         "status" => "failed",
         "message" => "Internal Error!"
     );
 }
+
+function reviewReview($username, $review_id, $status)
+{
+    global $db_conn;
+    $query = "SELECT * FROM review_reviews WHERE username='$username' AND review_id='$review_id'";
+    $result = $db_conn->query($query);
+	if ($result == false){
+		maddLog("review reviews failed in DB");
+		return array("status"=>"failed");
+	}	
+    if ($result->num_rows == 0) {
+        $query = "INSERT INTO review_reviews (username, review_id, status) VALUES ('$username', $review_id, $status)";
+        $result = $db_conn->query($query);
+		if ($result == false){
+		maddLog("insert review reviews failed in DB");
+		return array("status"=>"failed");
+	}
+        if (!$result){
+            echo "failed\n";
+			}
+        var_dump( array("test"=>"0"));
+        return;
+    }
+    $row = $result->fetch_assoc();
+    echo "$status $row[status]\n";
+    if ($row['status'] == $status) {
+        $query = "DELETE FROM review_reviews WHERE username='$username' AND review_id='$review_id'"; 
+        $db_conn->query($query);
+        if (!$result){
+            echo "failed\n";
+			//LOG DIS ALY
+		}
+        var_dump( array("test"=>"1"));
+    } else {
+        $query = "UPDATE review_reviews SET status=$status WHERE username='$username' AND review_id='$review_id'"; 
+        $db_conn->query($query);
+        if (!$result){
+            echo "failed\n";
+			//LOG DIS ALY
+		}
+        var_dump( array("test"=>"2"));
+    }
+}
+
 function higherlower($count){
 	global $db_conn;
 	$now=time();
 	$query="SELECT * FROM movies WHERE vote_average > 1 ORDER BY rand() limit $count";
 	$result=$db_conn->query($query);
+	if ($result == false){
+		maddLog("higher lower failed in DB");
+		return array("status"=>"failed");
+	}
 	if($result->num_rows>=$count){
 		echo "get movies for higher lower\n";
 		while($row=$result->fetch_assoc())
             $movies[] = $row;
 		return array("results"=>$movies);
 	}
+	//LOG DIS ALY
 	echo "new movies\n";
 	$client=new rabbitMQClient("db_client.ini", "data_listen_queue","data_listen");
 	$request=array();
 	$request['type']="higherlower";
 	$request['count']= $count;
 	$moviesdata=$client->send_request($request);
+	if ($moviesdata == false){
+		maddLog("getting new movies failed in DB");
+		return array("status"=>"failed");
+	}
 	$movieList=$moviesdata["results"];
 	foreach ($movieList as $movie){
         var_dump($movie);
@@ -623,6 +954,10 @@ function getAllReviewsForUser($username)
 	global $db_conn;
     $query = "SELECT * from reviews where username='$username'";
     $result = $db_conn->query($query);
+	if ($result == false){
+		maddLog("getting review for user failed in DB");
+		return array("status"=>"failed");
+	}
     $reviews = array();
     while ($row = $result->fetch_assoc()) {
         $review = array(
@@ -639,6 +974,10 @@ function getSearch($request) {
    global $db_conn;
    $client = new rabbitMQClient("db_client.ini", "data_listen_queue", "data_listen");
    $raw_search = $client->send_request($request);
+	if ($raw_search == false){
+		maddLog("search failed in DB");
+		return array("status"=>"failed");
+	}
    var_dump($raw_search);
    $search = array();
    foreach ($raw_search['results'] as $movie){
@@ -647,18 +986,40 @@ function getSearch($request) {
    return array("results"=>$search);
 }
 
+function getSearchProfile($request) {
+   global $db_conn;
+   $search=$request['query'];
+   $query="SELECT * FROM users WHERE username LIKE '$search%'";
+   $result=$db_conn->query($query);
+   if ($result == false){
+		maddLog("searc profile failed in DB");
+		return array("status"=>"failed");
+	} 
+   $users=array();
+   while($row=$result->fetch_assoc()){
+	$user=array(
+	"username" => $row["username"],
+	"email" => $row["email"]
+	);
+	array_push($users,$user);
+	}
+   return array("results" => $users);
+}
+
 function requestProcessor($request)
 {
   global $db_conn;  
   global $current_db;
-   
+
   echo "received request".PHP_EOL;
   var_dump($request);
-  if(!isset($request['type']))
-    return "ERROR: unsupported message type";
+  if(!isset($request['type'])){
+	//LOG DIS ALY
+    return array("status"=>"failed","message"=>"ERROR: unsupported message type");
+}
 
 
-if($current_db == 1)
+/*if($current_db == 1)
 {
   echo "Using DB 1!\n";
   $output;
@@ -697,52 +1058,79 @@ else
      $config = parse_ini_file('db_mysql2.ini');
      $db_conn = new mysqli($config["MYSQL_HOST"],$config["MYSQL_USER"],$config["MYSQL_PASS"],$config["MYSQL_DB"]);
    }
-}
+}*/
 
-  
-
+  $response = array("status"=>"failed","message"=>"ERROR: unsupported message type");
+//LOG DIS ALY
   try {
       switch ($request['type'])
       {
         case "login":
-          return doLogin($request['username']);
+          $response = doLogin($request['username']);
+          break;
         case "register":
-          return doRegister($request['username'],$request['email'],$request['password']);
+          $response = doRegister($request['username'],$request['email'],$request['password']);
+          break;
         case "get_email":
-          return getEmail($request['username']);
+          $response = getEmail($request['username']);
+          break;
         case "validate_session":
-          return doValidate($request['username']);
+          $response = doValidate($request['username']);
+          break;
         case "movie":
-          return getMovie($request['id']);
+          $response = getMovie($request['id']);
+          break;
         case "popular":
-          return getPopularMovies();
+          $response = getPopularMovies();
+          break;
         case "recommend":
-          return getRecommendations($request["username"]);
+          $response = getRecommendations($request["username"]);
+          break;
         case "watchlist":
-          return getWatchlist($request["username"]);
+          $response = getWatchlist($request["username"]);
+          break;
         case "upcoming":
-          return getUpcoming();
+          $response = getUpcoming();
+          break;
         case "add_watchlist":
-          return addToWatchlist($request["username"], $request["movie_id"], $request["movie_name"], $request["release_date"]);
+          $response = addToWatchlist($request["username"], $request["movie_id"], $request["movie_name"], $request["release_date"]);
+          break;
         case "review_movie":
-          return updateReview($request['username'],$request['message'],$request['movieID'],$request['rating']);
+          $response = updateReview($request['username'],$request['message'],$request['movieID'],$request['rating']);
+          break;
+        case "review_review":
+          $response = reviewReview($request['username'], $request['review_id'], $request['status']);
+          break;
         case "reviewAll":
-          return reviewAll();
+          $response = reviewAll();
+          break;
         case "getAllReviewsOne":
-          return getAllReviewsOne($request['username'],$request['movieID']);
+          $response = getAllReviewsOne($request['username'],$request['movieID']);
+          break;
         case "get_all_reviews_for_user":
-          return getAllReviewsForUser($request['username']);
+          $response = getAllReviewsForUser($request['username']);
+          break;
         case "createReview":
-          return createReview($request['username'],$request['message'],$request['movieID'],$request['rating']);
+          $response = createReview($request['username'],$request['message'],$request['movieID'],$request['rating']);
+          break;
         case "higherlower":
-          return higherlower($request['count']);
+          $response = higherlower($request['count']);
+          break;
         case "search":
-          return getSearch($request);
-          
-         default:
-          return "Error: Sent an invalid request type!";
+          $response = getSearch($request);
+          break;
+        case "searchProfile":
+          $response = getSearchProfile($request);    
+          break;
+        case "achievement":
+          $response = getAchievements($request['username']);  
+          break;
       }
-      return array("returnCode" => '0', 'message'=>"Server received request and processed");
+
+      if (isset($request['username']))
+          updateAchievements($request['username']);
+
+      return $response;
   } catch (Exception $e) {
       echo "PHP ERROR: " . $e->getMessage() . "\n";
       $i = 1;

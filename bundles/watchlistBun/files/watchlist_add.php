@@ -1,6 +1,6 @@
 <?php
 require_once('../rabbitMQLib.inc');
-
+include('../log.inc');
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $movieId = $_POST['movie_id'];
     $movieName = $_POST['movie_name'];
@@ -15,6 +15,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     ];
 
     $response = $client->send_request($request);
+	if ($response == false){
+	maddLog("watchlist add request failed in web");
+	return array("status"=>"failed");
+}
     header('Content-Type: application/json');
     echo json_encode($response);
     exit();

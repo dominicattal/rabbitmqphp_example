@@ -112,7 +112,7 @@ if [ "$type" == "all" ] || [ "$type" == "db" ]; then
             path="/tmp/madd_log.service"
             sed -e "s/username/$DEV_DB_USER/" deploy/config/madd_log.service > $path
             ssh $ssh_string "mkdir -p ~/it490"
-            scp "$path" "scp://$ssh_string/~/it490/"
+            scp -O "$path" "scp://$ssh_string/~/it490/"
         fi
     fi
     if [ "$target" == "all" ] || [ "$target" == "qa" ]; then

@@ -4,13 +4,13 @@
   //At some point this might need to be changed to check for session info aswell - ME
 if(!sessionStorage.getItem("username"))
 {
-  //LOG DIS ALY
   window.location.href = "login.html";
 }
 </script>
 
 <?php
 require_once('../rabbitMQLib.inc');
+include('../log.inc');
 $search = $_GET['search'] ?? null;
 $movies = [];
 $client = new rabbitMQClient("web_client.ini", "db_listen_queue", "db_listen");
@@ -18,6 +18,10 @@ $request = array();
 $request['type'] = "search";
 $request['query'] = $search;
 $response = $client->send_request($request);
+if ($response == false){
+	maddLog("search request failed in web");
+	return array("status"=>"failed");
+}
 $movies = $response['results'];
 ?>
 

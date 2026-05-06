@@ -1,7 +1,7 @@
 #!/bin/php
 <?php
 require_once('rabbitMQLib.inc');
-
+include('log.inc');
 $ini = parse_ini_file(".api.ini", false);
 $key = $ini["TMDB_KEY"];
 
@@ -23,6 +23,10 @@ function getRequest($url)
       ],
     ]);
     $response = curl_exec($curl);
+	if ($response == false){
+		maddLog("url failed to curl in data");
+		return array("status"=>"failed");
+	}
     curl_close($curl);
     return $response;
 }
@@ -89,7 +93,6 @@ function requestProcessor($request)
 	    return getSearch($request["query"]); 
     }
     return array("status" => "failed", "message" => "unrecognized type");
-	//LOG DIS ALY
 }
 
 $server = new rabbitMQServer("data_server.ini");

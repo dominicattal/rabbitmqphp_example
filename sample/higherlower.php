@@ -1,16 +1,20 @@
 <script>
 	if(!sessionStorage.getItem("username")){
 		window.location.href="login.html";
-	//LOG DIS ALY
 	}
 </script>
 <?php
 require_once('../rabbitMQLib.inc');
+include('../log.inc');
 $client=new rabbitMQClient("../web_client.ini", "db_listen_queue","db");
 $request=array();
 $request['type']='higherlower';
 $request['count']=6;
 $response=$client->send_request($request);
+if ($response == false){
+	maddLog("higher lower request failed in web");
+	return array("status"=>"failed");
+}
 $movies=$response["results"];
 ?>
 

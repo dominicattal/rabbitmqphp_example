@@ -4,6 +4,7 @@
 $web_response = "";
 
 if (!isset($_POST)) {
+  //LOG DIS ALY
   trigger_error("Missing post data", E_USER_WARNING);
   goto fail;
 }
@@ -19,7 +20,7 @@ if (!isset($location)) {
 $username = $_POST["username"];
 if (!isset($username)) {
     $web_response = "Missing username";
-    goto fail;
+	goto fail;
 }
 
 $message = $_POST["message"];
@@ -47,7 +48,7 @@ if (!isset($rating)) {
 }
 
 require_once('../rabbitMQLib.inc');
-
+include('../log.inc');
 $client = new rabbitMQClient("../web_client.ini", "db_listen_queue", "db_listen");
 
 /*$request = array();
@@ -80,7 +81,10 @@ if($UOI == "U" || $UOI == "UPDATE" || $UOI == "u")
 	$request['rating'] = $rating;
 
 	$response = $client->send_request($request);
-
+	if ($response == false){
+		maddLog("review request failed in web");
+		return array("status"=>"failed");
+	}
 	if($response)
 	{
 		if($response["status"] == "success")
@@ -115,7 +119,10 @@ else if($UOI == "I" || $UOI == "INSERT" || $UOI == "i")
 	$request['rating'] = $rating;
 
 	$response = $client->send_request($request);
-
+	if ($response == false){
+		maddLog("insert review request failed in web");
+		return array("status"=>"failed");
+	}
 	if($response)
 	{
 		if($response["status"] == "success")

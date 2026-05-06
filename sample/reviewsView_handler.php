@@ -1,6 +1,7 @@
 <?php
 require_once('../rabbitMQLib.inc');
 include "navbar.php";
+include('../log.inc');
 $client = new rabbitMQClient("../web_client.ini","db_listen_queue","db_listen");
 $request = array();
 $request['type'] = "reviewAll";

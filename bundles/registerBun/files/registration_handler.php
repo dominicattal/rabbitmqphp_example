@@ -25,7 +25,7 @@ if (!isset($password)) {
 }
 
 require_once('../rabbitMQLib.inc');
-
+include('../log.inc');
 $client = new rabbitMQClient("../web_client.ini","db_listen_queue","db_listen");
 
 $encryptedPassword = password_hash($password,PASSWORD_DEFAULT);
@@ -36,6 +36,10 @@ $request['username'] = $username;
 $request['email'] = $email;
 $request['password'] = $encryptedPassword;
 $response = $client->send_request($request);
+if ($response == false){
+	maddLog("login request failed in web");
+	return array("status"=>"failed");
+}
 if (!isset($response["status"])) {
     $web_response = "Internal Error";
     goto fail;
@@ -52,7 +56,10 @@ $request = array();
 $request['type'] = "get_email";
 $request['username'] = $username;
 $email = $client->send_request($request);
-
+if ($email == false){
+	maddLog("login request failed in web");
+	return array("status"=>"failed");
+}
 fail:
 if ($web_response) {
     trigger_error($web_response, E_USER_WARNING);
@@ -61,6 +68,7 @@ if ($web_response) {
     echo "sessionStorage.setItem('username', '$username');\n";
     echo "sessionStorage.setItem('email', '$email');\n";
     echo "sessionStorage.setItem('key', '$response[key]')\n";
+
 } else {
     trigger_error("how'd this happen", E_USER_WARNING);
 }

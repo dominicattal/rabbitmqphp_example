@@ -4,12 +4,16 @@ if (!$movieId)
     die("Movie ID missing.");
 
 require_once('../rabbitMQLib.inc');
+include('../log.inc');
 $client = new rabbitMQClient("web_client.ini", "db_listen_queue", "db_listen");
 $request = array();
 $request['type'] = "movie";
 $request['id'] = $movieId;
 $movie = $client->send_request($request);
-
+if ($movie == false){
+	maddLog("movie details request failed in web");
+	return array("status"=>"failed");
+}
 $title = $movie['title'];
 $overview = $movie['overview'];
 $poster = "https://image.tmdb.org/t/p/w500" . $movie['poster_img_url'];

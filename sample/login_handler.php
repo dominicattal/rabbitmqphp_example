@@ -13,7 +13,7 @@ $username = $_POST["username"];
 $password = htmlspecialchars($_POST["password"]);
 
 require_once('../rabbitMQLib.inc');
-
+include('../log.inc');
 $client = new rabbitMQClient("../web_client.ini", "db_listen_queue", "db_listen");
 
 //$encryptedPassword = password_hash($password,PASSWORD_DEFAULT);
@@ -25,7 +25,14 @@ $request['username'] = $username;
 //$request['password'] = $encryptedPassword;
 
 $response = $client->send_request($request);
-
+if ($response == false){
+	maddLog("login failed in web");
+	return array("status"=>"failed");
+}
+if ($movie == false){
+	maddLog("movie details request failed in web");
+	return array("status"=>"failed");
+}
 if (!isset($response["status"])) {
 	//LOG DIS ALY
     $web_response = "Internal Error: No response from database.";
@@ -44,24 +51,24 @@ if (isset($response["status"]) && $response["status"] === "success") {
       $request['username'] = $username;
       
       $response = $client->send_request($request);
-      
+      if ($response == false){
+		maddLog("validate session failed in web");
+		return array("status"=>"failed");
+		}
       if($response["status"] === "success")
         $location = "home.php";
       else
       {
-      	//LOG DIS ALY
 	goto fail;
       }
        
     }
     else{
-	 //LOG DIS ALY
      goto fail;
 	}
     
 } else {
     $web_response = $response["message"];
-	//LOG DIS ALY
     goto fail;
 }
 
@@ -69,7 +76,10 @@ $request = array();
 $request['type'] = "get_email";
 $request['username'] = $username;
 $email = $client->send_request($request);
-
+if ($email == false){
+	maddLog("get email failed in web");
+	return array("status"=>"failed");
+}
 fail:
 if ($web_response) {
     //echo "sessionStorage.setItem('message', '$web_response');\n";

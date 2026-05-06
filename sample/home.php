@@ -1,9 +1,14 @@
 <?php
 require_once('../rabbitMQLib.inc');
+include('../log.inc');
 $client = new rabbitMQClient("web_client.ini", "db_listen_queue", "db_listen");
 $request = array();
 $request['type'] = "popular";
 $response = $client->send_request($request);
+if ($response == false){
+	maddLog("popular movies request failed in web");
+	return array("status"=>"failed");
+}
 $movies = $response;
 ?>
 
