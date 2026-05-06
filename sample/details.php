@@ -20,6 +20,7 @@ $release_date = $movie['release_date'] ?? 'TBD';
 
 if(!sessionStorage.getItem("username"))
 {
+  //LOG DIS ALY
   //At some point this might need to be changed to check for session info aswell - ME
   //alert("User not logged in!");
   window.location.href = "login.html";
