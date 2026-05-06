@@ -69,6 +69,16 @@ if [ "$type" == "all" ] || [ "$type" == "web" ]; then
             path="/tmp/web_client.ini"
             sed -e "s/hostname/$DEV_DB_HOST/" deploy/template_web_client.ini > $path
             scp "$path" "scp://$ssh_string/~/it490/"
+            if [ -z ${DEV_WEB_HOST} ] || [ -z ${DEV_DB_HOST} ] || [ -z ${DEV_DATA_HOST} ]; then
+                echo "Cannot copy log_client.ini - missing $DEV_WEB_HOST, $DEV_DB_HOST, or $DEV_DATA_HOST"
+            else
+                path="/tmp/log_client.ini"
+                sed -e "s/web_host/$DEV_WEB_HOST/" -e "s/db_host/$DEV_DB_HOST/" -e "s/data_host/$DEV_DATA_HOST/" deploy/template_log_client.ini > $path
+                scp "$path" "scp://$ssh_string/~/it490/"
+                path="/tmp/log_server.ini"
+                sed "s/hostname/$DEV_WEB_HOST/" deploy/template_log_server.ini > $path
+                scp "$path" "scp://$ssh_string/~/it490/"
+            fi
         fi
     fi
     if [ "$target" == "all" ] || [ "$target" == "qa" ]; then
@@ -84,6 +94,16 @@ if [ "$type" == "all" ] || [ "$type" == "web" ]; then
             path="/tmp/web_client.ini"
             sed -e "s/hostname/$QA_DB_HOST/" deploy/template_web_client.ini > $path
             scp "$path" "scp://$ssh_string/~/it490/"
+            if [ -z ${QA_WEB_HOST} ] || [ -z ${QA_DB_HOST} ] || [ -z ${QA_DATA_HOST} ]; then
+                echo "Cannot copy log_client.ini - missing QA_WEB_HOST, QA_DB_HOST, or QA_DATA_HOST"
+            else
+                path="/tmp/log_client.ini"
+                sed -e "s/web_host/$QA_WEB_HOST/" -e "s/db_host/$QA_DB_HOST/" -e "s/data_host/$QA_DATA_HOST/" deploy/template_log_client.ini > $path
+                scp "$path" "scp://$ssh_string/~/it490/"
+                path="/tmp/log_server.ini"
+                sed "s/hostname/$QA_WEB_HOST/" deploy/template_log_server.ini > $path
+                scp "$path" "scp://$ssh_string/~/it490/"
+            fi
         fi
     fi
     if [ "$target" == "all" ] || [ "$target" == "prod" ]; then
@@ -99,6 +119,19 @@ if [ "$type" == "all" ] || [ "$type" == "web" ]; then
             path="/tmp/web_client.ini"
             sed -e "s/hostname/$PROD_DB_HOST/" deploy/template_web_client.ini > $path
             scp "$path" "scp://$ssh_string/~/it490/"
+            path="/tmp/log_client.ini"
+            sed -e "s/web_host/$DEV_WEB_HOST/" -e "s/db_host/$DEV_DB_HOST/" -e "s/data_host/$DEV_DATA_HOST/" deploy/template_log_client.ini > $path
+            scp "$path" "scp://$ssh_string/~/it490/"
+            if [ -z ${PROD_WEB_HOST} ] || [ -z ${PROD_DB_HOST} ] || [ -z ${PROD_DATA_HOST} ]; then
+                echo "Cannot copy log_client.ini - missing PROD_WEB_HOST, PROD_DB_HOST, or PROD_DATA_HOST"
+            else
+                path="/tmp/log_client.ini"
+                sed -e "s/web_host/$PROD_WEB_HOST/" -e "s/db_host/$PROD_DB_HOST/" -e "s/data_host/$PROD_DATA_HOST/" deploy/template_log_client.ini > $path
+                scp "$path" "scp://$ssh_string/~/it490/"
+                path="/tmp/log_server.ini"
+                sed "s/hostname/$PROD_WEB_HOST/" deploy/template_log_server.ini > $path
+                scp "$path" "scp://$ssh_string/~/it490/"
+            fi
         fi
     fi
 fi
@@ -120,6 +153,16 @@ if [ "$type" == "all" ] || [ "$type" == "db" ]; then
             sed -e "s/hostname/$DEV_DB_HOST/" deploy/template_db_server.ini > $path
             scp -O "$path" "scp://$ssh_string/~/it490/"
             scp -O "db_mysql.ini" "scp://$ssh_string/~/it490/"
+            if [ -z ${DEV_WEB_HOST} ] || [ -z ${DEV_DB_HOST} ] || [ -z ${DEV_DATA_HOST} ]; then
+                echo "Cannot copy log_client.ini - missing DEV_WEB_HOST, DEV_DB_HOST, or DEV_DATA_HOST"
+            else
+                path="/tmp/log_client.ini"
+                sed -e "s/web_host/$DEV_WEB_HOST/" -e "s/db_host/$DEV_DB_HOST/" -e "s/data_host/$DEV_DATA_HOST/" deploy/template_log_client.ini > $path
+                scp "$path" "scp://$ssh_string/~/it490/"
+                path="/tmp/log_server.ini"
+                sed "s/hostname/$DEV_DB_HOST/" deploy/template_log_server.ini > $path
+                scp "$path" "scp://$ssh_string/~/it490/"
+            fi
         fi
     fi
     if [ "$target" == "all" ] || [ "$target" == "qa" ]; then
@@ -139,6 +182,16 @@ if [ "$type" == "all" ] || [ "$type" == "db" ]; then
             sed -e "s/hostname/$QA_DB_HOST/" deploy/template_db_server.ini > $path
             scp "$path" "scp://$ssh_string/~/it490/"
             scp "db_mysql.ini" "scp://$ssh_string/~/it490/"
+            if [ -z ${QA_WEB_HOST} ] || [ -z ${QA_DB_HOST} ] || [ -z ${QA_DATA_HOST} ]; then
+                echo "Cannot copy log_client.ini - missing QA_WEB_HOST, QA_DB_HOST, or QA_DATA_HOST"
+            else
+                path="/tmp/log_client.ini"
+                sed -e "s/web_host/$QA_WEB_HOST/" -e "s/db_host/$QA_DB_HOST/" -e "s/data_host/$QA_DATA_HOST/" deploy/template_log_client.ini > $path
+                scp "$path" "scp://$ssh_string/~/it490/"
+                path="/tmp/log_server.ini"
+                sed "s/hostname/$QA_DB_HOST/" deploy/template_log_server.ini > $path
+                scp "$path" "scp://$ssh_string/~/it490/"
+            fi
         fi
     fi
     if [ "$target" == "all" ] || [ "$target" == "prod" ]; then
@@ -158,6 +211,16 @@ if [ "$type" == "all" ] || [ "$type" == "db" ]; then
             sed -e "s/hostname/$PROD_DB_HOST/" deploy/template_db_server.ini > $path
             scp "$path" "scp://$ssh_string/~/it490/"
             scp "db_mysql.ini" "scp://$ssh_string/~/it490/"
+            if [ -z ${PROD_WEB_HOST} ] || [ -z ${PROD_DB_HOST} ] || [ -z ${PROD_DATA_HOST} ]; then
+                echo "Cannot copy log_client.ini - missing PROD_WEB_HOST, PROD_DB_HOST, or PROD_DATA_HOST"
+            else
+                path="/tmp/log_client.ini"
+                sed -e "s/web_host/$PROD_WEB_HOST/" -e "s/db_host/$PROD_DB_HOST/" -e "s/data_host/$PROD_DATA_HOST/" deploy/template_log_client.ini > $path
+                scp "$path" "scp://$ssh_string/~/it490/"
+                path="/tmp/log_server.ini"
+                sed "s/hostname/$PROD_DB_HOST/" deploy/template_log_server.ini > $path
+                scp "$path" "scp://$ssh_string/~/it490/"
+            fi
         fi
     fi
 fi
@@ -175,6 +238,16 @@ if [ "$type" == "all" ] || [ "$type" == "data" ]; then
             path="/tmp/data_server.ini"
             sed -e "s/hostname/$DEV_DB_HOST/" deploy/template_data_server.ini > $path
             scp "$path" "scp://$ssh_string/~/it490/"
+            if [ -z ${DEV_WEB_HOST} ] || [ -z ${DEV_DB_HOST} ] || [ -z ${DEV_DATA_HOST} ]; then
+                echo "Cannot copy log_client.ini - missing DEV_WEB_HOST, DEV_DB_HOST, or DEV_DATA_HOST"
+            else
+                path="/tmp/log_client.ini"
+                sed -e "s/web_host/$DEV_WEB_HOST/" -e "s/db_host/$DEV_DB_HOST/" -e "s/data_host/$DEV_DATA_HOST/" deploy/template_log_client.ini > $path
+                scp "$path" "scp://$ssh_string/~/it490/"
+                path="/tmp/log_server.ini"
+                sed "s/hostname/$DEV_DATA_HOST/" deploy/template_log_server.ini > $path
+                scp "$path" "scp://$ssh_string/~/it490/"
+            fi
         fi
     fi
     if [ "$target" == "all" ] || [ "$target" == "qa" ]; then
@@ -190,6 +263,16 @@ if [ "$type" == "all" ] || [ "$type" == "data" ]; then
             path="/tmp/data_server.ini"
             sed -e "s/hostname/$QA_DB_HOST/" deploy/template_data_server.ini > $path
             scp "$path" "scp://$ssh_string/~/it490/"
+            if [ -z ${QA_WEB_HOST} ] || [ -z ${QA_DB_HOST} ] || [ -z ${QA_DATA_HOST} ]; then
+                echo "Cannot copy log_client.ini - missing QA_WEB_HOST, QA_DB_HOST, or QA_DATA_HOST"
+            else
+                path="/tmp/log_client.ini"
+                sed -e "s/web_host/$QA_WEB_HOST/" -e "s/db_host/$QA_DB_HOST/" -e "s/data_host/$QA_DATA_HOST/" deploy/template_log_client.ini > $path
+                scp "$path" "scp://$ssh_string/~/it490/"
+                path="/tmp/log_server.ini"
+                sed "s/hostname/$QA_DATA_HOST/" deploy/template_log_server.ini > $path
+                scp "$path" "scp://$ssh_string/~/it490/"
+            fi
         fi
     fi
     if [ "$target" == "all" ] || [ "$target" == "prod" ]; then
@@ -205,6 +288,16 @@ if [ "$type" == "all" ] || [ "$type" == "data" ]; then
             path="/tmp/data_server.ini"
             sed -e "s/hostname/$PROD_DB_HOST/" deploy/template_data_server.ini > $path
             scp "$path" "scp://$ssh_string/~/it490/"
+            if [ -z ${PROD_WEB_HOST} ] || [ -z ${PROD_DB_HOST} ] || [ -z ${PROD_DATA_HOST} ]; then
+                echo "Cannot copy log_client.ini - missing PROD_WEB_HOST, PROD_DB_HOST, or PROD_DATA_HOST"
+            else
+                path="/tmp/log_client.ini"
+                sed -e "s/web_host/$PROD_WEB_HOST/" -e "s/db_host/$PROD_DB_HOST/" -e "s/data_host/$PROD_DATA_HOST/" deploy/template_log_client.ini > $path
+                scp "$path" "scp://$ssh_string/~/it490/"
+                path="/tmp/log_server.ini"
+                sed "s/hostname/$PROD_DATA_HOST/" deploy/template_log_server.ini > $path
+                scp "$path" "scp://$ssh_string/~/it490/"
+            fi
         fi
     fi
 fi

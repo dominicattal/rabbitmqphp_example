@@ -5,7 +5,7 @@
 # -------- FILES TO COPY --------------
 deploy_files="deploy/ssh_copy.sh deploy/apt_deploy.sh deploy/broker_deploy.sh deploy/clusters.ini deploy/deploy.php ./rabbitMQLib.inc deploy/systemd.sh scripts/removeFromTmp.sh schema_deployment.sql deploy/deploy_db.ini scripts/db_deployment.sh"
 
-cluster_files="deploy/handler.php ./rabbitMQLib.inc"
+cluster_files="deploy/handler.php deploy/log.php deploy/broker_log.sh ./log.inc ./rabbitMQLib.inc"
 
 web_files="$cluster_files deploy/apt_web.sh deploy/systemd.sh deploy/config/apache.conf .api.ini"
 db_files="$cluster_files deploy/apt_db.sh deploy/broker_cluster.sh deploy/systemd.sh scripts/db.sh schema.sql"

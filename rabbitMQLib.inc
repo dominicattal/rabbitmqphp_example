@@ -266,7 +266,9 @@ class rabbitMQClient
 			$this->send_queue = new AMQPQueue($channel);
 			$this->send_queue->setName($this->send_queue_name);
 			$this->send_queue->bind($this->exchange_name,$this->send_routing_key);
-			return $exchange->publish($json_message,$this->send_routing_key);
+            $response = $exchange->publish($json_message,$this->send_routing_key);
+            $conn->disconnect();
+			return $response;
 		}
 		catch(Exception $e)
 		{
