@@ -57,21 +57,27 @@ sudo systemctl restart ssh
 9. Setup web vm
     1. `cd it490`
     2. Run `apt_web.sh`
-    3. Run `sudo ./systemd.sh` to initialize the madd service.
-    4. Run `mkdir html`. Do NOT run as sudo.
-    5. Run `sudo ln -snf ~/it490/html/ /var/www/html` to create symlink. Run this as sudo.
-    6. Make sure that the html directory in it490 is not root.
-    7. Make sure `/var/www/html` exists and looks like `html -> /home/it490/it490/html`.
-    8. Run `sudo a2ensite apache.conf`. This will enable our apache config. Verify it worked by looking in `/etc/apache2/sites-enabled/apache.conf`
+    3. Run `sudo ./broker_cluster.sh`
+    4. Run `sudo ./broker_log.sh`
+    5. Run `sudo ./systemd.sh` to initialize the madd service.
+    6. Run `mkdir html`. Do NOT run as sudo.
+    7. Run `sudo ln -snf ~/it490/html/ /var/www/html` to create symlink. Run this as sudo.
+    8. Make sure that the html directory in it490 is not root.
+    9. Make sure `/var/www/html` exists and looks like `html -> /home/it490/it490/html`.
+    10. Run `sudo a2ensite apache.conf`. This will enable our apache config. Verify it worked by looking in `/etc/apache2/sites-enabled/apache.conf`
         - If it did not work (it should be the same as `deploy/config/apache.conf` in the main vm), then copy it like `sudo cp apache2.conf /etc/apache2/sites-enabled/apache.conf`. Then, run `sudo systemctl restart apache2`
 10. Setup db vm
     1. `cd it490`
     2. Run `apt_db.sh`
-    3. Run `sudo ./systemd.sh` to initialize the madd service.
+    3. Run `sudo ./broker_cluster.sh`
+    4. Run `sudo ./broker_log.sh`
+    5. Run `sudo ./systemd.sh` to initialize the madd service.
 11. Setup data vm
     1. `cd it490`
     2. Run `apt_data.sh`
-    3. Run `sudo ./systemd.sh` to initialize the madd service.
+    3. Run `sudo ./broker_cluster.sh`
+    4. Run `sudo ./broker_log.sh`
+    5. Run `sudo ./systemd.sh` to initialize the madd service.
 
 ### Client
 
@@ -83,6 +89,10 @@ deploy/client.php rollback [dev/qa/prod] [bundle_name]
 deploy/client.php mark [bundle_name] [version] [good/bad/new]
 deploy/client.php list
 ```
+
+### Logging
+
+Each vm in each cluster has the `cluster_vhost` vhost with the `log_exchange` exchange on it. More details in `deploy/broker_log.sh`. PHP scripts can send to each other vm in its cluster by including `log.inc` and using the method `maddLog`.  
 
 ### Push
 
@@ -209,6 +219,8 @@ execute these like `sudo scripts/broker.sh`
 
 `deploy/clusters.ini`   -> host and user of each vm. copied from `deploy/clusters_sample.ini`
 `.api.ini`              -> api keys. must be created and have the `TMDB_KEY`, `MADD_EMAIL`, and `MADD_PASS` fields.
+
+The rest of the ini files are generated automatically using `deploy/genini.sh`
 
 ### Rabbitmq
 
