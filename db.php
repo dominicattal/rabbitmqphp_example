@@ -7,6 +7,8 @@ $current_db = 1;
 
 $config = parse_ini_file('db_mysql.ini');
 
+require_once('log.php');
+
 $db_conn = new mysqli($config["MYSQL_HOST"],$config["MYSQL_USER"],$config["MYSQL_PASS"],$config["MYSQL_DB"]);
 
 define("API_CACHE_DURATION", 60*60*24);

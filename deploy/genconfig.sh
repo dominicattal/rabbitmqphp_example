@@ -56,6 +56,10 @@ if [ "$type" == "all" ] || [ "$type" == "web" ]; then
             sed -e "s/username/$DEV_WEB_USER/" deploy/config/madd_handler.service > $path
             ssh $ssh_string "mkdir -p ~/it490"
             scp "$path" "scp://$ssh_string/~/it490/"
+            path="/tmp/madd_log.service"
+            sed -e "s/username/$DEV_WEB_USER/" deploy/config/madd_log.service > $path
+            ssh $ssh_string "mkdir -p ~/it490"
+            scp "$path" "scp://$ssh_string/~/it490/"
         fi
     fi
     if [ "$target" == "all" ] || [ "$target" == "qa" ]; then
@@ -68,6 +72,10 @@ if [ "$type" == "all" ] || [ "$type" == "web" ]; then
             sed -e "s/username/$QA_WEB_USER/" deploy/config/madd_handler.service > $path
             ssh $ssh_string "mkdir -p ~/it490"
             scp "$path" "scp://$ssh_string/~/it490/"
+            path="/tmp/madd_log.service"
+            sed -e "s/username/$QA_WEB_USER/" deploy/config/madd_log.service > $path
+            ssh $ssh_string "mkdir -p ~/it490"
+            scp "$path" "scp://$ssh_string/~/it490/"
         fi
     fi
     if [ "$target" == "all" ] || [ "$target" == "prod" ]; then
@@ -78,6 +86,10 @@ if [ "$type" == "all" ] || [ "$type" == "web" ]; then
             echo "Generating configs for PROD_WEB_HOST ($ssh_string)"
             path="/tmp/madd_handler.service"
             sed -e "s/username/$PROD_WEB_USER/" deploy/config/madd_handler.service > $path
+            ssh $ssh_string "mkdir -p ~/it490"
+            scp "$path" "scp://$ssh_string/~/it490/"
+            path="/tmp/madd_log.service"
+            sed -e "s/username/$PROD_WEB_USER/" deploy/config/madd_log.service > $path
             ssh $ssh_string "mkdir -p ~/it490"
             scp "$path" "scp://$ssh_string/~/it490/"
         fi
@@ -97,6 +109,10 @@ if [ "$type" == "all" ] || [ "$type" == "db" ]; then
             path="/tmp/madd_db.service"
             sed -e "s/username/$DEV_DB_USER/" deploy/config/madd_db.service > $path
             scp -O "$path" "scp://$ssh_string/~/it490/"
+            path="/tmp/madd_log.service"
+            sed -e "s/username/$DEV_DB_USER/" deploy/config/madd_log.service > $path
+            ssh $ssh_string "mkdir -p ~/it490"
+            scp "$path" "scp://$ssh_string/~/it490/"
         fi
     fi
     if [ "$target" == "all" ] || [ "$target" == "qa" ]; then
@@ -112,6 +128,10 @@ if [ "$type" == "all" ] || [ "$type" == "db" ]; then
             path="/tmp/madd_db.service"
             sed -e "s/username/$QA_DB_USER/" deploy/config/madd_db.service > $path
             scp "$path" "scp://$ssh_string/~/it490/"
+            path="/tmp/madd_log.service"
+            sed -e "s/username/$QA_DB_USER/" deploy/config/madd_log.service > $path
+            ssh $ssh_string "mkdir -p ~/it490"
+            scp "$path" "scp://$ssh_string/~/it490/"
         fi
     fi
     if [ "$target" == "all" ] || [ "$target" == "prod" ]; then
@@ -126,6 +146,10 @@ if [ "$type" == "all" ] || [ "$type" == "db" ]; then
             scp "$path" "scp://$ssh_string/~/it490/"
             path="/tmp/madd_db.service"
             sed -e "s/username/$PROD_DB_USER/" deploy/config/madd_db.service > $path
+            scp "$path" "scp://$ssh_string/~/it490/"
+            path="/tmp/madd_log.service"
+            sed -e "s/username/$PROD_DB_USER/" deploy/config/madd_log.service > $path
+            ssh $ssh_string "mkdir -p ~/it490"
             scp "$path" "scp://$ssh_string/~/it490/"
         fi
     fi
@@ -144,6 +168,10 @@ if [ "$type" == "all" ] || [ "$type" == "data" ]; then
             path="/tmp/madd_data.service"
             sed -e "s/username/$DEV_DATA_USER/" deploy/config/madd_data.service > $path
             scp "$path" "scp://$ssh_string/~/it490/"
+            path="/tmp/madd_log.service"
+            sed -e "s/username/$DEV_DATA_USER/" deploy/config/madd_log.service > $path
+            ssh $ssh_string "mkdir -p ~/it490"
+            scp "$path" "scp://$ssh_string/~/it490/"
         fi
     fi
     if [ "$target" == "all" ] || [ "$target" == "qa" ]; then
@@ -159,6 +187,10 @@ if [ "$type" == "all" ] || [ "$type" == "data" ]; then
             path="/tmp/madd_data.service"
             sed -e "s/username/$QA_DATA_USER/" deploy/config/madd_data.service > $path
             scp "$path" "scp://$ssh_string/~/it490/"
+            path="/tmp/madd_log.service"
+            sed -e "s/username/$QA_DATA_USER/" deploy/config/madd_log.service > $path
+            ssh $ssh_string "mkdir -p ~/it490"
+            scp "$path" "scp://$ssh_string/~/it490/"
         fi
     fi
     if [ "$target" == "all" ] || [ "$target" == "prod" ]; then
@@ -173,6 +205,10 @@ if [ "$type" == "all" ] || [ "$type" == "data" ]; then
             scp "$path" "scp://$ssh_string/~/it490/"
             path="/tmp/madd_data.service"
             sed -e "s/username/$PROD_DATA_USER/" deploy/config/madd_data.service > $path
+            scp "$path" "scp://$ssh_string/~/it490/"
+            path="/tmp/madd_log.service"
+            sed -e "s/username/$PROD_DATA_USER/" deploy/config/madd_log.service > $path
+            ssh $ssh_string "mkdir -p ~/it490"
             scp "$path" "scp://$ssh_string/~/it490/"
         fi
     fi

@@ -1,0 +1,14 @@
+[Unit]
+Description=MADD logging service
+After=network.target
+
+[Service]
+Type=simple
+ExecStart=/usr/bin/php /var/www/madd/log.php
+WorkingDirectory=/var/www/madd
+Restart=on-failure
+RestartSec=5
+User=username
+
+[Install]
+WantedBy=multi-user.target
