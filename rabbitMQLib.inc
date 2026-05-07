@@ -165,18 +165,18 @@ class rabbitMQClient
 	function send_request($message)
 	{
 		$this->correlation_id = uniqid();
-        	$message["reply_queue_name"] = $this->reply_queue_name;
-        	$message["reply_routing_key"] = $this->reply_routing_key;
+        $message["reply_queue_name"] = $this->reply_queue_name;
+        $message["reply_routing_key"] = $this->reply_routing_key;
 		$json_message = json_encode($message);
 		try
 		{
 			$params = array();
 		       
-  	  		$output = shell_exec("/var/www/madd/pingDB1.sh");
-  	  		$output = trim($output);
+  	  		//$output = shell_exec("/var/www/madd/pingDB1.sh");
+  	  		//$output = trim($output);
   	  		
   	  		//Uncomment this line if you do not want to change pingDB1.sh to your DB IP
-  	  		//$output = "online";
+  	  		$output = "online!";
 
 
   	  		//error_log("\nOutput is: ".$output,3,"/var/www/madd/logs/error.log");
