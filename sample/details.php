@@ -3,6 +3,11 @@ $movieId = $_GET['id'] ?? null;
 if (!$movieId)
     die("Movie ID missing.");
 
+
+//MATT TESTING COMMENT TO TRY AND SEE WHAT IS GOING WRONG! - ME
+
+
+
 require_once('../rabbitMQLib.inc');
 $client = new rabbitMQClient("web_client.ini", "db_listen_queue", "db_listen");
 $request = array();
@@ -122,6 +127,6 @@ Post request to reviews_handler sending currentpage (defunct), username, movieID
 <script>
 document.getElementById("username2").value = sessionStorage.getItem("username");
 document.getElementById("username3").value = sessionStorage.getItem("username");
-document.getElementById("movieID").value = <?php echo $movieId; ?>
-document.getElementById("movieID2").value = <?php echo $movieId; ?>
+document.getElementById("movieID").value = <?php echo $movieId; ?>;
+document.getElementById("movieID2").value = <?php echo $movieId; ?>;
 </script>
