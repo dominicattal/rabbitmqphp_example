@@ -11,26 +11,27 @@ $movies = $response;
 <body class="home-body">
     <?php include "navbar.php"; ?>
 
-    <main class="content-wrapper">
-    <h2 class="section-title">POPULAR NOW</h2> 
-    <div class="movie-grid">
-    <?php foreach ($movies as $movie): 
-        $title = $movie['title'];
-        $movieId = $movie['id']; 
-        $poster = $movie['poster_img_url'];
-    ?>
-        <a href="details.php?id=<?php echo $movieId; ?>" class="movie-link">
-            <div class="movie-card">
-                <div class="poster-container">
-                    <img src="<?php echo $poster; ?>" alt="<?php echo $title; ?>" class="movie-poster">
+    <main class="container content-wrapper">
+        <h2 class="text-center section-title">POPULAR NOW</h2> 
+        
+        <div class="row">
+            <?php foreach ($movies as $movie): 
+                $title = $movie['title'];
+                $movieId = $movie['id']; 
+                $poster = $movie['poster_img_url'];
+            ?>
+                <div class="col-md-3 col-sm-6">
+                    <a href="details.php?id=<?php echo $movieId; ?>" class="movie-link">
+                        <div class="thumbnail movie-card">
+                            <img src="<?php echo $poster; ?>" alt="<?php echo $title; ?>" class="img-responsive movie-poster">
+                            <div class="caption text-center">
+                                <h3 class="movie-title"><?php echo $title; ?></h3>
+                            </div>
+                        </div>
+                    </a>
                 </div>
-                <div class="movie-details">
-                    <h3 class="movie-title"><?php echo $title; ?></h3>
-                </div>
-            </div>
-        </a>
-    <?php endforeach; ?>
-    </div>
-    </main>
+            <?php endforeach; ?>
+        </div> </main>
 </body>
 </html>
+
