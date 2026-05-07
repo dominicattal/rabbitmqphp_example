@@ -2,9 +2,11 @@
 require_once('../rabbitMQLib.inc');
 include "navbar.php";
 include('../log.inc');
+$movieID = $_GET['id'];
 $client = new rabbitMQClient("../web_client.ini","db_listen_queue","db_listen");
 $request = array();
-$request['type'] = "reviewAll";
+$request['type'] = "getAllReviewsOne";
+$request['movieID'] = $movieID;
 $response = $client->send_request($request);
 ?>
 

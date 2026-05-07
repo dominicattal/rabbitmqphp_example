@@ -703,7 +703,7 @@ function addToWatchlist($user, $m_id, $m_name, $r_date)
 function getAllReviewsOne($username,$movieID)
 {
     global $db_conn;
-    $query = "SELECT username,movie_id,score, review FROM reviews WHERE movie_id = '$movieID'";
+    $query = "SELECT username,movie_id,score,review FROM reviews WHERE movie_id='$movieID'";
     $result = $db_conn->query($query);
 	if ($result == false){
 		maddLog("get all reviews query failed in DB");
@@ -715,25 +715,15 @@ function getAllReviewsOne($username,$movieID)
 
     if ($result->num_rows == 0)
     {
-		
         echo "No reviews exist for this movie!\n";
     }
-    else
+
+    $reviewsArray = array();
+    while ($row = $result->fetch_assoc()) 
     {
-        $reviewsArray = array();
-        while ($row = $result->fetch_assoc()) 
-        {
-            $reviewsArray[] = $row;
-        }
-        return $reviewsArray;
-        
-        echo "Success!\n";
+        $reviewsArray[] = $row;
     }
-    return array(
-		
-        "status" => "failed",
-        "message" => "Internal Error!"
-    );
+    return $reviewsArray;
 }
 
 //This function creates a review for a movie if it does not exist. if it does, returns fail!

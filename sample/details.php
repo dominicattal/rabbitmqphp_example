@@ -18,6 +18,8 @@ $title = $movie['title'];
 $overview = $movie['overview'];
 $poster = "https://image.tmdb.org/t/p/w500" . $movie['poster_img_url'];
 $release_date = $movie['release_date'] ?? 'TBD';
+
+$reviews_link = "reviewsView_handler.php?id=$movieId";
 ?>
 
 <script>
@@ -117,11 +119,11 @@ Post request to reviews_handler sending currentpage (defunct), username, movieID
   </div>
 
   <div class="col-md-6 text-center">
-    <form action="reviewsView_handler.php" method="post">
+    <form action="<?php echo $reviews_link;?>" method="post">
       <input type="hidden" name="username" id="username3" value="TEST VALUE" readonly />
       <input type="hidden" name="movieID" id="movieID2" required />
       <div style="margin-top: 25px;">
-        <a href="reviewsView_handler.php" class="btn btn-info btn-block" style="font-weight: bold;">See all reviews here!</a>
+        <a href"<?php echo $reviews_link;?>"= class="btn btn-info btn-block" style="font-weight: bold;">See all reviews here!</a>
       </div>
     </form>
     <p id="reviewListOne"></p>
