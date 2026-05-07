@@ -23,34 +23,44 @@ $movies = $response;
 //Do not forgot to add this to each webpage to prevent non logged in users from logging in! -ME
 if(!sessionStorage.getItem("username"))
 {
-	window.location.href="login.html";
+  window.location.href="login.html";
 }
 </script>
 
 <?php include "header.php"; ?>
 <body class="home-body">
-    <?php include "navbar.php"; ?>
-
-    <main class="content-wrapper">
-    <h2 class="section-title">UPCOMING</h2> 
-    <div class="movie-grid">
-    <?php foreach ($movies as $movie): 
-        $title = $movie['title'];
-        $movieId = $movie['id']; 
-        $poster = "https://image.tmdb.org/t/p/w500" . $movie['poster_img_url'];
-    ?>
-        <a href="details.php?id=<?php echo $movieId; ?>" class="movie-link">
-            <div class="movie-card">
+  <?php include "navbar.php"; ?>
+  <main class="container content-wrapper">
+    <h2 class="section-title text-center">UPCOMING</h2> 
+    
+    <div class="row">
+      <?php if (is_array($movies) && !empty($movies)): ?>
+        <?php foreach ($movies as $movie): 
+          $title = $movie['title'];
+          $movieId = $movie['id']; 
+          $poster = "https://image.tmdb.org/t/p/w500" . $movie['poster_img_url'];
+        ?>
+          <div class="col-sm-6 col-md-3">
+            <a href="details.php?id=<?php echo $movieId; ?>" class="movie-link">
+              <div class="thumbnail movie-card" style="height: 420px; border: 2px solid black; margin-bottom: 20px;">
                 <div class="poster-container">
-                    <img src="<?php echo $poster; ?>" alt="<?php echo $title; ?>" class="movie-poster">
+                  <img src="<?php echo $poster; ?>" 
+                       alt="<?php echo htmlspecialchars($title); ?>" 
+                       class="img-responsive"
+                       style="height: 300px; width: 100%; object-fit: cover;">
                 </div>
-                <div class="movie-details">
-                    <h3 class="movie-title"><?php echo $title; ?></h3>
+                <div class="caption text-center">
+                  <h4 style="font-weight: bold; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
+                    <?php echo $title; ?>
+                  </h4>
                 </div>
-            </div>
-        </a>
-    <?php endforeach; ?>
+              </div>
+            </a>
+          </div>
+        <?php endforeach; ?>
+      <?php endif; ?>
     </div>
-    </main>
+  </main>
 </body>
 </html>
+
