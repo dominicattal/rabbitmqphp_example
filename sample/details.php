@@ -1,7 +1,7 @@
 <?php
 $movieId = $_GET['id'] ?? null;
 if (!$movieId)
-    die("Movie ID missing.");
+  die("Movie ID missing.");
 
 require_once('../rabbitMQLib.inc');
 include('../log.inc');
@@ -21,115 +21,120 @@ $release_date = $movie['release_date'] ?? 'TBD';
 ?>
 
 <script>
-
 if(!sessionStorage.getItem("username"))
 {
   //At some point this might need to be changed to check for session info aswell - ME
   //alert("User not logged in!");
   window.location.href = "login.html";
 }
-
 </script>
 
 <?php include "header.php"; ?>
 <body class="home-body">
-    <?php include "navbar.php"; ?>
+  <?php include "navbar.php"; ?>
 
-    <main class="content-wrapper">
-        <div class="details-container">
-            <div class="movie-info-card">
-                <img src="<?php echo $poster; ?>" class="details-poster">
-	        <div class="text-content">
-                    <h1><?php echo $title; ?></h1>
-                    <p class="synopsis"><?php echo $overview; ?></p>
+  <main class="container content-wrapper" style="color: white;">
+    <div class="row">
+      <div class="col-md-4">
+        <div class="thumbnail" style="border: 2px solid black; background: transparent;">
+          <img src="<?php echo $poster; ?>" class="img-responsive" alt="<?php echo $title; ?>">
+        </div>
+      </div>
 
-                    <button type="button" 
-                        class="nav-btn" 
-			onclick="addToWatchlist('<?php echo $movieId; ?>', '<?php echo addslashes($title); ?>', '<?php echo $release_date; ?>')">
-                        + ADD TO WATCHLIST
-                    </button>
-                    <p id="watchlist-msg" style="margin-top: 10px; font-weight: bold;"></p>
-                   
-                   <script>
-                   function addToWatchlist(id, name, date) {
-                      const msg = document.getElementById('watchlist-msg');
-                      msg.textContent = "Adding...";
-                      let username = sessionStorage.getItem("username");
+      <div class="col-md-8">
+        <div class="text-content">
+          <h1 style="color: white; margin-top: 0;"><?php echo $title; ?></h1>
+          <p class="synopsis" style="font-size: 1.2em; line-height: 1.6;"><?php echo $overview; ?></p>
+          <p style="color: #ccc;">Release Date: <?php echo $release_date; ?></p>
 
-                      fetch('watchlist_add.php', {
-                         method: 'POST',
-                         headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-                         body: `username=${username}&movie_id=${id}&movie_name=${encodeURIComponent(name)}&release_date=${date}`
-                      })
-                      .then(response => response.json())
-                      .then(data => {
-                         if (data.status === 'success') {
-                            msg.style.color = "#FF5E5B"; // Cinema Red
-                            msg.textContent = "Added to your watchlist!";
-                         } else {
-                            msg.textContent = data.message || "Already in watchlist!";
-                         }
-                      })
-                   }
-                   </script>
-                </div>
-            </div>
+          <button type="button" 
+            class="btn btn-primary btn-lg" 
+            onclick="addToWatchlist('<?php echo $movieId; ?>', '<?php echo addslashes($title); ?>', '<?php echo $release_date; ?>')">
+            ADD TO WATCHLIST
+          </button>
+          <p id="watchlist-msg" style="margin-top: 10px; font-weight: bold;"></p>
+          
+          <script>
+          function addToWatchlist(id, name, date) {
+            const msg = document.getElementById('watchlist-msg');
+            msg.textContent = "Adding...";
+            let username = sessionStorage.getItem("username");
 
+            fetch('watchlist_add.php', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+              body: `username=${username}&movie_id=${id}&movie_name=${encodeURIComponent(name)}&release_date=${date}`
+            })
+            .then(response => response.json())
+            .then(data => {
+              if (data.status === 'success') {
+                msg.style.color = "#FF5E5B"; // Cinema Red
+                msg.textContent = "Added to your watchlist!";
+              } else {
+                msg.textContent = data.message || "Already in watchlist!";
+              }
+            })
+          }
+          </script>
+        </div>
+      </div>
+    </div>
 
 <!--The stuff to make a review possible -ME
 Post request to reviews_handler sending currentpage (defunct), username, movieID, and user's review-->
-<form action="reviews_handler.php" method="post" id="review_handler">
-<div>
-  <input type="hidden" name="currentPage" id="currentPage" value="">
-    <label for="username">Username</label>
-    <input type="text" name="username" id="username2" value ="TEST VALUE"  readonly />
+<hr style="border-top: 1px solid #444;">
+<div class="row">
+  <div class="col-md-6">
+    <form action="reviews_handler.php" method="post" id="review_handler">
+      <div class="form-group">
+        <input type="hidden" name="currentPage" id="currentPage" value="">
+        <label for="username" style="color: white;">Username</label>
+        <input type="text" class="form-control" name="username" id="username2" value="TEST VALUE" readonly />
+      </div>
+          
+      <div>
+        <input type="hidden" name="movieID" id="movieID" required />
+      </div>
 
-  </div>
-  <div>
-    <label for="movieID"></label>
-    <input type="hidden" name="movieID" id="movieID" required />
-  </div>
-  <div>
-    <label for="message">Write your review here</label>
-    <input type="text" name="message" id="message" required />
-  </div>
-<div>
-  <label for="rating">Rating out of 10</label>
-  <input type="number" name="rating" id="rating" min="0" max="10" step="1" required />
-</div>
-<div>
-    <label for="updateOrInsert">Update or Insert?</label>
-    <input type="text" name="UOI" id="UOI" required />
-  </div>
-  <div>
-    <input type="submit" value="Submit" />
-  </div>
-</form>
-<p id="response"></p>
-</div>
+      <div class="form-group">
+        <label for="message" style="color: white;">Write your review here</label>
+        <textarea class="form-control" name="message" id="message" rows="3" required></textarea>
+      </div>
 
-<form action="reviewsView_handler.php" method="post">
-<div>
-    
-    <input type="hidden" name="username" id="username3" value ="TEST VALUE"  readonly />
+      <div class="form-group">
+        <label for="rating" style="color: white;">Rating out of 10</label>
+        <input type="number" class="form-control" name="rating" id="rating" min="0" max="10" step="1" required />
+      </div>
+
+      <div class="form-group">
+        <label for="updateOrInsert" style="color: white;">Update or Insert?</label>
+        <input type="text" class="form-control" name="UOI" id="UOI" class="form-control" placeholder="Type Update or Insert" required />
+      </div>
+
+      <button type="submit" class="btn btn-success btn-block" style="font-weight: bold;">Submit</button>
+    </form>
+    <p id="response"></p>
   </div>
-    <div>
-    <input type="hidden" name="movieID" id="movieID2" required />
+
+  <div class="col-md-6 text-center">
+    <form action="reviewsView_handler.php" method="post">
+      <input type="hidden" name="username" id="username3" value="TEST VALUE" readonly />
+      <input type="hidden" name="movieID" id="movieID2" required />
+      <div style="margin-top: 25px;">
+        <a href="reviewsView_handler.php" class="btn btn-info btn-block" style="font-weight: bold;">See all reviews here!</a>
+      </div>
+    </form>
+    <p id="reviewListOne"></p>
   </div>
-  <div>
-    <a href="reviewsView.html"><button>See all reviews here!</button></a>
-  </div>
-</form>
-<p id="reviewListOne"></p>
 </div>
 </main>
-</body>
-</html>
-
 
 <script>
 document.getElementById("username2").value = sessionStorage.getItem("username");
 document.getElementById("username3").value = sessionStorage.getItem("username");
-document.getElementById("movieID").value = <?php echo $movieId; ?>
-document.getElementById("movieID2").value = <?php echo $movieId; ?>
+document.getElementById("movieID").value = <?php echo $movieId; ?>;
+document.getElementById("movieID2").value = <?php echo $movieId; ?>;
 </script>
+</body>
+</html>
+
