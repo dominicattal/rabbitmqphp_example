@@ -7,6 +7,8 @@ $current_db = 1;
 
 $config = parse_ini_file('db_mysql.ini');
 
+require_once('log.php');
+
 $db_conn = new mysqli($config["MYSQL_HOST"],$config["MYSQL_USER"],$config["MYSQL_PASS"],$config["MYSQL_DB"]);
 
 define("API_CACHE_DURATION", 60*60*24);
@@ -38,7 +40,9 @@ function updateAchievements($username)
     global $db_conn;
     $query = "SELECT COUNT(*) count FROM reviews WHERE username='$username'";
     $result = $db_conn->query($query);
-    if ($result->num_rows >= 1) {
+    $row = $result->fetch_assoc();
+    $num_reviews = $row["count"];
+    if ($num_reviews >= 1) {
         $query = "SELECT * FROM user_achievements WHERE username='$username' AND achievement_name ='review_1'";
         $result2 = $db_conn->query($query);
         if ($result2->num_rows == 0) {
@@ -46,7 +50,7 @@ function updateAchievements($username)
             $db_conn->query($query);
         }
     }
-    if ($result->num_rows >= 2) {
+    if ($num_reviews >= 2) {
         $query = "SELECT * FROM user_achievements WHERE username='$username' AND achievement_name='review_2'";
         $result3 = $db_conn->query($query);
         if ($result3->num_rows == 0) {
@@ -54,7 +58,7 @@ function updateAchievements($username)
             $db_conn->query($query);
         }
     }
-    if ($result->num_rows >= 3) {
+    if ($num_reviews >= 3) {
         $query = "SELECT * FROM user_achievements WHERE username='$username' AND achievement_name='review_3'";
         $result4 = $db_conn->query($query);
         if ($result4->num_rows == 0) {
@@ -63,9 +67,11 @@ function updateAchievements($username)
         }
     }
 
-    $query = "SELECT * FROM review_reviews WHERE username='$username'";
+    $query = "SELECT COUNT(*) count FROM review_reviews WHERE username='$username'";
     $result = $db_conn->query($query);
-    if ($result->num_rows > 0) {
+    $row = $result->fetch_assoc();
+    $num_reviews = $row["count"];
+    if ($num_reviews > 0) {
         $query = "SELECT * FROM user_achievements WHERE username='$username' AND achievement_name='review_review'";
         $result4 = $db_conn->query($query);
         if ($result4->num_rows == 0) {
@@ -76,7 +82,9 @@ function updateAchievements($username)
 
     $query = "SELECT COUNT(*) count FROM watchlist WHERE username='$username'";
     $result = $db_conn->query($query);
-    if ($result->num_rows > 0) {
+    $row = $result->fetch_assoc();
+    $num_reviews = $row["count"];
+    if ($num_reviews > 0) {
         $query = "SELECT * FROM user_achievements WHERE username='$username' AND achievement_name='watchlist_1'";
         $result4 = $db_conn->query($query);
         if ($result4->num_rows == 0) {
@@ -589,6 +597,47 @@ function getAllReviewsOne($username,$movieID)
     );
 }
 
+function doReview($username,$message,$movieID,$rating)
+{
+    global $db_conn;
+    
+    var_dump($username);
+	var_dump($message);
+	var_dump($movieID);
+	var_dump($rating);
+	
+	
+    $query = "SELECT * from reviews where username = '$username' and movie_id ='$movieID'";
+    $result = $db_conn->query($query);
+    
+    if ($result->num_rows == 0)
+    {
+    	echo "User has no review for this movie! Making one!\n";
+    	
+    	$query = "INSERT INTO reviews (username, movie_id, score, review) VALUES ('$username', '$movieID', 	$rating, '$message');";
+    	
+    	$result = $db_conn->query($query);
+
+		return array (
+	"status" => "success",
+	"message" => "Inserted User's review into DB!"
+		);
+    }
+    else
+    {
+    	echo "User has a review for this movie! Updating it!\n";
+    	$query = "UPDATE reviews set review = '$message', score = $rating where username ='$username'";
+	$result = $db_conn->query($query);
+		
+	
+	return array(
+	    "status" => "success",
+	    "message" => $message
+	  );
+    }
+}
+
+//Depreciateing - ME
 //This function creates a review for a movie if it does not exist. if it does, returns fail!
 function createReview($username, $message, $movieID, $rating)
 {
@@ -628,10 +677,11 @@ function createReview($username, $message, $movieID, $rating)
       );
 }
 
+//Depcrieating - ME
 //This function checks if a person has made a review on a movie and updates their review with what they have sent
 function updateReview($username, $message, $movieID,$rating)
 {
-	//to do, at somepoint sanatize message!!!!!!!!!!!!!!!!!!!!!
+	//to do, at somepoint sanatize message!!!!!!!!!!!!!!!!!!!!! - ME
 	var_dump($username);
 	var_dump($message);
 	var_dump($movieID);
@@ -643,7 +693,8 @@ function updateReview($username, $message, $movieID,$rating)
 	
 	if ($result->num_rows == 0)
 	{
-		echo "No rows from movie! Either no reviews or movie not real!\n";
+		echo "No rows from movie! Making an insert into the review for Movie!\n";
+		$query = "INSERT INTO";
 	}
 	else
 	{
@@ -924,6 +975,9 @@ else
         case "achievement":
           $response = getAchievements($request['username']);  
           break;
+      	case "doReview":
+      	  $response = doReview($request['username'],$request['message'],$request['movieID'],$request['rating']);
+      	  break;
       }
 
       if (isset($request['username']))

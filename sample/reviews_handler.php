@@ -34,12 +34,6 @@ if (!isset($movieID)) {
   goto fail;
 }
 
-$UOI = $_POST["UOI"];
-if (!isset($UOI)) {
-  trigger_error("Missing UOI", E_USER_WARNING);
-  goto fail;
-}
-
 $rating = $_POST["rating"];
 if (!isset($rating)) {
   trigger_error("Missing rating", E_USER_WARNING);
@@ -49,6 +43,28 @@ if (!isset($rating)) {
 require_once('../rabbitMQLib.inc');
 
 $client = new rabbitMQClient("../web_client.ini", "db_listen_queue", "db_listen");
+
+$request = array();
+$request['type'] = "doReview";
+$request['username'] = $username;
+$request['message'] = $message;
+$request['movieID'] = $movieID;
+$request['rating'] = $rating;
+
+if($response["status"] == "success")
+{	
+	$web_response = $response["message"];
+	$location = "home.php"; //This is to prevent an infinite loop of loading hell. Probably 	fixable -ME
+	header("Location: " . $location);
+	exit();
+}
+else
+{
+	
+	$web_response = $response["message"];
+	goto fail;
+		
+}
 
 /*$request = array();
 $request['type'] = "validate_session";
@@ -69,7 +85,7 @@ if($response["status"] == "boot")
 //For now, just making a connection to the local DB and adding the user's review
 //Need to do 2 things, 1 check if user has made a review on this movie before, if so output it for them to edit, else let them make a new one
 
-if($UOI == "U" || $UOI == "UPDATE" || $UOI == "u")
+/*if($UOI == "U" || $UOI == "UPDATE" || $UOI == "u")
 {
 	trigger_error("User is updating a review!", E_USER_WARNING);
 	$request = array();
@@ -145,7 +161,7 @@ else
 trigger_error("User never declared U or I!!!!!!!!!!", E_USER_WARNING);
 	goto fail;
 }
- 
+ */
 
 
 

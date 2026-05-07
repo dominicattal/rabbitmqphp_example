@@ -93,10 +93,6 @@ Post request to reviews_handler sending currentpage (defunct), username, movieID
   <label for="rating">Rating out of 10</label>
   <input type="number" name="rating" id="rating" min="0" max="10" step="1" required />
 </div>
-<div>
-    <label for="updateOrInsert">Update or Insert?</label>
-    <input type="text" name="UOI" id="UOI" required />
-  </div>
   <div>
     <input type="submit" value="Submit" />
   </div>
