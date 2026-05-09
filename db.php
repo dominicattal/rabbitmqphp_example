@@ -703,28 +703,47 @@ function addToWatchlist($user, $m_id, $m_name, $r_date)
 function getAllReviewsOne($username,$movieID)
 {
     global $db_conn;
-    $query = "SELECT username,movie_id,score,review FROM reviews WHERE movie_id='$movieID'";
+    $query = "SELECT id,username,movie_id,score, review FROM reviews WHERE movie_id='$movieID'";
     $result = $db_conn->query($query);
-	if ($result == false){
-		maddLog("get all reviews query failed in DB");
-		return array("status"=>"failed");
-	}
-	//var_dump($username);
-	//var_dump($message);
-	
+
+        //var_dump($username);
+        //var_dump($message);
+
 
     if ($result->num_rows == 0)
     {
         echo "No reviews exist for this movie!\n";
+        return array();
     }
-
     $reviewsArray = array();
-    while ($row = $result->fetch_assoc()) 
+
+    while ($row = $result->fetch_assoc())
     {
-        $reviewsArray[] = $row;
-    }
-    return $reviewsArray;
-}
+            $query = "SELECT COUNT(*) count FROM review_reviews WHERE review_id='$row[id]' AND status=1";
+            $res_likes = $db_conn->query($query);
+            $num_likes = 0;
+            if ($res_likes->num_rows > 0) {
+                $temp_row = $res_likes->fetch_assoc();
+                $num_likes = $temp_row['count'];
+            }
+            $query = "SELECT COUNT(*) count FROM review_reviews WHERE review_id='$row[id]' AND status=0";
+            $res_dislikes = $db_conn->query($query);
+            $num_dislikes = 0;
+            if ($res_dislikes->num_rows > 0) {
+                $temp_row = $res_dislikes->fetch_assoc();
+                $num_dislikes = $temp_row['count'];
+            }
+            $res = array_merge($row, array("likes"=>$num_likes,"dislikes"=>$num_dislikes));
+            $reviewsArray[] = $res;
+        }
+        return $reviewsArray;
+
+        return array(
+           "status" => "failed",
+           "message" => "Internal Error!"
+        );
+ }
+
 
 //This function creates a review for a movie if it does not exist. if it does, returns fail!
 function createReview($username, $message, $movieID, $rating)
