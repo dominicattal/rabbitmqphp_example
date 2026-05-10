@@ -36,7 +36,6 @@ body {
   border-radius: 12px;
 }
 
-/* The "offset" border effect */
 .login-container::before {
   content: '';
   position: absolute;
@@ -278,6 +277,7 @@ textarea {
     overflow-y: auto;
 }
 
+/*
 .navbar {
     position: sticky;
     top: 0;
@@ -333,6 +333,7 @@ textarea {
     display: flex;
     display: inline-block;
 }
+*/
 
 .dropdown-content {
     display: none;
@@ -345,11 +346,11 @@ textarea {
     z-index: 1001;
 }
 
-
+/*
 .profile-dropdown:hover .dropdown-content {
     display: block;
 }
-
+*/
 
 .dropdown-content a {
     color: var(--primary);
@@ -401,6 +402,7 @@ textarea {
     box-shadow: var(--shadow);
 }
 
+/*
 .searchbar-container form {
     display: flex;
     align-items: center;
@@ -443,4 +445,4 @@ textarea {
    box-shadow: 4px 4px 0px var(--primary);
    transform: translate(-2px, -2px);
 }
-
+*/
